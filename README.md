@@ -9,8 +9,8 @@ A Flutter plugin for [Plaid Link](https://github.com/plaid/link).
 The plugin is not published yet. Download a local copy and add as [dependency in your pubspec.yaml](https://flutter.io/platform-plugins/):
 
 ``` yaml
-	plaid_flutter:
-		path: PATH_TO_PLAID_FLUTTER_PLUGIN_FOLDER
+  plaid_flutter:
+    path: PATH_TO_PLAID_FLUTTER_PLUGIN_FOLDER
 ``` 
 
 ### Android
