@@ -3,37 +3,38 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+
 //
 // The available environments to use.
-enum EnvOption { 
-	//
-	// For testing use,
-	sandbox, 
-	//
-	// For development use
-	development, 
-	//
-	// For production use only
-	production 
+enum EnvOption {
+  //
+  // For testing use,
+  sandbox,
+  //
+  // For development use
+  development,
+  //
+  // For production use only
+  production
 }
 //
 // Options for specifying the Plaid products to use.
-enum ProductOption { 
-	//
-	// Verify accounts for payments without micro-deposits.
-	auth, 
-	//
-	// Validate income and verify employer info more accurately.
-	income, 
-	//
-	// Account and transaction data to better serve users.
-	transactions,
-	// 
-	// Verify user identities with bank account data to reduce fraud.
-	identity,
-	// 
-	// Historical snapshots, real-time summaries, and auditable copies.
-	assets
+enum ProductOption {
+  //
+  // Verify accounts for payments without micro-deposits.
+  auth,
+  //
+  // Validate income and verify employer info more accurately.
+  income,
+  //
+  // Account and transaction data to better serve users.
+  transactions,
+  //
+  // Verify user identities with bank account data to reduce fraud.
+  identity,
+  //
+  // Historical snapshots, real-time summaries, and auditable copies.
+  assets
 }
 
 typedef void AccountLinkedCallback(String publicToken, Map<dynamic, dynamic> metadata);
@@ -44,18 +45,17 @@ typedef void ExitCallback(String metadata);
 
 typedef void EventCallback(String event, Map<dynamic, dynamic> metadata);
 
-
 class PlaidLink {
-
-  PlaidLink({this.publicKey, 
-			 this.clientName, 
- 			 this.env,
- 			 this.products,
- 			 this.onAccountLinked,
- 			 this.onAccountLinkError,
- 			 this.onExit,
- 			 this.onEvent})
-  : _channel = MethodChannel('plugins.flutter.io/plaid_flutter') {
+  PlaidLink(
+      {this.publicKey,
+      this.clientName,
+      this.env,
+      this.products,
+      this.onAccountLinked,
+      this.onAccountLinkError,
+      this.onExit,
+      this.onEvent})
+      : _channel = MethodChannel('plugins.flutter.io/plaid_flutter') {
     _channel.setMethodCallHandler(_onMethodCall);
   }
   //
@@ -86,10 +86,9 @@ class PlaidLink {
   //
   final EventCallback onEvent;
   //
-  // 
+  //
   Future<bool> _onMethodCall(MethodCall call) async {
     switch (call.method) {
-  
       case 'onAccountLinked':
         if (this.onAccountLinked != null) {
           this.onAccountLinked(call.arguments['publicToken'], call.arguments['metadata']);
@@ -116,17 +115,15 @@ class PlaidLink {
     }
     throw MissingPluginException('${call.method} was invoked but has no handler');
   }
+
   //
   //
   void open() {
-     _channel.invokeMethod('open', <String, dynamic>{
-     	'publicKey': publicKey,
-        'clientName': clientName,
-        'env': env.toString().split('.').last,
-        'products': products.map((p) => p.toString().split('.').last).toList(),
-      });
+    _channel.invokeMethod('open', <String, dynamic>{
+      'publicKey': publicKey,
+      'clientName': clientName,
+      'env': env.toString().split('.').last,
+      'products': products.map((p) => p.toString().split('.').last).toList(),
+    });
   }
-
 }
-
-

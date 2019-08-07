@@ -8,6 +8,7 @@
 @implementation PlaidFlutterPlugin {
     UIViewController *_rootViewController;
     FlutterMethodChannel *_channel;
+    PLKPlaidLinkViewController *_linkViewController;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -46,19 +47,19 @@
           linkConfiguration.clientName = clientName;
           
           id<PLKPlaidLinkViewDelegate> linkViewDelegate  = self;
-          PLKPlaidLinkViewController* linkViewController = [[PLKPlaidLinkViewController alloc] initWithConfiguration:linkConfiguration
-                                                                                                            delegate:linkViewDelegate];
+          _linkViewController = [[PLKPlaidLinkViewController alloc] initWithConfiguration:linkConfiguration delegate:linkViewDelegate];
           
           if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-              linkViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+              _linkViewController.modalPresentationStyle = UIModalPresentationFormSheet;
           }
           
-          [_rootViewController presentViewController:linkViewController animated:YES completion:nil];
+          [_rootViewController presentViewController:_linkViewController animated:YES completion:nil];
       }
       @catch (NSException *exception) {
           NSLog(@"Invalid configuration: %@", exception);
       }
-  } else {
+  }
+  else {
     result(FlutterMethodNotImplemented);
   }
 }
@@ -83,6 +84,8 @@
         }
         else {
             [self->_channel invokeMethod:@"onExit" arguments:@{@"metadata" : metadata}];
+            self->_linkViewController.delegate = nil;
+            self->_linkViewController = nil;
         }
     }];
     
