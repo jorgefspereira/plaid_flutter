@@ -48,7 +48,7 @@
 
           linkConfiguration.clientName = clientName;
 
-          if(webhook) {
+          if([webhook isKindOfClass:[NSString class]]) {
               linkConfiguration.webhook = [NSURL URLWithString:webhook];
           }
 
