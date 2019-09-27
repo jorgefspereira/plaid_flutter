@@ -36,6 +36,8 @@
       
       NSString* clientName = call.arguments[@"clientName"];
       NSString* publicKey = call.arguments[@"publicKey"];
+      NSString* webhook = call.arguments[@"webhook"];
+
       PLKEnvironment env = PLKEnvironmentFromString(call.arguments[@"env"]);
       PLKProduct product = PLKProductFromArray(call.arguments[@"products"]);
       
@@ -45,7 +47,11 @@
                                                             product:product];
 
           linkConfiguration.clientName = clientName;
-          
+
+          if(webhook) {
+              linkConfiguration.webhook = [NSURL URLWithString:webhook];
+          }
+
           id<PLKPlaidLinkViewDelegate> linkViewDelegate  = self;
           _linkViewController = [[PLKPlaidLinkViewController alloc] initWithConfiguration:linkConfiguration delegate:linkViewDelegate];
           

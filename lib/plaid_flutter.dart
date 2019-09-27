@@ -1,8 +1,5 @@
 import 'dart:async';
-
 import 'package:flutter/services.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 
 //
 // The available environments to use.
@@ -50,6 +47,7 @@ class PlaidLink {
       {this.publicKey,
       this.clientName,
       this.env,
+      this.webhook,
       this.products,
       this.onAccountLinked,
       this.onAccountLinkError,
@@ -70,6 +68,9 @@ class PlaidLink {
   //
   // The API environment selects the Plaid servers with which LinkKit communicates.
   final EnvOption env;
+  //
+  // The webhook will receive notifications once a userʼs transactions have been processed and are ready for use.
+  final String webhook;
   //
   // List of Plaid products you would like to use.
   final List<ProductOption> products;
@@ -122,6 +123,7 @@ class PlaidLink {
     _channel.invokeMethod('open', <String, dynamic>{
       'publicKey': publicKey,
       'clientName': clientName,
+      'webhook': webhook,
       'env': env.toString().split('.').last,
       'products': products.map((p) => p.toString().split('.').last).toList(),
     });
