@@ -29,7 +29,7 @@ cp "${LINK_ROOT:-$PROJECT_DIR}"/LinkKit.framework/prepare_for_distribution.sh "$
 "${CODESIGNING_FOLDER_PATH}"/Frameworks/LinkKit.framework/prepare_for_distribution.sh
 ```
 
-![](./docs/images/edit_run_script_build_phase.jpg)
+![](https://raw.githubusercontent.com/jorgefspereira/plaid_flutter/master/doc/images/edit_run_script_build_phase.jpg)
 
 *NOTE: More info at [https://plaid.com/docs/link/ios](https://plaid.com/docs/link/ios).*
 
@@ -58,7 +58,7 @@ cp "${LINK_ROOT:-$PROJECT_DIR}"/LinkKit.framework/prepare_for_distribution.sh "$
 
 3. Log into your Plaid Dashboard at the API page and add a new Allowed Android package name *(for example com.plaid.example)* and a new Allowed redirect URI.
 
-![](./docs/images/register-app-id.png)
+![](https://raw.githubusercontent.com/jorgefspereira/plaid_flutter/master/doc/images/register-app-id.png)
 	
 *NOTE: More info at [https://plaid.com/docs/link/android](https://plaid.com/docs/link/android).*
 
