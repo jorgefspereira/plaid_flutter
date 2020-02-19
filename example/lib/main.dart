@@ -22,12 +22,14 @@ class _MyAppState extends State<MyApp> {
     _plaidLink = PlaidLink(
       clientName: "CLIENT_NAME",
       publicKey: "PUBLIC_KEY",
+      oauthRedirectUri: "myapp://test",
+      oauthNonce: "XXXXXXXXXXXXXXXX",
       env: EnvOption.sandbox,
       products: <ProductOption>[
         ProductOption.auth,
       ],
       onAccountLinked: (publicToken, metadata) { print("onAccountLinked: $publicToken metadata: $metadata"); },
-      onAccountLinkError: (error, metadata) { print("onAccountError: $error metadata: $metadata"); },
+      onAccountLinkError: (error, metadata) { print("onAccountLinkError: $error metadata: $metadata"); },
       onEvent: (event, metadata) { print("onEvent: $event metadata: $metadata"); },
       onExit: (metadata) { print("onExit: $metadata"); },
     );
