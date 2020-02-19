@@ -1,8 +1,8 @@
 name: plaid_flutter
 description: Plaid Link plugin for Flutter.
 version: 0.1.0
-author:
-homepage:
+author: Jorge Pereira <jorgefspereira@icloud.com>
+homepage: https://github.com/jorgefspereira/plaid_flutter
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
