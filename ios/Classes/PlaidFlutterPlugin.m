@@ -37,6 +37,9 @@
       NSString* clientName = call.arguments[@"clientName"];
       NSString* publicKey = call.arguments[@"publicKey"];
       NSString* webhook = call.arguments[@"webhook"];
+      NSString* oauthRedirectUri = call.arguments[@"oauthRedirectUri"];
+      NSString* oauthNonce = call.arguments[@"oauthNonce"];
+      
 
       PLKEnvironment env = PLKEnvironmentFromString(call.arguments[@"env"]);
       PLKProduct product = PLKProductFromArray(call.arguments[@"products"]);
@@ -47,6 +50,14 @@
                                                             product:product];
 
           linkConfiguration.clientName = clientName;
+          
+          if([oauthRedirectUri isKindOfClass:[NSString class]]) {
+            linkConfiguration.oauthRedirectUri = [NSURL URLWithString:oauthRedirectUri];
+          }
+
+          if([oauthNonce isKindOfClass:[NSString class]]) {
+            linkConfiguration.oauthNonce = oauthNonce;
+          }
 
           if([webhook isKindOfClass:[NSString class]]) {
               linkConfiguration.webhook = [NSURL URLWithString:webhook];

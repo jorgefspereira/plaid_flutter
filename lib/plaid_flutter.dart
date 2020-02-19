@@ -38,7 +38,7 @@ typedef void AccountLinkedCallback(String publicToken, Map<dynamic, dynamic> met
 
 typedef void AccountLinkErrorCallback(String error, Map<dynamic, dynamic> metadata);
 
-typedef void ExitCallback(String metadata);
+typedef void ExitCallback(Map<dynamic, dynamic> metadata);
 
 typedef void EventCallback(String event, Map<dynamic, dynamic> metadata);
 
@@ -48,6 +48,8 @@ class PlaidLink {
       this.clientName,
       this.env,
       this.webhook,
+      this.oauthRedirectUri,
+      this.oauthNonce,
       this.products,
       this.onAccountLinked,
       this.onAccountLinkError,
@@ -71,6 +73,12 @@ class PlaidLink {
   //
   // The webhook will receive notifications once a userʼs transactions have been processed and are ready for use.
   final String webhook;
+  //
+  // An oauthRedirectUri is required to support OAuth authentication
+  final String oauthRedirectUri;
+  //
+  // An oauthNonce is required to support OAuth authentication 
+  final String oauthNonce;
   //
   // List of Plaid products you would like to use.
   final List<ProductOption> products;
@@ -124,6 +132,8 @@ class PlaidLink {
       'publicKey': publicKey,
       'clientName': clientName,
       'webhook': webhook,
+      'oauthRedirectUri': oauthRedirectUri,
+      'oauthNonce': oauthNonce,
       'env': env.toString().split('.').last,
       'products': products.map((p) => p.toString().split('.').last).toList(),
     });
