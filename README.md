@@ -29,9 +29,9 @@ cp "${LINK_ROOT:-$PROJECT_DIR}"/LinkKit.framework/prepare_for_distribution.sh "$
 "${CODESIGNING_FOLDER_PATH}"/Frameworks/LinkKit.framework/prepare_for_distribution.sh
 ```
 
-![](./docs/images/edit_run_script_build_phase.png)
+![](./docs/images/edit_run_script_build_phase.jpg)
 
-*NOTE: More info at [https://github.com/plaid/link/ios](https://plaid.com/docs/link/ios).*
+*NOTE: More info at [https://plaid.com/docs/link/ios](https://plaid.com/docs/link/ios).*
 
 ### Android
 
@@ -60,7 +60,7 @@ cp "${LINK_ROOT:-$PROJECT_DIR}"/LinkKit.framework/prepare_for_distribution.sh "$
 
 ![](./docs/images/register-app-id.png)
 	
-*NOTE: More info at [https://github.com/plaid/link/android](https://plaid.com/docs/link/android).*
+*NOTE: More info at [https://plaid.com/docs/link/android](https://plaid.com/docs/link/android).*
 
 ## Usage Example
 
