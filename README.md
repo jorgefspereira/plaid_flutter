@@ -2,21 +2,66 @@
 
 A Flutter plugin for [Plaid Link](https://github.com/plaid/link).
 
+This plugin integrates the native SDKs:
+
+- [Plaid Link iOS SDK](https://github.com/plaid/plaid-link-ios)
+- [Plaid Link Android SDK](https://github.com/plaid/plaid-link-android)
+
 *Note*: This plugin is still under development, and some APIs might not be available yet. Feedback and Pull Requests are most welcome!
 
 ## Installation
 
-The plugin is not published yet. Download a local copy and add as [dependency in your pubspec.yaml](https://flutter.io/platform-plugins/):
+The plugin is not published yet. Add the package as a [git dependency in your pubspec.yaml](https://flutter.dev/docs/development/packages-and-plugins/using-packages#dependencies-on-unpublished-packages):
 
 ``` yaml
   plaid_flutter:
-    path: PATH_TO_PLAID_FLUTTER_PLUGIN_FOLDER
+    git:
+      url: https://github.com/jorgefspereira/plaid_flutter.git
 ``` 
+
+### iOS
+
+1. Add a Run Script build phase *(name it Prepare for Distribution for example)* with the script below. Be sure to run this build phase after the Embed Frameworks build phase (or [CP] Embed Pods Frameworks build phase when integrating using CocoaPods)
+
+``` sh
+LINK_ROOT=${PODS_ROOT:+$PODS_ROOT/Plaid}
+cp "${LINK_ROOT:-$PROJECT_DIR}"/LinkKit.framework/prepare_for_distribution.sh "${CODESIGNING_FOLDER_PATH}"/Frameworks/LinkKit.framework/prepare_for_distribution.sh
+"${CODESIGNING_FOLDER_PATH}"/Frameworks/LinkKit.framework/prepare_for_distribution.sh
+```
+
+![](./docs/images/edit_run_script_build_phase.png)
+
+*NOTE: More info at [https://github.com/plaid/link/ios](https://plaid.com/docs/link/ios).*
 
 ### Android
 
-Not supported yet.
+1. Add the LinkActivity activity and plaid_public_key metadata element to your AndroidManifest.xml within the application tag.
+
+``` xml
+<application>
+
+  // ...
+
+  <activity android:name="com.plaid.link.LinkActivity" />
+
+  <meta-data android:name="com.plaid.link.public_key"
+             android:value="@string/plaid_public_key" />
+
+</application>
+```
+
+2. Add your plaid public key from the Plaid Dashboard to the donottranslate.xml file
+
+``` xml
+<string name="plaid_public_key">PUBLIC_KEY</string>
+```
+
+3. Log into your Plaid Dashboard at the API page and add a new Allowed Android package name *(for example com.plaid.example)* and a new Allowed redirect URI.
+
+![](./docs/images/register-app-id.png)
 	
+*NOTE: More info at [https://github.com/plaid/link/android](https://plaid.com/docs/link/android).*
+
 ## Usage Example
 
 ``` dart
@@ -36,8 +81,10 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   
     _plaidLink = PlaidLink(
-      clientName: "CLIENT_NAME",
-      publicKey: "PUBLIC_KEY",
+      clientName: "CLIENT_NAME",        //required
+      publicKey: "PUBLIC_KEY",          //required
+      oauthRedirectUri: "myapp://test", //required for android
+      oauthNonce: "XXXXXXXXXXXXXXXX",   
       env: EnvOption.sandbox,
       products: <ProductOption>[
         ProductOption.auth,
@@ -71,6 +118,5 @@ class _MyAppState extends State<MyApp> {
 
 ## TODOs
 
-- [ ] Android support
-- [ ] [iOS Prepare for distribution](https://plaid.com/docs/link/ios/#prepare-distribution-script)
+- [ ] [Avoid iOS Prepare for distribution configuration](https://plaid.com/docs/link/ios/#prepare-distribution-script)
 - [ ] Implement tests
