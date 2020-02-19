@@ -1,5 +1,7 @@
 # Plaid Link plugin for Flutter
 
+[![pub](https://img.shields.io/pub/v/plaid_flutter.svg)](https://pub.dev/packages/plaid_flutter)
+
 A Flutter plugin for [Plaid Link](https://github.com/plaid/link).
 
 This plugin integrates the native SDKs:
@@ -13,7 +15,7 @@ This plugin integrates the native SDKs:
 
 ``` yaml
   dependencies:
-    plaid_flutter: ^0.1.0
+    plaid_flutter: ^0.1.1
 ``` 
 
 ### iOS
