@@ -13,10 +13,7 @@ This plugin integrates the native SDKs:
 
 ## Installation
 
-``` yaml
-  dependencies:
-    plaid_flutter: ^0.1.1
-``` 
+Add `plaid_flutter` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
 
 ### iOS
 

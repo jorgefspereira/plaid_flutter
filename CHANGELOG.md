@@ -1,3 +1,7 @@
+## 0.1.2
+
+* pubspec.yaml plugin platform changes
+
 ## 0.1.1
 
 * Minor changes to documentation
