@@ -7,16 +7,13 @@ This plugin integrates the native SDKs:
 - [Plaid Link iOS SDK](https://github.com/plaid/plaid-link-ios)
 - [Plaid Link Android SDK](https://github.com/plaid/plaid-link-android)
 
-*Note*: This plugin is still under development, and some APIs might not be available yet. Feedback and Pull Requests are most welcome!
+*Note*: Feedback and Pull Requests are most welcome!
 
 ## Installation
 
-The plugin is not published yet. Add the package as a [git dependency in your pubspec.yaml](https://flutter.dev/docs/development/packages-and-plugins/using-packages#dependencies-on-unpublished-packages):
-
 ``` yaml
-  plaid_flutter:
-    git:
-      url: https://github.com/jorgefspereira/plaid_flutter.git
+  dependencies:
+    plaid_flutter: ^0.1.0
 ``` 
 
 ### iOS

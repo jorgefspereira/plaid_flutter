@@ -1,16 +1,53 @@
-# plaid_flutter_example
+## Usage Example
 
-Demonstrates how to use the plaid_flutter plugin.
+``` dart
+import 'package:plaid_flutter/plaid_flutter.dart';
 
-## Getting Started
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
-This project is a starting point for a Flutter application.
+class _MyAppState extends State<MyApp> {
 
-A few resources to get you started if this is your first Flutter project:
+  PlaidLink _plaidLink;
+  
+  @override
+  void initState() {
+    super.initState();
+  
+    _plaidLink = PlaidLink(
+      clientName: "CLIENT_NAME",        //required
+      publicKey: "PUBLIC_KEY",          //required
+      oauthRedirectUri: "myapp://test", //required for android
+      oauthNonce: "XXXXXXXXXXXXXXXX",   
+      env: EnvOption.sandbox,
+      products: <ProductOption>[
+        ProductOption.auth,
+      ],
+      onAccountLinked: (publicToken, metadata) { print("onAccountLinked: $publicToken metadata: $metadata"); },
+      onAccountLinkError: (error, metadata) { print("onAccountError: $error metadata: $metadata"); },
+      onEvent: (event, metadata) { print("onEvent: $event metadata: $metadata"); },
+      onExit: (metadata) { print("onExit: $metadata"); },
+    );
+  }
 
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: 
+        Center( 
+            child: 
+            RaisedButton(
+              onPressed: () {
+                _plaidLink.open();
+              },
+              child: Text("Open Plaid Link"),
+          	),
+        ),
+      ),
+    );
+  }
+}
+```
