@@ -1,3 +1,7 @@
+## 0.1.1
+
+* Minor changes to documentation
+
 ## 0.1.0
 
 * Support for Android
