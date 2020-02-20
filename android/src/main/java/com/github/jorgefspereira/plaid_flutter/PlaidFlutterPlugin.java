@@ -21,21 +21,20 @@ import kotlin.jvm.functions.Function1;
 
 import com.plaid.link.BuildConfig;
 import com.plaid.link.Plaid;
-import com.plaid.linkbase.models.LinkCancellation;
-import com.plaid.linkbase.models.LinkConfiguration;
-import com.plaid.linkbase.models.LinkConnection;
-import com.plaid.linkbase.models.LinkConnectionMetadata;
-import com.plaid.linkbase.models.LinkEvent;
-import com.plaid.linkbase.models.LinkEventListener;
-import com.plaid.linkbase.models.LinkEventMetadata;
-import com.plaid.linkbase.models.LinkExitMetadata;
-import com.plaid.linkbase.models.PlaidApiError;
-import com.plaid.linkbase.models.PlaidEnvironment;
-import com.plaid.linkbase.models.PlaidLinkActivityResultHandler;
-import com.plaid.linkbase.models.PlaidOptions;
-import com.plaid.linkbase.models.PlaidProduct;
-import com.plaid.linkbase.models.LinkAccount;
-import com.plaid.plog.LogLevel;
+import com.plaid.linkbase.models.configuration.PlaidEnvironment;
+import com.plaid.linkbase.models.configuration.PlaidOptions;
+import com.plaid.linkbase.models.configuration.PlaidProduct;
+import com.plaid.linkbase.models.connection.LinkAccount;
+import com.plaid.linkbase.models.connection.LinkCancellation;
+import com.plaid.linkbase.models.connection.LinkConnection;
+import com.plaid.linkbase.models.connection.LinkConnection.LinkConnectionMetadata;
+import com.plaid.linkbase.models.connection.LinkExitMetadata;
+import com.plaid.linkbase.models.connection.PlaidError;
+import com.plaid.linkbase.models.connection.PlaidLinkResultHandler;
+import com.plaid.linkbase.models.configuration.LinkConfiguration;
+import com.plaid.linkbase.models.configuration.LinkEvent;
+import com.plaid.linkbase.models.internal.configuration.LinkEventMetadata;
+import com.plaid.log.LogLevel;
 
 
 /** PlaidFlutterPlugin */
@@ -47,7 +46,7 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
   private static final String CHANNEL_NAME = "plugins.flutter.io/plaid_flutter";
   private static final int LINK_REQUEST_CODE = 1;
 
-  private PlaidLinkActivityResultHandler plaidLinkActivityResultHandler = new PlaidLinkActivityResultHandler(
+  private PlaidLinkResultHandler plaidLinkResultHandler = new PlaidLinkResultHandler(
       LINK_REQUEST_CODE,
       new Function1<LinkConnection, Unit>() {
         @Override
@@ -79,21 +78,15 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
           return Unit.INSTANCE;
         }
       },
-      new Function1<PlaidApiError, Unit>() {
+      new Function1<PlaidError, Unit>() {
         @Override
-        public Unit invoke(PlaidApiError e) {
+        public Unit invoke(PlaidError e) {
           Map<String, Object> data = new HashMap<>();
 
           data.put("error", e.getErrorMessage());
           data.put("metadata", createMapFromExitMetadata(e.getLinkExitMetadata()));
 
           channel.invokeMethod("onAccountLinkError", data);
-          return Unit.INSTANCE;
-        }
-      },
-      new Function1<Throwable, Unit>() {
-        @Override
-        public Unit invoke(Throwable e) {
           return Unit.INSTANCE;
         }
       }
@@ -115,11 +108,11 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
     this.channel = new MethodChannel(messenger, CHANNEL_NAME);
     channel.setMethodCallHandler(this);
 
-    PlaidOptions plaidOptions = new PlaidOptions.Builder()
+    PlaidOptions options = new PlaidOptions.Builder()
             .logLevel(BuildConfig.DEBUG ? LogLevel.DEBUG : LogLevel.ASSERT)
             .build();
 
-    Plaid.create(activity.getApplication(), plaidOptions);
+    Plaid.setOptions(options);
   }
 
   @Override
@@ -129,13 +122,13 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
       Map<String, Object> arguments = call.arguments();
 
       String clientName = (String) arguments.get("clientName");
-
+      String publicKey = (String)arguments.get("publicKey");
       String envString = (String)arguments.get("env");
       PlaidEnvironment env = PlaidEnvironment.valueOf(envString.toUpperCase());
 
       String webhook = (String) arguments.get("webhook");
-      String webviewRedirectUri = (String) arguments.get("oauthRedirectUri");
-      Log.i("TESTE", webviewRedirectUri);
+      String oauthRedirectUri = (String) arguments.get("oauthRedirectUri");
+      String oauthNonce = (String) arguments.get("oauthNonce");
 
       ArrayList<PlaidProduct> products = new ArrayList<>();
       ArrayList<?> productsObjects = (ArrayList<?>)arguments.get("products");
@@ -146,23 +139,25 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
         products.add(p);
       }
 
-      final LinkConfiguration configuration = new LinkConfiguration.Builder(clientName, products, webviewRedirectUri)
+
+      final LinkConfiguration configuration = new LinkConfiguration.Builder(clientName, products).
+              .oauthNonce(oauthNonce)
               .environment(env)
               .webhook(webhook)
               .build();
 
-      Plaid.setLinkEventListener(new LinkEventListener(new Function1<LinkEvent, Unit>() {
-          @Override
-          public Unit invoke(LinkEvent e) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("event", e.getEventName());
-            data.put("metadata", createMapFromEventMetadata(e.getMetadata()));
+      Plaid.setPublicKey(publicKey);
+      Plaid.setLinkEventListener(new Function1<LinkEvent, Unit>() {
+                                   @Override
+                                   public Unit invoke(LinkEvent e) {
+                                     Map<String, Object> data = new HashMap<>();
+                                     data.put("event", e.getEventName());
+                                     data.put("metadata", createMapFromEventMetadata(e.getMetadata()));
 
-            channel.invokeMethod("onEvent", data);
-            return Unit.INSTANCE;
-          }
-        }
-      ));
+                                     channel.invokeMethod("onEvent", data);
+                                     return Unit.INSTANCE;
+                                   }
+                                 });
 
       Plaid.openLink(activity, configuration, LINK_REQUEST_CODE);
 
@@ -173,7 +168,7 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
 
   @Override
   public boolean onActivityResult(int requestCode, int resultCode, Intent intent) {
-    return plaidLinkActivityResultHandler.onActivityResult(requestCode, resultCode, intent);
+    return plaidLinkResultHandler.onActivityResult(requestCode, resultCode, intent);
   }
 
   private Map<String, String> createMapFromEventMetadata(LinkEventMetadata data) {

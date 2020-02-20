@@ -29,11 +29,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-
-        <activity android:name="com.plaid.link.LinkActivity" />
-
-        <meta-data android:name="com.plaid.link.public_key"
-                    android:value="@string/plaid_public_key" />
-
+        
     </application>
 </manifest>
