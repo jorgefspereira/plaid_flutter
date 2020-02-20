@@ -34,9 +34,11 @@ enum ProductOption {
   assets
 }
 
-typedef void AccountLinkedCallback(String publicToken, Map<dynamic, dynamic> metadata);
+typedef void AccountLinkedCallback(
+    String publicToken, Map<dynamic, dynamic> metadata);
 
-typedef void AccountLinkErrorCallback(String error, Map<dynamic, dynamic> metadata);
+typedef void AccountLinkErrorCallback(
+    String error, Map<dynamic, dynamic> metadata);
 
 typedef void ExitCallback(Map<dynamic, dynamic> metadata);
 
@@ -77,7 +79,7 @@ class PlaidLink {
   // An oauthRedirectUri is required to support OAuth authentication
   final String oauthRedirectUri;
   //
-  // An oauthNonce is required to support OAuth authentication 
+  // An oauthNonce is required to support OAuth authentication
   final String oauthNonce;
   //
   // List of Plaid products you would like to use.
@@ -100,13 +102,15 @@ class PlaidLink {
     switch (call.method) {
       case 'onAccountLinked':
         if (this.onAccountLinked != null) {
-          this.onAccountLinked(call.arguments['publicToken'], call.arguments['metadata']);
+          this.onAccountLinked(
+              call.arguments['publicToken'], call.arguments['metadata']);
         }
         return null;
 
       case 'onAccountLinkError':
         if (this.onAccountLinkError != null) {
-          this.onAccountLinkError(call.arguments['error'], call.arguments['metadata']);
+          this.onAccountLinkError(
+              call.arguments['error'], call.arguments['metadata']);
         }
         return null;
 
@@ -122,7 +126,8 @@ class PlaidLink {
         }
         return null;
     }
-    throw MissingPluginException('${call.method} was invoked but has no handler');
+    throw MissingPluginException(
+        '${call.method} was invoked but has no handler');
   }
 
   //
