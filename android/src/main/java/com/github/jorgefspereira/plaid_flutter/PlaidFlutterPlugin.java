@@ -140,7 +140,7 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
       }
 
 
-      final LinkConfiguration configuration = new LinkConfiguration.Builder(clientName, products).
+      final LinkConfiguration configuration = new LinkConfiguration.Builder(clientName, products)
               .oauthNonce(oauthNonce)
               .environment(env)
               .webhook(webhook)
