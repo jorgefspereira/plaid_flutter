@@ -31,28 +31,7 @@ cp "${LINK_ROOT:-$PROJECT_DIR}"/LinkKit.framework/prepare_for_distribution.sh "$
 
 ### Android
 
-1. Add the LinkActivity activity and plaid_public_key metadata element to your AndroidManifest.xml within the application tag.
-
-``` xml
-<application>
-
-  // ...
-
-  <activity android:name="com.plaid.link.LinkActivity" />
-
-  <meta-data android:name="com.plaid.link.public_key"
-             android:value="@string/plaid_public_key" />
-
-</application>
-```
-
-2. Add your plaid public key from the Plaid Dashboard to the donottranslate.xml file
-
-``` xml
-<string name="plaid_public_key">PUBLIC_KEY</string>
-```
-
-3. Log into your Plaid Dashboard at the API page and add a new Allowed Android package name *(for example com.plaid.example)* and a new Allowed redirect URI.
+1. Log into your Plaid Dashboard at the API page and add a new Allowed Android package name *(for example com.plaid.example)* and a new Allowed redirect URI.
 
 ![](https://raw.githubusercontent.com/jorgefspereira/plaid_flutter/master/doc/images/register-app-id.png)
 	
@@ -79,12 +58,12 @@ class _MyAppState extends State<MyApp> {
     _plaidLink = PlaidLink(
       clientName: "CLIENT_NAME",        //required
       publicKey: "PUBLIC_KEY",          //required
-      oauthRedirectUri: "myapp://test", //required for android
-      oauthNonce: "XXXXXXXXXXXXXXXX",   
-      env: EnvOption.sandbox,
-      products: <ProductOption>[
+      env: EnvOption.sandbox,           //required
+      products: <ProductOption>[        //required
         ProductOption.auth,
       ],
+      oauthRedirectUri: "myapp://test",
+      oauthNonce: "XXXXXXXXXXXXXXXX",   
       onAccountLinked: (publicToken, metadata) { print("onAccountLinked: $publicToken metadata: $metadata"); },
       onAccountLinkError: (error, metadata) { print("onAccountError: $error metadata: $metadata"); },
       onEvent: (event, metadata) { print("onEvent: $event metadata: $metadata"); },
@@ -114,5 +93,6 @@ class _MyAppState extends State<MyApp> {
 
 ## TODOs
 
+- [ ] RedirectUri on Android. Note: version 1.0.0 removed webviewRedirectUri from the LinkConfiguration.
 - [ ] [Avoid iOS Prepare for distribution configuration](https://plaid.com/docs/link/ios/#prepare-distribution-script)
 - [ ] Implement tests

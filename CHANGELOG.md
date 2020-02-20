@@ -1,3 +1,7 @@
+## 0.2.0
+
+* Upgrade Plaid Android SDK to version 1.0.0
+
 ## 0.1.2
 
 * pubspec.yaml plugin platform changes
