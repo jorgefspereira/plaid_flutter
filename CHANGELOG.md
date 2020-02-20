@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Small bug fix LinkConfiguration
+
 ## 0.2.0
 
 * Upgrade Plaid Android SDK to version 1.0.0
