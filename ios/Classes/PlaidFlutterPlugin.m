@@ -39,6 +39,7 @@
       NSString* webhook = call.arguments[@"webhook"];
       NSString* oauthRedirectUri = call.arguments[@"oauthRedirectUri"];
       NSString* oauthNonce = call.arguments[@"oauthNonce"];
+      NSDictionary<NSString*, NSArray<NSString*>*>* accountSubtypes = call.arguments[@"accountSubtypes"];
       
 
       PLKEnvironment env = PLKEnvironmentFromString(call.arguments[@"env"]);
@@ -51,6 +52,7 @@
 
           linkConfiguration.clientName = clientName;
           
+
           if([oauthRedirectUri isKindOfClass:[NSString class]]) {
             linkConfiguration.oauthRedirectUri = [NSURL URLWithString:oauthRedirectUri];
           }
@@ -59,6 +61,10 @@
             linkConfiguration.oauthNonce = oauthNonce;
           }
 
+          if([accountSubtypes isKindOfClass:[NSDictionary class]]) {
+            linkConfiguration.accountSubtypes = accountSubtypes;
+          }
+                    
           if([webhook isKindOfClass:[NSString class]]) {
               linkConfiguration.webhook = [NSURL URLWithString:webhook];
           }

@@ -61,10 +61,11 @@ class PlaidLink {
       {@required this.publicKey,
       @required this.clientName,
       @required this.env,
+      @required this.products,
       this.webhook,
+      this.accountSubtypes,
       this.oauthRedirectUri,
       this.oauthNonce,
-      @required this.products,
       this.onAccountLinked,
       this.onAccountLinkError,
       this.onExit,
@@ -96,6 +97,11 @@ class PlaidLink {
 
   /// The list of Plaid products you would like to use.
   final List<ProductOption> products;
+
+  /// Map of account types and subtypes, used to show only institutions with these following account subtypes
+  ///
+  /// For more information: https://plaid.com/docs/#auth-filtering-institutions-in-link
+  final Map<String, List<String>> accountSubtypes;
 
   /// Called on a successfull account link.
   ///
@@ -187,6 +193,7 @@ class PlaidLink {
       'oauthNonce': oauthNonce,
       'env': env.toString().split('.').last,
       'products': products.map((p) => p.toString().split('.').last).toList(),
+      'accountSubtypes': accountSubtypes,
     });
   }
 }

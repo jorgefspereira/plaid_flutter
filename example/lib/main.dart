@@ -9,13 +9,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   PlaidLink _plaidLink;
-  
+
   @override
   void initState() {
     super.initState();
-  
+
     _plaidLink = PlaidLink(
       clientName: "CLIENT_NAME",
       publicKey: "PUBLIC_KEY",
@@ -25,10 +24,21 @@ class _MyAppState extends State<MyApp> {
       products: <ProductOption>[
         ProductOption.auth,
       ],
-      onAccountLinked: (publicToken, metadata) { print("onAccountLinked: $publicToken metadata: $metadata"); },
-      onAccountLinkError: (error, metadata) { print("onAccountLinkError: $error metadata: $metadata"); },
-      onEvent: (event, metadata) { print("onEvent: $event metadata: $metadata"); },
-      onExit: (metadata) { print("onExit: $metadata"); },
+      accountSubtypes: {
+        "depository": ["checking", "savings"],
+      },
+      onAccountLinked: (publicToken, metadata) {
+        print("onAccountLinked: $publicToken metadata: $metadata");
+      },
+      onAccountLinkError: (error, metadata) {
+        print("onAccountLinkError: $error metadata: $metadata");
+      },
+      onEvent: (event, metadata) {
+        print("onEvent: $event metadata: $metadata");
+      },
+      onExit: (metadata) {
+        print("onExit: $metadata");
+      },
     );
   }
 
@@ -36,13 +46,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: 
-        Container(
+        body: Container(
           color: Colors.lightBlue,
-          child:
-          Center( 
-            child: 
-            RaisedButton(
+          child: Center(
+            child: RaisedButton(
               onPressed: () {
                 _plaidLink.open();
               },
