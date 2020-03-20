@@ -19,7 +19,6 @@ import io.flutter.plugin.common.BinaryMessenger;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
-import com.plaid.link.BuildConfig;
 import com.plaid.link.Plaid;
 import com.plaid.linkbase.models.configuration.PlaidEnvironment;
 import com.plaid.linkbase.models.configuration.PlaidOptions;
@@ -33,7 +32,7 @@ import com.plaid.linkbase.models.connection.PlaidError;
 import com.plaid.linkbase.models.connection.PlaidLinkResultHandler;
 import com.plaid.linkbase.models.configuration.LinkConfiguration;
 import com.plaid.linkbase.models.configuration.LinkEvent;
-import com.plaid.linkbase.models.internal.configuration.LinkEventMetadata;
+import com.plaid.linkbase.models.configuration.LinkEventMetadata;
 import com.plaid.log.LogLevel;
 
 
@@ -129,6 +128,9 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
       String webhook = (String) arguments.get("webhook");
       String oauthRedirectUri = (String) arguments.get("oauthRedirectUri");
       String oauthNonce = (String) arguments.get("oauthNonce");
+      
+      /// TODO: Support for Account Subtypes filtering
+      /// Map<String, ArrayList<String>> accountSubtypes = arguments.get("accountSubtypes");
 
       ArrayList<PlaidProduct> products = new ArrayList<>();
       ArrayList<?> productsObjects = (ArrayList<?>)arguments.get("products");
@@ -138,7 +140,6 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
         PlaidProduct p = PlaidProduct.valueOf(ps.toUpperCase());
         products.add(p);
       }
-
 
       final LinkConfiguration configuration = new LinkConfiguration.Builder(clientName, products)
               .oauthNonce(oauthNonce)
