@@ -1,3 +1,8 @@
+## 0.2.2
+
+* Added iOS support for account subtype filtering
+* Updated Plaid Android SDK to version 1.2.1
+
 ## 0.2.1
 
 * Small bug fix LinkConfiguration

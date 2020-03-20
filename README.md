@@ -93,6 +93,7 @@ class _MyAppState extends State<MyApp> {
 
 ## TODOs
 
+- [ ] Add android support for account subtype filtering
 - [ ] RedirectUri on Android. Note: version 1.0.0 removed webviewRedirectUri from the LinkConfiguration.
 - [ ] [Avoid iOS Prepare for distribution configuration](https://plaid.com/docs/link/ios/#prepare-distribution-script)
 - [ ] Implement tests
