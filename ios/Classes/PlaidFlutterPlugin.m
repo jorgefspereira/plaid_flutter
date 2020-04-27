@@ -37,6 +37,8 @@
       NSString* clientName = call.arguments[@"clientName"];
       NSString* publicKey = call.arguments[@"publicKey"];
       NSString* webhook = call.arguments[@"webhook"];
+      NSString* userLegalName = call.arguments[@"userLegalName"];
+      NSString* userEmailAddress = call.arguments[@"userEmailAddress"];
       NSString* oauthRedirectUri = call.arguments[@"oauthRedirectUri"];
       NSString* oauthNonce = call.arguments[@"oauthNonce"];
       NSDictionary<NSString*, NSArray<NSString*>*>* accountSubtypes = call.arguments[@"accountSubtypes"];
@@ -52,6 +54,13 @@
 
           linkConfiguration.clientName = clientName;
           
+          if([userLegalName isKindOfClass:[NSString class]]) {
+            linkConfiguration.userLegalName = userLegalName;
+          }
+
+          if([userEmailAddress isKindOfClass:[NSString class]]) {
+            linkConfiguration.userEmailAddress = userEmailAddress;    
+          }
 
           if([oauthRedirectUri isKindOfClass:[NSString class]]) {
             linkConfiguration.oauthRedirectUri = [NSURL URLWithString:oauthRedirectUri];
@@ -66,7 +75,7 @@
           }
                     
           if([webhook isKindOfClass:[NSString class]]) {
-              linkConfiguration.webhook = [NSURL URLWithString:webhook];
+            linkConfiguration.webhook = [NSURL URLWithString:webhook];
           }
 
           id<PLKPlaidLinkViewDelegate> linkViewDelegate  = self;

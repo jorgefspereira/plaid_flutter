@@ -20,6 +20,8 @@ class _MyAppState extends State<MyApp> {
       publicKey: "PUBLIC_KEY",
       oauthRedirectUri: "myapp://test",
       oauthNonce: "XXXXXXXXXXXXXXXX",
+      userLegalName: "John Appleseed",
+      userEmailAddress: "jappleseed@youapp.com",
       env: EnvOption.sandbox,
       products: <ProductOption>[
         ProductOption.auth,

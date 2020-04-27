@@ -125,6 +125,8 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
       String envString = (String)arguments.get("env");
       PlaidEnvironment env = PlaidEnvironment.valueOf(envString.toUpperCase());
 
+      String userLegalName = (String) arguments.get("userLegalName");
+      String userEmailAddress = (String) arguments.get("userEmailAddress");
       String webhook = (String) arguments.get("webhook");
       String oauthRedirectUri = (String) arguments.get("oauthRedirectUri");
       String oauthNonce = (String) arguments.get("oauthNonce");
@@ -142,6 +144,8 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
       }
 
       final LinkConfiguration configuration = new LinkConfiguration.Builder(clientName, products)
+              .userLegalName(userLegalName)
+              .userEmailAddress(userEmailAddress)
               .oauthNonce(oauthNonce)
               .environment(env)
               .webhook(webhook)

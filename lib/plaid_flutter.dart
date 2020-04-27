@@ -64,6 +64,8 @@ class PlaidLink {
       @required this.products,
       this.webhook,
       this.accountSubtypes,
+      this.userLegalName,
+      this.userEmailAddress,
       this.oauthRedirectUri,
       this.oauthNonce,
       this.onAccountLinked,
@@ -102,6 +104,16 @@ class PlaidLink {
   ///
   /// For more information: https://plaid.com/docs/#auth-filtering-institutions-in-link
   final Map<String, List<String>> accountSubtypes;
+
+  /// Your userʼs legal first and last name; necessary to enable all Auth features.
+  /// 
+  /// For more information: https://plaid.com/docs/#auth
+  final String userLegalName;
+
+  /// Your userʼs associated email address; necessary to enable all Auth features.
+  /// 
+  /// For more information: https://plaid.com/docs/#auth
+  final String userEmailAddress;
 
   /// Called on a successfull account link.
   ///
@@ -194,6 +206,8 @@ class PlaidLink {
       'env': env.toString().split('.').last,
       'products': products.map((p) => p.toString().split('.').last).toList(),
       'accountSubtypes': accountSubtypes,
+      'userLegalName': userLegalName,
+      'userEmailAddress': userEmailAddress,
     });
   }
 }
