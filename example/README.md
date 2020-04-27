@@ -25,6 +25,9 @@ class _MyAppState extends State<MyApp> {
       products: <ProductOption>[
         ProductOption.auth,
       ],
+      accountSubtypes: {
+        "depository": ["checking", "savings"],
+      },
       onAccountLinked: (publicToken, metadata) { print("onAccountLinked: $publicToken metadata: $metadata"); },
       onAccountLinkError: (error, metadata) { print("onAccountError: $error metadata: $metadata"); },
       onEvent: (event, metadata) { print("onEvent: $event metadata: $metadata"); },
