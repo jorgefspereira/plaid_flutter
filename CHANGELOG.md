@@ -1,3 +1,8 @@
+## 0.2.3
+
+* Added support to enable all Auth features (https://plaid.com/docs/#enabling-all-auth-features)
+* Updated Plaid Android SDK to version 1.3.0
+
 ## 0.2.2
 
 * Added iOS support for account subtype filtering
