@@ -20,7 +20,9 @@ class _MyAppState extends State<MyApp> {
       clientName: "CLIENT_NAME",        //required
       publicKey: "PUBLIC_KEY",          //required
       oauthRedirectUri: "myapp://test", //required for android
-      oauthNonce: "XXXXXXXXXXXXXXXX",   
+      oauthNonce: "XXXXXXXXXXXXXXXX",
+      userLegalName: "John Appleseed",
+      userEmailAddress: "jappleseed@youapp.com",
       env: EnvOption.sandbox,
       products: <ProductOption>[
         ProductOption.auth,
