@@ -20,6 +20,7 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import com.plaid.link.Plaid;
+import com.plaid.linkbase.models.configuration.LinkEventViewName;
 import com.plaid.linkbase.models.configuration.PlaidEnvironment;
 import com.plaid.linkbase.models.configuration.PlaidOptions;
 import com.plaid.linkbase.models.configuration.PlaidProduct;
@@ -189,7 +190,11 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
     result.put("exit_status", data.getExitStatus());
     result.put("institution_id", data.getInstitutionId());
     result.put("institution_search_query", data.getInstitutionSearchQuery());
-    result.put("view_name", data.getViewName().name());
+
+    String viewName = data.getViewName().toString();
+    String trimViewName = viewName.substring(viewName.lastIndexOf("(") + 1, viewName.lastIndexOf(")"));
+
+    result.put("view_name", trimViewName);
     result.put("error_type", data.getErrorType());
 
     return result;
