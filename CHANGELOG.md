@@ -1,3 +1,7 @@
+## 0.2.4
+
+* Breaking change: Added userLegalName and userEmailAddress to the open method.
+
 ## 0.2.3
 
 * Added support to enable all Auth features (https://plaid.com/docs/#enabling-all-auth-features)
