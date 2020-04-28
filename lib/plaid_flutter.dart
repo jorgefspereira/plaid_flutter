@@ -64,8 +64,6 @@ class PlaidLink {
       @required this.products,
       this.webhook,
       this.accountSubtypes,
-      this.userLegalName,
-      this.userEmailAddress,
       this.oauthRedirectUri,
       this.oauthNonce,
       this.onAccountLinked,
@@ -104,16 +102,6 @@ class PlaidLink {
   ///
   /// For more information: https://plaid.com/docs/#auth-filtering-institutions-in-link
   final Map<String, List<String>> accountSubtypes;
-
-  /// Your userʼs legal first and last name; necessary to enable all Auth features.
-  /// 
-  /// For more information: https://plaid.com/docs/#auth
-  final String userLegalName;
-
-  /// Your userʼs associated email address; necessary to enable all Auth features.
-  /// 
-  /// For more information: https://plaid.com/docs/#auth
-  final String userEmailAddress;
 
   /// Called on a successfull account link.
   ///
@@ -195,8 +183,10 @@ class PlaidLink {
         '${call.method} was invoked but has no handler');
   }
 
-  /// Initializes the Plaid Link flow on the device.
-  void open() {
+  /// Initializes the Plaid Link flow on the device. The [userLegalName] and [userEmailAddress] can be passed to enable all Auth features.
+  ///
+  /// For more information about the Auth: https://plaid.com/docs/#auth
+  void open({String userLegalName, String userEmailAddress}) {
     _channel.invokeMethod('open', <String, dynamic>{
       'publicKey': publicKey,
       'clientName': clientName,

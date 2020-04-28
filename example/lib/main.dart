@@ -20,8 +20,6 @@ class _MyAppState extends State<MyApp> {
       publicKey: "PUBLIC_KEY",
       oauthRedirectUri: "myapp://test",
       oauthNonce: "XXXXXXXXXXXXXXXX",
-      userLegalName: "John Appleseed",
-      userEmailAddress: "jappleseed@youapp.com",
       env: EnvOption.sandbox,
       products: <ProductOption>[
         ProductOption.auth,
@@ -53,7 +51,10 @@ class _MyAppState extends State<MyApp> {
           child: Center(
             child: RaisedButton(
               onPressed: () {
-                _plaidLink.open();
+                _plaidLink.open(
+                  userLegalName: "John Appleseed",
+                  userEmailAddress: "jappleseed@youapp.com",
+                );
               },
               child: Text("Open Plaid Link"),
             ),
