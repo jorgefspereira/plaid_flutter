@@ -24,20 +24,29 @@ enum EnvOption {
 ///
 /// For more information visit the Plaid Products page (https://plaid.com/products/).
 enum ProductOption {
+  /// Historical snapshots, real-time summaries, and auditable copies.
+  assets,
+
   /// Verify accounts for payments without micro-deposits.
   auth,
 
-  /// Validate income and verify employer info more accurately.
-  income,
-
-  /// Account and transaction data to better serve users.
-  transactions,
+  /// Verify real-time account balances
+  balance,
 
   /// Verify user identities with bank account data to reduce fraud.
   identity,
 
-  /// Historical snapshots, real-time summaries, and auditable copies.
-  assets
+  /// Validate income and verify employer info more accurately.
+  income,
+
+  /// Build a holistic view of a user’s investments
+  investments,
+
+  /// Access liabilities data for student loans and credit cards
+  liabilities,
+
+  /// Account and transaction data to better serve users.
+  transactions
 }
 
 typedef void AccountLinkedCallback(
