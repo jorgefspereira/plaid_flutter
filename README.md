@@ -39,7 +39,5 @@ cp "${LINK_ROOT:-$PROJECT_DIR}"/LinkKit.framework/prepare_for_distribution.sh "$
 
 ## TODOs
 
-- [ ] Add android support for account subtype filtering
-- [ ] RedirectUri on Android. Note: version 1.0.0 removed webviewRedirectUri from the LinkConfiguration.
 - [ ] [Avoid iOS Prepare for distribution configuration](https://plaid.com/docs/link/ios/#prepare-distribution-script)
 - [ ] Implement tests
