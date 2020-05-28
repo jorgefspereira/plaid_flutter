@@ -1,3 +1,10 @@
+## 0.2.5
+
+* Updated Plaid Android SDK to version 1.4.1
+* Added support for account subtype filtering on Android.
+* Added for additional products (Thank you @mrienstra)
+* Added configuration support for: countryCodes, linkCustomizationName, language and userPhoneNumber.
+
 ## 0.2.4
 
 * Breaking change: Added userLegalName and userEmailAddress to the open method.
