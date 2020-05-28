@@ -78,7 +78,10 @@ class PlaidLink {
       this.onAccountLinked,
       this.onAccountLinkError,
       this.onExit,
-      this.onEvent})
+      this.onEvent,
+      this.linkCustomizationName,
+      this.language,
+      this.countryCodes})
       : _channel = MethodChannel('plugins.flutter.io/plaid_flutter') {
     _channel.setMethodCallHandler(_onMethodCall);
   }
@@ -111,6 +114,15 @@ class PlaidLink {
   ///
   /// For more information: https://plaid.com/docs/#auth-filtering-institutions-in-link
   final Map<String, List<String>> accountSubtypes;
+
+  /// Allows non default customization to be retrieved by name.
+  final String linkCustomizationName;
+
+  /// Plaid-supported language to localize Link. English will be used by default.
+  final String language;
+
+  /// A list of Plaid-supported country codes using the ISO-3166-1 alpha-2 country code standard.
+  final List<String> countryCodes;
 
   /// Called on a successfull account link.
   ///
@@ -192,21 +204,29 @@ class PlaidLink {
         '${call.method} was invoked but has no handler');
   }
 
-  /// Initializes the Plaid Link flow on the device. The [userLegalName] and [userEmailAddress] can be passed to enable all Auth features.
+  /// Initializes the Plaid Link flow on the device. The [userLegalName], [userEmailAddress] and [userPhoneNumber] can be passed to enable all Auth features.
   ///
   /// For more information about the Auth: https://plaid.com/docs/#auth
-  void open({String userLegalName, String userEmailAddress}) {
-    _channel.invokeMethod('open', <String, dynamic>{
-      'publicKey': publicKey,
-      'clientName': clientName,
-      'webhook': webhook,
-      'oauthRedirectUri': oauthRedirectUri,
-      'oauthNonce': oauthNonce,
-      'env': env.toString().split('.').last,
-      'products': products.map((p) => p.toString().split('.').last).toList(),
-      'accountSubtypes': accountSubtypes,
-      'userLegalName': userLegalName,
-      'userEmailAddress': userEmailAddress,
-    });
+  void open(
+      {String userLegalName, String userEmailAddress, String userPhoneNumber}) {
+    _channel.invokeMethod(
+      'open',
+      <String, dynamic>{
+        'publicKey': publicKey,
+        'clientName': clientName,
+        'webhook': webhook,
+        'oauthRedirectUri': oauthRedirectUri,
+        'oauthNonce': oauthNonce,
+        'env': env.toString().split('.').last,
+        'products': products.map((p) => p.toString().split('.').last).toList(),
+        'accountSubtypes': accountSubtypes,
+        'userLegalName': userLegalName,
+        'userEmailAddress': userEmailAddress,
+        'userPhoneNumber': userPhoneNumber,
+        'linkCustomizationName': linkCustomizationName,
+        'language': language,
+        'countryCodes': countryCodes,
+      },
+    );
   }
 }

@@ -39,8 +39,12 @@
       NSString* webhook = call.arguments[@"webhook"];
       NSString* userLegalName = call.arguments[@"userLegalName"];
       NSString* userEmailAddress = call.arguments[@"userEmailAddress"];
+      NSString* userPhoneNumber = call.arguments[@"userPhoneNumber"];
       NSString* oauthRedirectUri = call.arguments[@"oauthRedirectUri"];
       NSString* oauthNonce = call.arguments[@"oauthNonce"];
+      NSString* linkCustomizationName = call.arguments[@"linkCustomizationName"];
+      NSString* language = call.arguments[@"language"];
+      NSArray<NSString*>* countryCodes = call.arguments[@"countryCodes"];
       NSDictionary<NSString*, NSArray<NSString*>*>* accountSubtypes = call.arguments[@"accountSubtypes"];
       
 
@@ -78,6 +82,22 @@
             linkConfiguration.webhook = [NSURL URLWithString:webhook];
           }
 
+          if([linkCustomizationName isKindOfClass:[NSString class]]) {
+            linkConfiguration.linkCustomizationName = linkCustomizationName;
+          }
+
+          if ([userPhoneNumber isKindOfClass:[NSString class]]) {
+            linkConfiguration.userPhoneNumber = userPhoneNumber;
+          }
+          
+          if ([language isKindOfClass:[NSString class]]) {
+            linkConfiguration.language = language;
+          }
+
+          if ([countryCodes isKindOfClass:[NSArray class]]) {
+            linkConfiguration.countryCodes = countryCodes;
+          }
+          
           id<PLKPlaidLinkViewDelegate> linkViewDelegate  = self;
           _linkViewController = [[PLKPlaidLinkViewController alloc] initWithConfiguration:linkConfiguration delegate:linkViewDelegate];
           

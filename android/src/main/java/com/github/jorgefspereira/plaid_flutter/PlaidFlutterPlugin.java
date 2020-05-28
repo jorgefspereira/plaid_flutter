@@ -36,6 +36,8 @@ import com.plaid.linkbase.models.configuration.LinkEvent;
 import com.plaid.linkbase.models.configuration.LinkEventMetadata;
 import com.plaid.log.LogLevel;
 
+import org.json.JSONObject;
+
 
 /** PlaidFlutterPlugin */
 public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener {
@@ -128,12 +130,16 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
 
       String userLegalName = (String) arguments.get("userLegalName");
       String userEmailAddress = (String) arguments.get("userEmailAddress");
+      String userPhoneNumber = (String) arguments.get("userPhoneNumber");
+
+      String language = (String) arguments.get("language");
+      String linkCustomizationName = (String) arguments.get("linkCustomizationName");
       String webhook = (String) arguments.get("webhook");
-      String oauthRedirectUri = (String) arguments.get("oauthRedirectUri");
-      String oauthNonce = (String) arguments.get("oauthNonce");
-      
-      /// TODO: Support for Account Subtypes filtering
-      /// Map<String, ArrayList<String>> accountSubtypes = arguments.get("accountSubtypes");
+      ArrayList<String> countryCodes = (ArrayList<String>) arguments.get("countryCodes");
+
+      //NOTE: Not supported like plaid ios sdk
+      // String oauthNonce = (String) arguments.get("oauthNonce");
+      // String oauthRedirectUri = (String) arguments.get("oauthRedirectUri");
 
       ArrayList<PlaidProduct> products = new ArrayList<>();
       ArrayList<?> productsObjects = (ArrayList<?>)arguments.get("products");
@@ -144,13 +150,44 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
         products.add(p);
       }
 
-      final LinkConfiguration configuration = new LinkConfiguration.Builder(clientName, products)
-              .userLegalName(userLegalName)
-              .userEmailAddress(userEmailAddress)
-              .oauthNonce(oauthNonce)
-              .environment(env)
-              .webhook(webhook)
-              .build();
+      LinkConfiguration.Builder configuration = new LinkConfiguration.Builder(clientName, products).environment(env);
+
+      if(userLegalName != null) {
+        configuration.userLegalName(userLegalName);
+      }
+
+      if(userEmailAddress != null) {
+        configuration.userEmailAddress(userEmailAddress);
+      }
+
+      if(userPhoneNumber != null) {
+        configuration.userPhoneNumber(userPhoneNumber);
+      }
+
+      if(linkCustomizationName != null) {
+        configuration.linkCustomizationName(linkCustomizationName);
+      }
+
+      if(language != null) {
+        configuration.language(language);
+      }
+
+      if(countryCodes != null) {
+        configuration.countryCodes(countryCodes);
+      }
+
+      if(webhook != null) {
+        configuration.webhook(webhook);
+      }
+
+      Map<String, String> extraParams = new HashMap<>();
+      Map<String, ArrayList<String>> accountSubtypes = (Map<String, ArrayList<String>>) arguments.get("accountSubtypes");
+
+      if(accountSubtypes != null) {
+        JSONObject json = new JSONObject(accountSubtypes);
+        extraParams.put("accountSubtypes", json.toString());
+        configuration.extraParams(extraParams);
+      }
 
       Plaid.setPublicKey(publicKey);
       Plaid.setLinkEventListener(new Function1<LinkEvent, Unit>() {
@@ -165,7 +202,7 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
                                    }
                                  });
 
-      Plaid.openLink(activity, configuration, LINK_REQUEST_CODE);
+      Plaid.openLink(activity, configuration.build(), LINK_REQUEST_CODE);
 
     } else {
       result.notImplemented();

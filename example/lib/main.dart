@@ -27,6 +27,8 @@ class _MyAppState extends State<MyApp> {
       accountSubtypes: {
         "depository": ["checking", "savings"],
       },
+      language: "en",
+      countryCodes: ['US'],
       onAccountLinked: (publicToken, metadata) {
         print("onAccountLinked: $publicToken metadata: $metadata");
       },
@@ -54,6 +56,7 @@ class _MyAppState extends State<MyApp> {
                 _plaidLink.open(
                   userLegalName: "John Appleseed",
                   userEmailAddress: "jappleseed@youapp.com",
+                  userPhoneNumber: "+1 (512) 555-1234",
                 );
               },
               child: Text("Open Plaid Link"),
