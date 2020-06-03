@@ -41,6 +41,16 @@ cp "${LINK_ROOT:-$PROJECT_DIR}"/LinkKit.framework/prepare_for_distribution.sh "$
 	
 *NOTE: More info at [https://plaid.com/docs/link/android](https://plaid.com/docs/link/android).*
 
+#### Release configurations
+
+Before creating the release build of your app (which is the default setting when building an APK or App Bundle) you will likely need to add the following line to your ProGuard configuration file as per this [link](https://developer.android.com/studio/build/shrink-code#keep-code) to avoid runtime crashes when the app is built with shrink enabled:
+
+```
+-keep class com.google.crypto.tink.proto.** { *; }
+```
+
+*NOTE: The example app is updated with a Proguard rules file(`proguard-rules.pro`)[here](https://github.com/jorgefspereira/plaid_flutter/tree/master/example/android/app/proguard-rules.pro).*
+
 ## TODOs
 
 - [ ] [Avoid iOS Prepare for distribution configuration](https://plaid.com/docs/link/ios/#prepare-distribution-script)
