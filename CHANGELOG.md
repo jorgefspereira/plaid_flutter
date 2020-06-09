@@ -1,3 +1,8 @@
+## 0.2.6
+
+* Added important Android release configurations to README
+* Updated example app with the new android release configurations
+
 ## 0.2.5
 
 * Updated Plaid Android SDK to version 1.4.1
