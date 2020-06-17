@@ -20,21 +20,19 @@ import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 import com.plaid.link.Plaid;
-import com.plaid.linkbase.models.configuration.LinkEventViewName;
-import com.plaid.linkbase.models.configuration.PlaidEnvironment;
-import com.plaid.linkbase.models.configuration.PlaidOptions;
-import com.plaid.linkbase.models.configuration.PlaidProduct;
-import com.plaid.linkbase.models.connection.LinkAccount;
-import com.plaid.linkbase.models.connection.LinkCancellation;
-import com.plaid.linkbase.models.connection.LinkConnection;
-import com.plaid.linkbase.models.connection.LinkConnection.LinkConnectionMetadata;
-import com.plaid.linkbase.models.connection.LinkExitMetadata;
-import com.plaid.linkbase.models.connection.PlaidError;
-import com.plaid.linkbase.models.connection.PlaidLinkResultHandler;
-import com.plaid.linkbase.models.configuration.LinkConfiguration;
-import com.plaid.linkbase.models.configuration.LinkEvent;
-import com.plaid.linkbase.models.configuration.LinkEventMetadata;
-import com.plaid.log.LogLevel;
+import com.plaid.link.configuration.LinkConfiguration;
+import com.plaid.link.configuration.LinkLogLevel;
+import com.plaid.link.configuration.PlaidEnvironment;
+import com.plaid.link.configuration.PlaidProduct;
+import com.plaid.link.event.LinkEvent;
+import com.plaid.link.event.LinkEventMetadata;
+import com.plaid.link.result.LinkAccount;
+import com.plaid.link.result.LinkError;
+import com.plaid.link.result.LinkExit;
+import com.plaid.link.result.LinkExitMetadata;
+import com.plaid.link.result.LinkSuccess;
+import com.plaid.link.result.LinkSuccess.LinkSuccessMetadata;
+import com.plaid.link.result.PlaidLinkResultHandler;
 
 import org.json.JSONObject;
 
@@ -49,46 +47,35 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
   private static final int LINK_REQUEST_CODE = 1;
 
   private PlaidLinkResultHandler plaidLinkResultHandler = new PlaidLinkResultHandler(
-      LINK_REQUEST_CODE,
-      new Function1<LinkConnection, Unit>() {
+      new Function1<LinkSuccess, Unit>() {
         @Override
-        public Unit invoke(LinkConnection e) {
+        public Unit invoke(LinkSuccess e) {
           Map<String, Object> data = new HashMap<>();
 
           data.put("publicToken", e.getPublicToken());
-          data.put("metadata", createMapFromConnectionMetadata(e.getLinkConnectionMetadata()));
+          data.put("metadata", createMapFromConnectionMetadata(e.getMetadata()));
 
           channel.invokeMethod("onAccountLinked", data);
           return Unit.INSTANCE;
         }
       },
-      new Function1<LinkCancellation, Unit>() {
+      new Function1<LinkExit, Unit>() {
         @Override
-        public Unit invoke(LinkCancellation e) {
+        public Unit invoke(LinkExit e) {
+
           Map<String, Object> data = new HashMap<>();
-          Map<String, String> metadata = new HashMap<>();
+          data.put("metadata", createMapFromExitMetadata(e.getMetadata()));
 
-          metadata.put("institution_name", e.getInstitutionName());
-          metadata.put("exit_status", e.getExitStatus());
-          metadata.put("link_session_id", e.getLinkSessionId());
-          metadata.put("institution_id", e.getInstitutionId());
-          metadata.put("status", e.getStatus());
+          LinkError error = e.getError();
 
-          data.put("metadata", metadata);
+          if(error != null) {
+            data.put("error", error.getErrorMessage());
+            channel.invokeMethod("onAccountLinkError", data);
+          }
+          else {
+            channel.invokeMethod("onExit", data);
+          }
 
-          channel.invokeMethod("onExit", data);
-          return Unit.INSTANCE;
-        }
-      },
-      new Function1<PlaidError, Unit>() {
-        @Override
-        public Unit invoke(PlaidError e) {
-          Map<String, Object> data = new HashMap<>();
-
-          data.put("error", e.getErrorMessage());
-          data.put("metadata", createMapFromExitMetadata(e.getLinkExitMetadata()));
-
-          channel.invokeMethod("onAccountLinkError", data);
           return Unit.INSTANCE;
         }
       }
@@ -110,17 +97,12 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
     this.channel = new MethodChannel(messenger, CHANNEL_NAME);
     channel.setMethodCallHandler(this);
 
-    PlaidOptions options = new PlaidOptions.Builder()
-            .logLevel(BuildConfig.DEBUG ? LogLevel.DEBUG : LogLevel.ASSERT)
-            .build();
-
-    Plaid.setOptions(options);
+    Plaid.initialize(activity.getApplication());
   }
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     if (call.method.equals("open")) {
-
       Map<String, Object> arguments = call.arguments();
 
       String clientName = (String) arguments.get("clientName");
@@ -150,7 +132,12 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
         products.add(p);
       }
 
-      LinkConfiguration.Builder configuration = new LinkConfiguration.Builder(clientName, products).environment(env);
+      LinkConfiguration.Builder configuration = new LinkConfiguration.Builder()
+              .environment(env)
+              .publicKey(publicKey)
+              .clientName(clientName)
+              .logLevel(BuildConfig.DEBUG ? LinkLogLevel.DEBUG : LinkLogLevel.ASSERT)
+              .products(products);
 
       if(userLegalName != null) {
         configuration.userLegalName(userLegalName);
@@ -189,12 +176,11 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
         configuration.extraParams(extraParams);
       }
 
-      Plaid.setPublicKey(publicKey);
       Plaid.setLinkEventListener(new Function1<LinkEvent, Unit>() {
                                    @Override
                                    public Unit invoke(LinkEvent e) {
                                      Map<String, Object> data = new HashMap<>();
-                                     data.put("event", e.getEventName());
+                                     data.put("event", e.getEventName().toString());
                                      data.put("metadata", createMapFromEventMetadata(e.getMetadata()));
 
                                      channel.invokeMethod("onEvent", data);
@@ -202,7 +188,7 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
                                    }
                                  });
 
-      Plaid.openLink(activity, configuration.build(), LINK_REQUEST_CODE);
+      Plaid.openLink(activity, configuration.build());
 
     } else {
       result.notImplemented();
@@ -228,16 +214,13 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
     result.put("institution_id", data.getInstitutionId());
     result.put("institution_search_query", data.getInstitutionSearchQuery());
 
-    String viewName = data.getViewName().toString();
-    String trimViewName = viewName.substring(viewName.lastIndexOf("(") + 1, viewName.lastIndexOf(")"));
-
-    result.put("view_name", trimViewName);
+    result.put("view_name", data.getViewName().getJsonValue());
     result.put("error_type", data.getErrorType());
 
     return result;
   }
 
-  private Map<String, Object> createMapFromConnectionMetadata(LinkConnectionMetadata data) {
+  private Map<String, Object> createMapFromConnectionMetadata(LinkSuccessMetadata data) {
     Map<String, Object> result = new HashMap<>();
 
     result.put("institution_name", data.getInstitutionName());
@@ -269,7 +252,7 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
     result.put("request_id", data.getRequestId());
     result.put("link_session_id", data.getLinkSessionId());
     result.put("institution_id", data.getInstitutionId());
-    result.put("status", data.getStatus());
+    result.put("status", data.getExitStatus());
 
     return result;
   }
