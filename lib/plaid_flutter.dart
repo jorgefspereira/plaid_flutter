@@ -204,13 +204,24 @@ class PlaidLink {
         '${call.method} was invoked but has no handler');
   }
 
-  /// Initializes the Plaid Link flow on the device. The [userLegalName], [userEmailAddress] and [userPhoneNumber] can be passed to enable all Auth features.
+  /// Initializes the Plaid Link flow on the device.
+  /// - [userLegalName], [userEmailAddress] and [userPhoneNumber] to enable all Auth features. More info: https://plaid.com/docs/#auth
+  /// - [publicToken] to use plaid link in update mode or pass an item_add_token to launch Link in regular mode. More info: https://plaid.com/docs/link/ios/#update-mode and https://plaid.com/docs/link-token-migration-guide/
+  /// - [paymentToken] to use in payment initation mode. More info: https://plaid.com/docs/#payment-initiation
+  /// - [institution] to start plaid link with an institution pre-selected.
+  /// - [oauthStateId] to use OAuth code mode. More info: https://plaid.com/docs/link/ios/#oauth-support and https://plaid.com/docs/#oauth
   ///
-  /// For more information about the Auth: https://plaid.com/docs/#auth
-  void open(
-      {String userLegalName, String userEmailAddress, String userPhoneNumber}) {
+  void open({
+    String userLegalName,
+    String userEmailAddress,
+    String userPhoneNumber,
+    String publicToken,
+    String institution,
+    String paymentToken,
+    String oauthStateId,
+  }) {
     _channel.invokeMethod(
-      'open',
+      'create',
       <String, dynamic>{
         'publicKey': publicKey,
         'clientName': clientName,
@@ -220,12 +231,21 @@ class PlaidLink {
         'env': env.toString().split('.').last,
         'products': products.map((p) => p.toString().split('.').last).toList(),
         'accountSubtypes': accountSubtypes,
-        'userLegalName': userLegalName,
-        'userEmailAddress': userEmailAddress,
-        'userPhoneNumber': userPhoneNumber,
         'linkCustomizationName': linkCustomizationName,
         'language': language,
         'countryCodes': countryCodes,
+      },
+    );
+    _channel.invokeMethod(
+      'open',
+      <String, dynamic>{
+        'userLegalName': userLegalName,
+        'userEmailAddress': userEmailAddress,
+        'userPhoneNumber': userPhoneNumber,
+        'publicToken': publicToken,
+        'institution': institution,
+        'paymentToken': paymentToken,
+        'oauthStateId': oauthStateId,
       },
     );
   }

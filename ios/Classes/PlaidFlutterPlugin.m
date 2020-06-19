@@ -9,6 +9,7 @@
     UIViewController *_rootViewController;
     FlutterMethodChannel *_channel;
     PLKPlaidLinkViewController *_linkViewController;
+    PLKConfiguration *_linkConfiguration;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -28,18 +29,23 @@
     return self;
 }
 
+- (void)dealloc {
+  [_channel setMethodCallHandler:nil];
+  _channel = nil;
+  _rootViewController = nil;
+  _linkViewController = nil;
+  _linkConfiguration = nil;
+}
+
 //MARK:-
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if ([@"open" isEqualToString:call.method]) {
-      PLKConfiguration* linkConfiguration;
+    
+  if ([@"create" isEqualToString:call.method]) {
       
       NSString* clientName = call.arguments[@"clientName"];
       NSString* publicKey = call.arguments[@"publicKey"];
       NSString* webhook = call.arguments[@"webhook"];
-      NSString* userLegalName = call.arguments[@"userLegalName"];
-      NSString* userEmailAddress = call.arguments[@"userEmailAddress"];
-      NSString* userPhoneNumber = call.arguments[@"userPhoneNumber"];
       NSString* oauthRedirectUri = call.arguments[@"oauthRedirectUri"];
       NSString* oauthNonce = call.arguments[@"oauthNonce"];
       NSString* linkCustomizationName = call.arguments[@"linkCustomizationName"];
@@ -52,64 +58,110 @@
       PLKProduct product = PLKProductFromArray(call.arguments[@"products"]);
       
       @try {
-          linkConfiguration = [[PLKConfiguration alloc] initWithKey:publicKey
+          _linkConfiguration = [[PLKConfiguration alloc] initWithKey:publicKey
                                                                 env:env
                                                             product:product];
 
-          linkConfiguration.clientName = clientName;
+          _linkConfiguration.clientName = clientName;
           
-          if([userLegalName isKindOfClass:[NSString class]]) {
-            linkConfiguration.userLegalName = userLegalName;
-          }
-
-          if([userEmailAddress isKindOfClass:[NSString class]]) {
-            linkConfiguration.userEmailAddress = userEmailAddress;    
-          }
-
-          if([oauthRedirectUri isKindOfClass:[NSString class]]) {
-            linkConfiguration.oauthRedirectUri = [NSURL URLWithString:oauthRedirectUri];
-          }
-
-          if([oauthNonce isKindOfClass:[NSString class]]) {
-            linkConfiguration.oauthNonce = oauthNonce;
-          }
-
-          if([accountSubtypes isKindOfClass:[NSDictionary class]]) {
-            linkConfiguration.accountSubtypes = accountSubtypes;
-          }
-                    
-          if([webhook isKindOfClass:[NSString class]]) {
-            linkConfiguration.webhook = [NSURL URLWithString:webhook];
-          }
-
-          if([linkCustomizationName isKindOfClass:[NSString class]]) {
-            linkConfiguration.linkCustomizationName = linkCustomizationName;
-          }
-
-          if ([userPhoneNumber isKindOfClass:[NSString class]]) {
-            linkConfiguration.userPhoneNumber = userPhoneNumber;
-          }
-          
-          if ([language isKindOfClass:[NSString class]]) {
-            linkConfiguration.language = language;
-          }
-
-          if ([countryCodes isKindOfClass:[NSArray class]]) {
-            linkConfiguration.countryCodes = countryCodes;
-          }
-          
-          id<PLKPlaidLinkViewDelegate> linkViewDelegate  = self;
-          _linkViewController = [[PLKPlaidLinkViewController alloc] initWithConfiguration:linkConfiguration delegate:linkViewDelegate];
-          
-          if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-              _linkViewController.modalPresentationStyle = UIModalPresentationFormSheet;
-          }
-          
-          [_rootViewController presentViewController:_linkViewController animated:YES completion:nil];
       }
       @catch (NSException *exception) {
           NSLog(@"Invalid configuration: %@", exception);
       }
+      
+      if([oauthRedirectUri isKindOfClass:[NSString class]]) {
+        _linkConfiguration.oauthRedirectUri = [NSURL URLWithString:oauthRedirectUri];
+      }
+
+      if([oauthNonce isKindOfClass:[NSString class]]) {
+        _linkConfiguration.oauthNonce = oauthNonce;
+      }
+
+      if([accountSubtypes isKindOfClass:[NSDictionary class]]) {
+        _linkConfiguration.accountSubtypes = accountSubtypes;
+      }
+                
+      if([webhook isKindOfClass:[NSString class]]) {
+        _linkConfiguration.webhook = [NSURL URLWithString:webhook];
+      }
+
+      if([linkCustomizationName isKindOfClass:[NSString class]]) {
+        _linkConfiguration.linkCustomizationName = linkCustomizationName;
+      }
+      
+      if ([language isKindOfClass:[NSString class]]) {
+        _linkConfiguration.language = language;
+      }
+
+      if ([countryCodes isKindOfClass:[NSArray class]]) {
+        _linkConfiguration.countryCodes = countryCodes;
+      }
+      
+  }
+  else if ([@"open" isEqualToString:call.method]) {
+      
+      id<PLKPlaidLinkViewDelegate> linkViewDelegate  = self;
+      
+      NSString* userLegalName = call.arguments[@"userLegalName"];
+      NSString* userEmailAddress = call.arguments[@"userEmailAddress"];
+      NSString* userPhoneNumber = call.arguments[@"userPhoneNumber"];
+      
+      NSString* publicToken = call.arguments[@"publicToken"];
+      NSString* institution = call.arguments[@"institution"];
+      NSString* paymentToken = call.arguments[@"paymentToken"];
+      NSString* oauthStateId = call.arguments[@"oauthStateId"];
+
+      if([userLegalName isKindOfClass:[NSString class]]) {
+        _linkConfiguration.userLegalName = userLegalName;
+      }
+
+      if([userEmailAddress isKindOfClass:[NSString class]]) {
+        _linkConfiguration.userEmailAddress = userEmailAddress;
+      }
+
+      if ([userPhoneNumber isKindOfClass:[NSString class]]) {
+        _linkConfiguration.userPhoneNumber = userPhoneNumber;
+      }
+      
+      
+      if ([publicToken isKindOfClass:[NSString class]]) {
+         if ([publicToken hasPrefix:@"item-add-"]) {
+             _linkViewController = [[PLKPlaidLinkViewController alloc] initWithItemAddToken:publicToken
+                                                                              configuration:_linkConfiguration
+                                                                                   delegate:linkViewDelegate];
+         } else {
+             _linkViewController = [[PLKPlaidLinkViewController alloc] initWithPublicToken:publicToken
+                                                                             configuration:_linkConfiguration
+                                                                                  delegate:linkViewDelegate];
+         }
+      }
+      else if ([institution isKindOfClass:[NSString class]]) {
+          _linkViewController = [[PLKPlaidLinkViewController alloc] initWithInstitution:institution
+                                                                          configuration:_linkConfiguration
+                                                                               delegate:linkViewDelegate];
+      }
+      else if ([paymentToken isKindOfClass:[NSString class]] && [oauthStateId isKindOfClass:[NSString class]]) {
+          _linkViewController = [[PLKPlaidLinkViewController alloc] initWithPaymentToken:paymentToken
+                                                                            oauthStateId:oauthStateId
+                                                                           configuration:_linkConfiguration
+                                                                                delegate:linkViewDelegate];
+      }
+      else if ([oauthStateId isKindOfClass:[NSString class]]) {
+          _linkViewController = [[PLKPlaidLinkViewController alloc] initWithOAuthStateId:oauthStateId
+                                                                           configuration:_linkConfiguration
+                                                                                delegate:linkViewDelegate];
+      }
+      else {
+          _linkViewController = [[PLKPlaidLinkViewController alloc] initWithConfiguration:_linkConfiguration
+                                                                                 delegate:linkViewDelegate];
+      }
+
+      if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+          _linkViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+      }
+
+      [_rootViewController presentViewController:_linkViewController animated:YES completion:nil];
+      
   }
   else {
     result(FlutterMethodNotImplemented);
@@ -123,6 +175,8 @@
                   metadata:(NSDictionary<NSString*,id>* _Nullable)metadata {
     [_rootViewController dismissViewControllerAnimated:YES completion:^{
         [self->_channel invokeMethod:@"onAccountLinked" arguments:@{@"publicToken": publicToken, @"metadata" : metadata}];
+        self->_linkViewController.delegate = nil;
+        self->_linkViewController = nil;
     }];
 }
 
@@ -136,9 +190,10 @@
         }
         else {
             [self->_channel invokeMethod:@"onExit" arguments:@{@"metadata" : metadata}];
-            self->_linkViewController.delegate = nil;
-            self->_linkViewController = nil;
         }
+        
+        self->_linkViewController.delegate = nil;
+        self->_linkViewController = nil;
     }];
     
 }

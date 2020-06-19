@@ -25,6 +25,7 @@ import com.plaid.link.configuration.LinkLogLevel;
 import com.plaid.link.configuration.PlaidEnvironment;
 import com.plaid.link.configuration.PlaidProduct;
 import com.plaid.link.event.LinkEvent;
+import com.plaid.link.event.LinkEventListenerKt;
 import com.plaid.link.event.LinkEventMetadata;
 import com.plaid.link.result.LinkAccount;
 import com.plaid.link.result.LinkError;
@@ -40,11 +41,11 @@ import org.json.JSONObject;
 /** PlaidFlutterPlugin */
 public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener {
 
+  private static final String CHANNEL_NAME = "plugins.flutter.io/plaid_flutter";
+
   private Activity activity;
   private MethodChannel channel;
-
-  private static final String CHANNEL_NAME = "plugins.flutter.io/plaid_flutter";
-  private static final int LINK_REQUEST_CODE = 1;
+  private LinkConfiguration.Builder configuration;
 
   private PlaidLinkResultHandler plaidLinkResultHandler = new PlaidLinkResultHandler(
       new Function1<LinkSuccess, Unit>() {
@@ -102,17 +103,15 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-    if (call.method.equals("open")) {
-      Map<String, Object> arguments = call.arguments();
+
+    Map<String, Object> arguments = call.arguments();
+
+    if (call.method.equals("create")) {
 
       String clientName = (String) arguments.get("clientName");
       String publicKey = (String)arguments.get("publicKey");
       String envString = (String)arguments.get("env");
       PlaidEnvironment env = PlaidEnvironment.valueOf(envString.toUpperCase());
-
-      String userLegalName = (String) arguments.get("userLegalName");
-      String userEmailAddress = (String) arguments.get("userEmailAddress");
-      String userPhoneNumber = (String) arguments.get("userPhoneNumber");
 
       String language = (String) arguments.get("language");
       String linkCustomizationName = (String) arguments.get("linkCustomizationName");
@@ -132,24 +131,12 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
         products.add(p);
       }
 
-      LinkConfiguration.Builder configuration = new LinkConfiguration.Builder()
+      configuration = new LinkConfiguration.Builder()
               .environment(env)
               .publicKey(publicKey)
               .clientName(clientName)
               .logLevel(BuildConfig.DEBUG ? LinkLogLevel.DEBUG : LinkLogLevel.ASSERT)
               .products(products);
-
-      if(userLegalName != null) {
-        configuration.userLegalName(userLegalName);
-      }
-
-      if(userEmailAddress != null) {
-        configuration.userEmailAddress(userEmailAddress);
-      }
-
-      if(userPhoneNumber != null) {
-        configuration.userPhoneNumber(userPhoneNumber);
-      }
 
       if(linkCustomizationName != null) {
         configuration.linkCustomizationName(linkCustomizationName);
@@ -187,6 +174,34 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
                                      return Unit.INSTANCE;
                                    }
                                  });
+
+    } else if(call.method.equals("open")) {
+
+      String userLegalName = (String) arguments.get("userLegalName");
+      String userEmailAddress = (String) arguments.get("userEmailAddress");
+      String userPhoneNumber = (String) arguments.get("userPhoneNumber");
+      String publicToken = (String) arguments.get("publicToken");
+      String paymentToken = (String) arguments.get("paymentToken");
+
+      if(userLegalName != null) {
+        configuration.userLegalName(userLegalName);
+      }
+
+      if(userEmailAddress != null) {
+        configuration.userEmailAddress(userEmailAddress);
+      }
+
+      if(userPhoneNumber != null) {
+        configuration.userPhoneNumber(userPhoneNumber);
+      }
+
+      if(publicToken != null) {
+        configuration.token(publicToken);
+      }
+
+      if(paymentToken != null) {
+        configuration.paymentToken(paymentToken);
+      }
 
       Plaid.openLink(activity, configuration.build());
 
