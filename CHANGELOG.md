@@ -1,3 +1,7 @@
+## 0.3.0
+
+* Added update mode, payment initation mode, institution pre-selection and oauth code mode.
+
 ## 0.2.7
 
 * Updated Plaid Android SDK to version 2.0.0
