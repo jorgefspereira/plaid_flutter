@@ -18,8 +18,8 @@ class _MyAppState extends State<MyApp> {
     _plaidLink = PlaidLink(
       clientName: "CLIENT_NAME",
       publicKey: "PUBLIC_KEY",
-      oauthRedirectUri: "myapp://test",
-      oauthNonce: "XXXXXXXXXXXXXXXX",
+      // oauthRedirectUri: "myapp://test",
+      // oauthNonce: "XXXXXXXXXXXXXXXX",
       env: EnvOption.sandbox,
       products: <ProductOption>[
         ProductOption.auth,
@@ -57,6 +57,10 @@ class _MyAppState extends State<MyApp> {
                   userLegalName: "John Appleseed",
                   userEmailAddress: "jappleseed@youapp.com",
                   userPhoneNumber: "+1 (512) 555-1234",
+                  // publicToken: "...",
+                  // paymentToken: "...",
+                  // institution: "...",
+                  // oauthStateId: "...",
                 );
               },
               child: Text("Open Plaid Link"),
