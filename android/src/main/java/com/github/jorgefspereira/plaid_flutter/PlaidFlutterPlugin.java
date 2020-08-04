@@ -22,10 +22,10 @@ import kotlin.jvm.functions.Function1;
 import com.plaid.link.Plaid;
 import com.plaid.link.configuration.LinkConfiguration;
 import com.plaid.link.configuration.LinkLogLevel;
+import com.plaid.link.configuration.LinkTokenConfiguration;
 import com.plaid.link.configuration.PlaidEnvironment;
 import com.plaid.link.configuration.PlaidProduct;
 import com.plaid.link.event.LinkEvent;
-import com.plaid.link.event.LinkEventListenerKt;
 import com.plaid.link.event.LinkEventMetadata;
 import com.plaid.link.result.LinkAccount;
 import com.plaid.link.result.LinkError;
@@ -37,15 +37,38 @@ import com.plaid.link.result.PlaidLinkResultHandler;
 
 import org.json.JSONObject;
 
-
 /** PlaidFlutterPlugin */
 public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener {
 
   private static final String CHANNEL_NAME = "plugins.flutter.io/plaid_flutter";
 
+  /// LinkConfiguration
+  private static final String CLIENT_NAME = "clientName";
+  private static final String PRODUCTS = "product";
+  private static final String ENV = "env";
+  private static final String ACCOUNT_SUBTYPES = "accountSubtypes";
+  private static final String USER_EMAIL_ADDRESS = "userEmailAddress";
+  private static final String USER_LEGAL_NAME = "product";
+  private static final String USER_PHONE_NUMBER = "userPhoneNumber";
+  private static final String WEBHOOK = "webhook";
+  private static final String LINK_CUSTOMIZATION_NAME = "linkCustomizationName";
+  private static final String LANGUAGE = "countryCodes";
+  private static final String COUNTRY_CODES = "product";
+  private static final String LINK_TOKEN = "linkToken";
+  private static final String PUBLIC_KEY = "publicKey";
+  private static final String PAYMENT_TOKEN = "paymentToken";
+
+  /// PlaidLinkResultHandler
+  private static final String ON_SUCCESS_METHOD = "onSuccess";
+  private static final String ON_EXIT_METHOD = "onExit";
+  private static final String ON_EVENT_METHOD = "onEvent";
+  private static final String ERROR = "error";
+  private static final String METADATA = "metadata";
+  private static final String PUBLIC_TOKEN = "publicToken";
+  private static final String EVENT = "event";
+
   private Activity activity;
   private MethodChannel channel;
-  private LinkConfiguration.Builder configuration;
 
   private PlaidLinkResultHandler plaidLinkResultHandler = new PlaidLinkResultHandler(
       new Function1<LinkSuccess, Unit>() {
@@ -53,10 +76,10 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
         public Unit invoke(LinkSuccess e) {
           Map<String, Object> data = new HashMap<>();
 
-          data.put("publicToken", e.getPublicToken());
-          data.put("metadata", createMapFromConnectionMetadata(e.getMetadata()));
+          data.put(PUBLIC_TOKEN, e.getPublicToken());
+          data.put(METADATA, createMapFromConnectionMetadata(e.getMetadata()));
 
-          channel.invokeMethod("onAccountLinked", data);
+          channel.invokeMethod(ON_SUCCESS_METHOD, data);
           return Unit.INSTANCE;
         }
       },
@@ -65,16 +88,16 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
         public Unit invoke(LinkExit e) {
 
           Map<String, Object> data = new HashMap<>();
-          data.put("metadata", createMapFromExitMetadata(e.getMetadata()));
+          data.put(METADATA, createMapFromExitMetadata(e.getMetadata()));
 
           LinkError error = e.getError();
 
           if(error != null) {
-            data.put("error", error.getErrorMessage());
-            channel.invokeMethod("onAccountLinkError", data);
+            data.put(ERROR, error.getErrorMessage());
           }
+
           else {
-            channel.invokeMethod("onExit", data);
+            channel.invokeMethod(ON_EXIT_METHOD, data);
           }
 
           return Unit.INSTANCE;
@@ -103,107 +126,23 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
-
-    Map<String, Object> arguments = call.arguments();
-
-    if (call.method.equals("create")) {
-
-      String clientName = (String) arguments.get("clientName");
-      String publicKey = (String)arguments.get("publicKey");
-      String envString = (String)arguments.get("env");
-      PlaidEnvironment env = PlaidEnvironment.valueOf(envString.toUpperCase());
-
-      String language = (String) arguments.get("language");
-      String linkCustomizationName = (String) arguments.get("linkCustomizationName");
-      String webhook = (String) arguments.get("webhook");
-      ArrayList<String> countryCodes = (ArrayList<String>) arguments.get("countryCodes");
-
-      //NOTE: Not supported like plaid ios sdk
-      // String oauthNonce = (String) arguments.get("oauthNonce");
-      // String oauthRedirectUri = (String) arguments.get("oauthRedirectUri");
-
-      ArrayList<PlaidProduct> products = new ArrayList<>();
-      ArrayList<?> productsObjects = (ArrayList<?>)arguments.get("products");
-
-      for (Object po : productsObjects) {
-        String ps = (String)po;
-        PlaidProduct p = PlaidProduct.valueOf(ps.toUpperCase());
-        products.add(p);
-      }
-
-      configuration = new LinkConfiguration.Builder()
-              .environment(env)
-              .publicKey(publicKey)
-              .clientName(clientName)
-              .logLevel(BuildConfig.DEBUG ? LinkLogLevel.DEBUG : LinkLogLevel.ASSERT)
-              .products(products);
-
-      if(linkCustomizationName != null) {
-        configuration.linkCustomizationName(linkCustomizationName);
-      }
-
-      if(language != null) {
-        configuration.language(language);
-      }
-
-      if(countryCodes != null) {
-        configuration.countryCodes(countryCodes);
-      }
-
-      if(webhook != null) {
-        configuration.webhook(webhook);
-      }
-
-      Map<String, String> extraParams = new HashMap<>();
-      Map<String, ArrayList<String>> accountSubtypes = (Map<String, ArrayList<String>>) arguments.get("accountSubtypes");
-
-      if(accountSubtypes != null) {
-        JSONObject json = new JSONObject(accountSubtypes);
-        extraParams.put("accountSubtypes", json.toString());
-        configuration.extraParams(extraParams);
-      }
+    if(call.method.equals("open")) {
 
       Plaid.setLinkEventListener(new Function1<LinkEvent, Unit>() {
-                                   @Override
-                                   public Unit invoke(LinkEvent e) {
-                                     Map<String, Object> data = new HashMap<>();
-                                     data.put("event", e.getEventName().toString());
-                                     data.put("metadata", createMapFromEventMetadata(e.getMetadata()));
+        @Override
+        public Unit invoke(LinkEvent e) {
+          Map<String, Object> data = new HashMap<>();
+          data.put(EVENT, e.getEventName().toString());
+          data.put(METADATA, createMapFromEventMetadata(e.getMetadata()));
 
-                                     channel.invokeMethod("onEvent", data);
-                                     return Unit.INSTANCE;
-                                   }
-                                 });
+          channel.invokeMethod(ON_EVENT_METHOD, data);
+          return Unit.INSTANCE;
+        }
+      });
 
-    } else if(call.method.equals("open")) {
-
-      String userLegalName = (String) arguments.get("userLegalName");
-      String userEmailAddress = (String) arguments.get("userEmailAddress");
-      String userPhoneNumber = (String) arguments.get("userPhoneNumber");
-      String publicToken = (String) arguments.get("publicToken");
-      String paymentToken = (String) arguments.get("paymentToken");
-
-      if(userLegalName != null) {
-        configuration.userLegalName(userLegalName);
-      }
-
-      if(userEmailAddress != null) {
-        configuration.userEmailAddress(userEmailAddress);
-      }
-
-      if(userPhoneNumber != null) {
-        configuration.userPhoneNumber(userPhoneNumber);
-      }
-
-      if(publicToken != null) {
-        configuration.token(publicToken);
-      }
-
-      if(paymentToken != null) {
-        configuration.paymentToken(paymentToken);
-      }
-
-      Plaid.openLink(activity, configuration.build());
+      Map<String, Object> arguments = call.arguments();
+      LinkConfiguration configuration = arguments.get(LINK_TOKEN) != null ? getNewLinkConfiguration(arguments) : getLegacyLinkConfiguration(arguments);
+      Plaid.openLink(activity, configuration);
 
     } else {
       result.notImplemented();
@@ -213,6 +152,96 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
   @Override
   public boolean onActivityResult(int requestCode, int resultCode, Intent intent) {
     return plaidLinkResultHandler.onActivityResult(requestCode, resultCode, intent);
+  }
+
+  private LinkConfiguration getNewLinkConfiguration(Map<String, Object> arguments) {
+    String linkToken = (String) arguments.get(LINK_TOKEN);
+
+    LinkTokenConfiguration.Builder configuration = new LinkTokenConfiguration.Builder()
+            .token(linkToken)
+            .logLevel(BuildConfig.DEBUG ? LinkLogLevel.DEBUG : LinkLogLevel.ASSERT);
+
+    return configuration.build().toLinkConfiguration();
+  }
+
+  private LinkConfiguration getLegacyLinkConfiguration(Map<String, Object> arguments) {
+
+    String clientName = (String) arguments.get(CLIENT_NAME);
+    String publicKey = (String) arguments.get(PUBLIC_KEY);
+    String envString = (String) arguments.get(ENV);
+    String language = (String) arguments.get(LANGUAGE);
+    String linkCustomizationName = (String) arguments.get(LINK_CUSTOMIZATION_NAME);
+    String webhook = (String) arguments.get(WEBHOOK);
+    String userLegalName = (String) arguments.get(USER_LEGAL_NAME);
+    String userEmailAddress = (String) arguments.get(USER_EMAIL_ADDRESS);
+    String userPhoneNumber = (String) arguments.get(USER_PHONE_NUMBER);
+    String paymentToken = (String) arguments.get(PAYMENT_TOKEN);
+    ArrayList<String> countryCodes = (ArrayList<String>) arguments.get(COUNTRY_CODES);
+    ArrayList<?> productsObjects = (ArrayList<?>)arguments.get(PRODUCTS);
+    Map<String, ArrayList<String>> accountSubtypes = (Map<String, ArrayList<String>>) arguments.get(ACCOUNT_SUBTYPES);
+
+    PlaidEnvironment env = PlaidEnvironment.valueOf(envString.toUpperCase());
+
+    LinkConfiguration.Builder configuration = new LinkConfiguration.Builder()
+            .publicKey(publicKey)
+            .clientName(clientName)
+            .logLevel(BuildConfig.DEBUG ? LinkLogLevel.DEBUG : LinkLogLevel.ASSERT);
+
+    ArrayList<PlaidProduct> products = new ArrayList<>();
+
+
+    for (Object po : productsObjects) {
+      String ps = (String)po;
+      PlaidProduct p = PlaidProduct.valueOf(ps.toUpperCase());
+      products.add(p);
+    }
+
+    configuration.products(products);
+
+    if(accountSubtypes != null) {
+      Map<String, String> extraParams = new HashMap<>();
+      JSONObject json = new JSONObject(accountSubtypes);
+      extraParams.put(ACCOUNT_SUBTYPES, json.toString());
+      configuration.extraParams(extraParams);
+    }
+
+    if(env != null) {
+      configuration.environment(env);
+    }
+
+    if(linkCustomizationName != null) {
+      configuration.linkCustomizationName(linkCustomizationName);
+    }
+
+    if(language != null) {
+      configuration.language(language);
+    }
+
+    if(countryCodes != null) {
+      configuration.countryCodes(countryCodes);
+    }
+
+    if(webhook != null) {
+      configuration.webhook(webhook);
+    }
+
+    if(paymentToken != null) {
+      configuration.paymentToken(paymentToken);
+    }
+
+    if(userLegalName != null) {
+      configuration.userLegalName(userLegalName);
+    }
+
+    if(userEmailAddress != null) {
+      configuration.userEmailAddress(userEmailAddress);
+    }
+
+    if(userPhoneNumber != null) {
+      configuration.userPhoneNumber(userPhoneNumber);
+    }
+
+    return configuration.build();
   }
 
   private Map<String, String> createMapFromEventMetadata(LinkEventMetadata data) {
