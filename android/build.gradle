@@ -33,6 +33,6 @@ android {
     }
 
     dependencies {
-        implementation 'com.plaid.link:sdk-core:2.0.0'
+        implementation 'com.plaid.link:sdk-core:2.1.0'
     }
 }
