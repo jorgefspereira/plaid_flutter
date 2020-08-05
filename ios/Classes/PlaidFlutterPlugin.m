@@ -75,37 +75,27 @@ static NSString* const kEventKey = @"event";
         NSString* institution = call.arguments[kInstitutionKey];
         NSString* paymentToken = call.arguments[kPaymentTokenKey];
         NSString* oauthStateId = call.arguments[kOAuthStateIdKey];
-        
-        NSString* publicKey = call.arguments[kPublicKeyKey];
         NSString* linkToken = call.arguments[kLinkTokenKey];
       
-        NSString* token;
-        PLKConfiguration* linkConfiguration;
         id<PLKPlaidLinkViewDelegate> linkViewDelegate  = self;
-        BOOL isLinkToken = [linkToken isKindOfClass:[NSString class]];
+        BOOL usingLinkToken = [linkToken isKindOfClass:[NSString class]];
+        PLKConfiguration* linkConfiguration = usingLinkToken ?
+                                            [self getNewLinkConfigurationWithArguments:call.arguments] :
+                                            [self getLegacyLinkConfigurationWithArguments:call.arguments];
         
-        if(isLinkToken) {
-            token = linkToken;
-            linkConfiguration = [self getNewLinkConfigurationWithArguments:call.arguments];
-        }  else {
-            token = publicKey;
-            linkConfiguration = [self getLegacyLinkConfigurationWithArguments:call.arguments];
-        }
-      
-              
-        if ([token isKindOfClass:[NSString class]]) {
-            if (isLinkToken) {
-                _linkViewController = [[PLKPlaidLinkViewController alloc] initWithLinkToken:token
+        if (usingLinkToken) {
+            if ([linkToken hasPrefix:@"link-"]) {
+                _linkViewController = [[PLKPlaidLinkViewController alloc] initWithLinkToken:linkToken
                                                                                oauthStateId:oauthStateId
                                                                               configuration:linkConfiguration
                                                                                    delegate:linkViewDelegate];
             }
-            else if ([token hasPrefix:@"item-add-"]) {
-                _linkViewController = [[PLKPlaidLinkViewController alloc] initWithItemAddToken:token
+            else if ([linkToken hasPrefix:@"item-add-"]) {
+                _linkViewController = [[PLKPlaidLinkViewController alloc] initWithItemAddToken:linkToken
                                                                                  configuration:linkConfiguration
                                                                                       delegate:linkViewDelegate];
             } else {
-                _linkViewController = [[PLKPlaidLinkViewController alloc] initWithPublicToken:token
+                _linkViewController = [[PLKPlaidLinkViewController alloc] initWithPublicToken:linkToken
                                                                                 configuration:linkConfiguration
                                                                                      delegate:linkViewDelegate];
             }
@@ -165,7 +155,6 @@ static NSString* const kEventKey = @"event";
 }
 
 - (PLKConfiguration*)getLegacyLinkConfigurationWithArguments:(id _Nullable)arguments {
-
     NSString* userLegalName = arguments[kUserLegalNameKey];
     NSString* userEmailAddress = arguments[kUserEmailAddressKey];
     NSString* userPhoneNumber = arguments[kUserPhoneNumberKey];
@@ -247,8 +236,7 @@ static NSString* const kEventKey = @"event";
  didSucceedWithPublicToken:(NSString*)publicToken
                   metadata:(NSDictionary<NSString*,id>* _Nullable)metadata {
     [_rootViewController dismissViewControllerAnimated:YES completion:^{
-        [self->_channel invokeMethod:kOnSuccessMethod arguments:@{kPublicTokenKey: publicToken,
-                                                                    kMetadataKey : metadata}];
+        [self->_channel invokeMethod:kOnSuccessMethod arguments:@{kPublicTokenKey: publicToken, kMetadataKey : metadata}];
         self->_linkViewController.delegate = nil;
         self->_linkViewController = nil;
     }];
@@ -260,7 +248,6 @@ static NSString* const kEventKey = @"event";
 
     [_rootViewController dismissViewControllerAnimated:YES completion:^{
         NSMutableDictionary* arguments = [[NSMutableDictionary alloc] init];
-        
         [arguments setObject:metadata forKey:kMetadataKey];
         
         if(error) {
@@ -277,7 +264,7 @@ static NSString* const kEventKey = @"event";
 - (void)linkViewController:(PLKPlaidLinkViewController*)linkViewController
             didHandleEvent:(NSString*)event
                   metadata:(NSDictionary<NSString*,id>* _Nullable)metadata {
-    [_channel invokeMethod:kOnSuccessMethod arguments:@{kEventKey: event, kMetadataKey : metadata}];
+    [_channel invokeMethod:kOnEventMethod arguments:@{kEventKey: event, kMetadataKey : metadata}];
 }
 
 @end

@@ -79,11 +79,11 @@ class PlaidLink {
     switch (call.method) {
       case 'onSuccess':
         if (this.onSuccess != null) {
-          Map<String, dynamic> metadata = call.arguments['metadata'];
-          List<Map<String, dynamic>> accounts = metadata["accounts"];
+          final metadata = call.arguments['metadata'];
+          final accounts = metadata["accounts"];
           List<AccountMetadata> accountsMetadata = [];
 
-          for (Map<String, dynamic> account in accounts) {
+          for (dynamic account in accounts) {
             AccountMetadata accountMetadata = AccountMetadata(
               id: account["id"],
               mask: account["mask"],
@@ -107,8 +107,7 @@ class PlaidLink {
 
       case 'onExit':
         if (this.onExit != null) {
-          Map<String, dynamic> metadata = call.arguments['metadata'];
-
+          final metadata = call.arguments['metadata'];
           ExitMetadata exitMetadata = ExitMetadata(
             status: metadata["status"],
             requestId: metadata["request_id"],
@@ -123,8 +122,7 @@ class PlaidLink {
 
       case 'onEvent':
         if (this.onEvent != null) {
-          Map<String, dynamic> metadata = call.arguments['metadata'];
-
+          final metadata = call.arguments['metadata'];
           EventMetadata eventMetadata = EventMetadata(
             viewName: metadata["view_name"],
             exitStatus: metadata["exit_status"],
@@ -158,8 +156,9 @@ class PlaidLink {
         'webhook': configuration.webhook,
         'oauthRedirectUri': configuration.oauthRedirectUri,
         'oauthNonce': configuration.oauthNonce,
-        'env': configuration.env.toString().split('.').last,
-        'products': configuration.products.map((p) => p.toString().split('.').last).toList(),
+        'env': configuration.env != null ? configuration.env.toString().split('.').last : LinkEnv.sandbox,
+        'products':
+            configuration.products != null ? configuration.products.map((p) => p.toString().split('.').last).toList() : [],
         'accountSubtypes': configuration.accountSubtypes,
         'linkCustomizationName': configuration.linkCustomizationName,
         'language': configuration.language,
