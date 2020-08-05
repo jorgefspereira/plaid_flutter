@@ -9,13 +9,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  PlaidLink _plaidLink;
+  PlaidLink _plaidPublicKey, _plaidLinkToken;
 
   @override
   void initState() {
     super.initState();
 
-    LinkConfiguration configuration = LinkConfiguration(
+    LinkConfiguration publicKeyConfiguration = LinkConfiguration(
       clientName: "CLIENT_NAME",
       publicKey: "PUBLIC_KEY",
       env: LinkEnv.sandbox,
@@ -32,18 +32,35 @@ class _MyAppState extends State<MyApp> {
       userPhoneNumber: "+1 (512) 555-1234",
     );
 
-    _plaidLink = PlaidLink(
-      configuration: configuration,
-      onSuccess: (publicToken, metadata) {
-        print("onSuccess: $publicToken, metadata: ${metadata.description()}");
-      },
-      onEvent: (event, metadata) {
-        print("onEvent: $event, metadata: ${metadata.description()}");
-      },
-      onExit: (error, metadata) {
-        print("onExit: $error, metadata: ${metadata.description()}");
-      },
+    LinkConfiguration linkTokenConfiguration = LinkConfiguration(
+      linkToken: "GENERATED_LINK_TOKEN",
     );
+
+    _plaidPublicKey = PlaidLink(
+      configuration: publicKeyConfiguration,
+      onSuccess: _onSuccessCallback,
+      onEvent: _onEventCallback,
+      onExit: _onExitCallback,
+    );
+
+    _plaidLinkToken = PlaidLink(
+      configuration: linkTokenConfiguration,
+      onSuccess: _onSuccessCallback,
+      onEvent: _onEventCallback,
+      onExit: _onExitCallback,
+    );
+  }
+
+  void _onSuccessCallback(publicToken, metadata) {
+    print("onSuccess: $publicToken, metadata: ${metadata.description()}");
+  }
+
+  void _onEventCallback(event, metadata) {
+    print("onEvent: $event, metadata: ${metadata.description()}");
+  }
+
+  void _onExitCallback(error, metadata) {
+    print("onExit: $error, metadata: ${metadata.description()}");
   }
 
   @override
@@ -51,12 +68,20 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         body: Container(
+          width: double.infinity,
           color: Colors.lightBlue,
-          child: Center(
-            child: RaisedButton(
-              onPressed: () => _plaidLink.open(),
-              child: Text("Open Plaid Link"),
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              RaisedButton(
+                onPressed: () => _plaidPublicKey.open(),
+                child: Text("Open Plaid Link (Public Key)"),
+              ),
+              RaisedButton(
+                onPressed: () => _plaidLinkToken.open(),
+                child: Text("Open Plaid Link (Link Token)"),
+              ),
+            ],
           ),
         ),
       ),
