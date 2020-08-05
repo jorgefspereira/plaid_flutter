@@ -3,57 +3,88 @@
 ``` dart
 import 'package:plaid_flutter/plaid_flutter.dart';
 
+void main() => runApp(MyApp());
+
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  PlaidLink _plaidPublicKey, _plaidLinkToken;
 
-  PlaidLink _plaidLink;
-  
   @override
   void initState() {
     super.initState();
-  
-    _plaidLink = PlaidLink(
-      clientName: "CLIENT_NAME",        //required
-      publicKey: "PUBLIC_KEY",          //required
-      oauthRedirectUri: "myapp://test", //required for android
-      oauthNonce: "XXXXXXXXXXXXXXXX",
-      env: EnvOption.sandbox,
-      products: <ProductOption>[
-        ProductOption.auth,
+
+    LinkConfiguration publicKeyConfiguration = LinkConfiguration(
+      clientName: "CLIENT_NAME",
+      publicKey: "YOUR_PUBLIC_KEY",
+      env: LinkEnv.sandbox,
+      products: <LinkProduct>[
+        LinkProduct.auth,
       ],
       accountSubtypes: {
         "depository": ["checking", "savings"],
       },
-      language: "en"
-      countryCodes: ['US']
-      onAccountLinked: (publicToken, metadata) { print("onAccountLinked: $publicToken metadata: $metadata"); },
-      onAccountLinkError: (error, metadata) { print("onAccountError: $error metadata: $metadata"); },
-      onEvent: (event, metadata) { print("onEvent: $event metadata: $metadata"); },
-      onExit: (metadata) { print("onExit: $metadata"); },
+      language: "en",
+      countryCodes: ['US'],
+      userLegalName: "John Appleseed",
+      userEmailAddress: "jappleseed@youapp.com",
+      userPhoneNumber: "+1 (512) 555-1234",
     );
+
+    LinkConfiguration linkTokenConfiguration = LinkConfiguration(
+      linkToken: "GENERATED_LINK_TOKEN",
+    );
+
+    _plaidPublicKey = PlaidLink(
+      configuration: publicKeyConfiguration,
+      onSuccess: _onSuccessCallback,
+      onEvent: _onEventCallback,
+      onExit: _onExitCallback,
+    );
+
+    _plaidLinkToken = PlaidLink(
+      configuration: linkTokenConfiguration,
+      onSuccess: _onSuccessCallback,
+      onEvent: _onEventCallback,
+      onExit: _onExitCallback,
+    );
+  }
+
+  void _onSuccessCallback(publicToken, metadata) {
+    print("onSuccess: $publicToken, metadata: ${metadata.description()}");
+  }
+
+  void _onEventCallback(event, metadata) {
+    print("onEvent: $event, metadata: ${metadata.description()}");
+  }
+
+  void _onExitCallback(error, metadata) {
+    print("onExit: $error, metadata: ${metadata.description()}");
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        body: 
-        Center( 
-            child: 
-            RaisedButton(
-              onPressed: () {
-                _plaidLink.open(
-                  userLegalName: "John Appleseed",
-                  userEmailAddress: "jappleseed@example.com",
-                  userPhoneNumber: "+1 (512) 555-1234",
-                );
-              },
-              child: Text("Open Plaid Link"),
-          	),
+        body: Container(
+          width: double.infinity,
+          color: Colors.lightBlue,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              RaisedButton(
+                onPressed: () => _plaidPublicKey.open(),
+                child: Text("Open Plaid Link (Public Key)"),
+              ),
+              RaisedButton(
+                onPressed: () => _plaidLinkToken.open(),
+                child: Text("Open Plaid Link (Link Token)"),
+              ),
+            ],
+          ),
         ),
       ),
     );
