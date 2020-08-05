@@ -1,4 +1,4 @@
-# Plaid Link plugin for Flutter
+# Plaid Link for Flutter
 
 [![pub](https://img.shields.io/pub/v/plaid_flutter.svg)](https://pub.dev/packages/plaid_flutter)
 
