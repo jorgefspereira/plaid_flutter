@@ -15,31 +15,33 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    _plaidLink = PlaidLink(
+    LinkConfiguration configuration = LinkConfiguration(
       clientName: "CLIENT_NAME",
       publicKey: "PUBLIC_KEY",
-      // oauthRedirectUri: "myapp://test",
-      // oauthNonce: "XXXXXXXXXXXXXXXX",
-      env: EnvOption.sandbox,
-      products: <ProductOption>[
-        ProductOption.auth,
+      env: LinkEnv.sandbox,
+      products: <LinkProduct>[
+        LinkProduct.auth,
       ],
       accountSubtypes: {
         "depository": ["checking", "savings"],
       },
       language: "en",
       countryCodes: ['US'],
-      onAccountLinked: (publicToken, metadata) {
-        print("onAccountLinked: $publicToken metadata: $metadata");
-      },
-      onAccountLinkError: (error, metadata) {
-        print("onAccountLinkError: $error metadata: $metadata");
+      userLegalName: "John Appleseed",
+      userEmailAddress: "jappleseed@youapp.com",
+      userPhoneNumber: "+1 (512) 555-1234",
+    );
+
+    _plaidLink = PlaidLink(
+      configuration: configuration,
+      onSuccess: (publicToken, metadata) {
+        print("onSuccess: $publicToken, metadata: ${metadata.description()}");
       },
       onEvent: (event, metadata) {
-        print("onEvent: $event metadata: $metadata");
+        print("onEvent: $event, metadata: ${metadata.description()}");
       },
-      onExit: (metadata) {
-        print("onExit: $metadata");
+      onExit: (error, metadata) {
+        print("onExit: $error, metadata: ${metadata.description()}");
       },
     );
   }
@@ -52,17 +54,7 @@ class _MyAppState extends State<MyApp> {
           color: Colors.lightBlue,
           child: Center(
             child: RaisedButton(
-              onPressed: () {
-                _plaidLink.open(
-                  userLegalName: "John Appleseed",
-                  userEmailAddress: "jappleseed@youapp.com",
-                  userPhoneNumber: "+1 (512) 555-1234",
-                  // publicToken: "...",
-                  // paymentToken: "...",
-                  // institution: "...",
-                  // oauthStateId: "...",
-                );
-              },
+              onPressed: () => _plaidLink.open(),
               child: Text("Open Plaid Link"),
             ),
           ),
