@@ -284,7 +284,6 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
     }
 
     result.put("accounts", accounts);
-    result.put("account", accounts.get(0));
 
     return result;
   }
