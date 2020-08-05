@@ -85,10 +85,17 @@ static NSString* const kEventKey = @"event";
         
         if (usingLinkToken) {
             if ([linkToken hasPrefix:@"link-"]) {
-                _linkViewController = [[PLKPlaidLinkViewController alloc] initWithLinkToken:linkToken
-                                                                               oauthStateId:oauthStateId
-                                                                              configuration:linkConfiguration
-                                                                                   delegate:linkViewDelegate];
+                if([oauthStateId isKindOfClass:[NSString class]]) {
+                    _linkViewController = [[PLKPlaidLinkViewController alloc] initWithLinkToken:linkToken
+                                                                                   oauthStateId:oauthStateId
+                                                                                  configuration:linkConfiguration
+                                                                                       delegate:linkViewDelegate];
+                }
+                else {
+                    _linkViewController = [[PLKPlaidLinkViewController alloc] initWithLinkToken:linkToken
+                                                                                  configuration:linkConfiguration
+                                                                                       delegate:linkViewDelegate];
+                }
             }
             else if ([linkToken hasPrefix:@"item-add-"]) {
                 _linkViewController = [[PLKPlaidLinkViewController alloc] initWithItemAddToken:linkToken

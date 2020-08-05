@@ -156,7 +156,7 @@ class PlaidLink {
         'webhook': configuration.webhook,
         'oauthRedirectUri': configuration.oauthRedirectUri,
         'oauthNonce': configuration.oauthNonce,
-        'env': configuration.env != null ? configuration.env.toString().split('.').last : LinkEnv.sandbox,
+        'env': configuration.env != null ? configuration.env.toString().split('.').last : "sandbox",
         'products':
             configuration.products != null ? configuration.products.map((p) => p.toString().split('.').last).toList() : [],
         'accountSubtypes': configuration.accountSubtypes,
