@@ -22,7 +22,8 @@ class PlaidLink {
     this.onExit,
     this.onEvent,
   })  : _channel = MethodChannel('plugins.flutter.io/plaid_flutter'),
-        assert(configuration.publicKey != null || configuration.linkToken != null) {
+        assert(configuration.publicKey != null ||
+            configuration.linkToken != null) {
     _channel.setMethodCallHandler(_onMethodCall);
   }
 
@@ -142,7 +143,8 @@ class PlaidLink {
         }
         return null;
     }
-    throw MissingPluginException('${call.method} was invoked but has no handler');
+    throw MissingPluginException(
+        '${call.method} was invoked but has no handler');
   }
 
   /// Initializes the Plaid Link flow on the device.
@@ -156,9 +158,14 @@ class PlaidLink {
         'webhook': configuration.webhook,
         'oauthRedirectUri': configuration.oauthRedirectUri,
         'oauthNonce': configuration.oauthNonce,
-        'env': configuration.env != null ? configuration.env.toString().split('.').last : "sandbox",
-        'products':
-            configuration.products != null ? configuration.products.map((p) => p.toString().split('.').last).toList() : [],
+        'env': configuration.env != null
+            ? configuration.env.toString().split('.').last
+            : "sandbox",
+        'products': configuration.products != null
+            ? configuration.products
+                .map((p) => p.toString().split('.').last)
+                .toList()
+            : [],
         'accountSubtypes': configuration.accountSubtypes,
         'linkCustomizationName': configuration.linkCustomizationName,
         'language': configuration.language,
