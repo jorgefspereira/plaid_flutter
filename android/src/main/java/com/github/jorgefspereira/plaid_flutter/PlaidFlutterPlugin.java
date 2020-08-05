@@ -44,16 +44,16 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
 
   /// LinkConfiguration
   private static final String CLIENT_NAME = "clientName";
-  private static final String PRODUCTS = "product";
+  private static final String PRODUCTS = "products";
   private static final String ENV = "env";
   private static final String ACCOUNT_SUBTYPES = "accountSubtypes";
   private static final String USER_EMAIL_ADDRESS = "userEmailAddress";
-  private static final String USER_LEGAL_NAME = "product";
+  private static final String USER_LEGAL_NAME = "userLegalName";
   private static final String USER_PHONE_NUMBER = "userPhoneNumber";
   private static final String WEBHOOK = "webhook";
   private static final String LINK_CUSTOMIZATION_NAME = "linkCustomizationName";
-  private static final String LANGUAGE = "countryCodes";
-  private static final String COUNTRY_CODES = "product";
+  private static final String LANGUAGE = "language";
+  private static final String COUNTRY_CODES = "countryCodes";
   private static final String LINK_TOKEN = "linkToken";
   private static final String PUBLIC_KEY = "publicKey";
   private static final String PAYMENT_TOKEN = "paymentToken";
