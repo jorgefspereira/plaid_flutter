@@ -21,6 +21,10 @@ class AccountMetadata {
     this.type,
     this.subtype,
   });
+
+  String description() {
+    return "[id: $id, mask: $mask, name: $name, type: $type, subtype: $subtype]";
+  }
 }
 
 /// The metadata object for the onSuccess callback
@@ -43,6 +47,17 @@ class SuccessMetadata {
     this.institutionName,
     this.accounts,
   });
+
+  String description() {
+    String description =
+        "linkSessionId: $linkSessionId, institutionId: $institutionId, institutionName: $institutionName, accounts: ";
+
+    for (AccountMetadata a in accounts) {
+      description += a.description();
+    }
+
+    return description;
+  }
 }
 
 /// The metadata object for the onExit callback
@@ -75,6 +90,10 @@ class ExitMetadata {
     this.institutionId,
     this.institutionName,
   });
+
+  String description() {
+    return "status: $status, linkSessionId: $linkSessionId, institutionId: $institutionId, institutionName: $institutionName, requestId: $requestId,";
+  }
 }
 
 /// The metadata object for the onEvent callback
@@ -129,4 +148,8 @@ class EventMetadata {
     this.errorCode,
     this.errorMesssage,
   });
+
+  String description() {
+    return "viewName: $viewName, exitStatus: $exitStatus, mfaType: $mfaType, requestId: $requestId, timestamp: $timestamp, linkSessionId: $linkSessionId, institutionId: $institutionId, institutionName: $institutionName, institutionSearchQuery: $institutionSearchQuery, errorType: $errorType, errorCode: $errorCode, errorMesssage: $errorMesssage";
+  }
 }
