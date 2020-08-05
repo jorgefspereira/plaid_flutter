@@ -1,3 +1,8 @@
+## 1.0.0
+
+* Added support for the new link_token flow.
+* Updated Plaid Android SDK to version 2.1.0
+
 ## 0.3.0
 
 * Added update mode, payment initation mode, institution pre-selection and oauth code mode.
