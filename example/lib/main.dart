@@ -51,15 +51,15 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void _onSuccessCallback(publicToken, metadata) {
+  void _onSuccessCallback(String publicToken, LinkSuccessMetadata metadata) {
     print("onSuccess: $publicToken, metadata: ${metadata.description()}");
   }
 
-  void _onEventCallback(event, metadata) {
+  void _onEventCallback(String event, LinkEventMetadata metadata) {
     print("onEvent: $event, metadata: ${metadata.description()}");
   }
 
-  void _onExitCallback(error, metadata) {
+  void _onExitCallback(String error, LinkExitMetadata metadata) {
     print("onExit: $error, metadata: ${metadata.description()}");
   }
 

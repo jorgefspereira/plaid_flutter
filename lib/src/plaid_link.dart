@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:plaid_flutter/plaid_flutter.dart';
 import 'metadata.dart';
 
-typedef void SuccessCallback(String publicToken, SuccessMetadata metadata);
+typedef void SuccessCallback(String publicToken, LinkSuccessMetadata metadata);
 
-typedef void ExitCallback(String error, ExitMetadata metadata);
+typedef void ExitCallback(String error, LinkExitMetadata metadata);
 
-typedef void EventCallback(String event, EventMetadata metadata);
+typedef void EventCallback(String event, LinkEventMetadata metadata);
 
 /// Provides Plaid Link drop in functionality.
 class PlaidLink {
@@ -82,10 +82,10 @@ class PlaidLink {
         if (this.onSuccess != null) {
           final metadata = call.arguments['metadata'];
           final accounts = metadata["accounts"];
-          List<AccountMetadata> accountsMetadata = [];
+          List<LinkAccountMetadata> accountsMetadata = [];
 
           for (dynamic account in accounts) {
-            AccountMetadata accountMetadata = AccountMetadata(
+            final accountMetadata = LinkAccountMetadata(
               id: account["id"],
               mask: account["mask"],
               name: account["name"],
@@ -95,10 +95,13 @@ class PlaidLink {
             accountsMetadata.add(accountMetadata);
           }
 
-          SuccessMetadata successMetadata = SuccessMetadata(
+          final institution = metadata["institution"];
+
+          final successMetadata = LinkSuccessMetadata(
             linkSessionId: metadata["link_session_id"],
-            institutionName: metadata["institution_name"],
-            institutionId: metadata["institution_id"],
+            institutionName: institution != null ? institution["name"] : null,
+            institutionId:
+                institution != null ? institution["institution_id"] : null,
             accounts: accountsMetadata,
           );
 
@@ -109,12 +112,15 @@ class PlaidLink {
       case 'onExit':
         if (this.onExit != null) {
           final metadata = call.arguments['metadata'];
-          ExitMetadata exitMetadata = ExitMetadata(
+          final institution = metadata["institution"];
+
+          final exitMetadata = LinkExitMetadata(
             status: metadata["status"],
             requestId: metadata["request_id"],
             linkSessionId: metadata["link_session_id"],
-            institutionName: metadata["institution_name"],
-            institutionId: metadata["institution_id"],
+            institutionName: institution != null ? institution["name"] : null,
+            institutionId:
+                institution != null ? institution["institution_id"] : null,
           );
 
           this.onExit(call.arguments['error'], exitMetadata);
@@ -124,7 +130,7 @@ class PlaidLink {
       case 'onEvent':
         if (this.onEvent != null) {
           final metadata = call.arguments['metadata'];
-          EventMetadata eventMetadata = EventMetadata(
+          final eventMetadata = LinkEventMetadata(
             viewName: metadata["view_name"],
             exitStatus: metadata["exit_status"],
             mfaType: metadata["mfa_type"],
