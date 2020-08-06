@@ -96,10 +96,7 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
             data.put(ERROR, error.getErrorMessage());
           }
 
-          else {
-            channel.invokeMethod(ON_EXIT_METHOD, data);
-          }
-
+          channel.invokeMethod(ON_EXIT_METHOD, data);
           return Unit.INSTANCE;
         }
       }
