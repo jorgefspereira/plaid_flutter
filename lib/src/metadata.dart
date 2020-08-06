@@ -1,4 +1,4 @@
-class AccountMetadata {
+class LinkAccountMetadata {
   /// The id of the selected account
   final String id;
 
@@ -14,7 +14,7 @@ class AccountMetadata {
   /// The account subtype
   final String subtype;
 
-  AccountMetadata({
+  LinkAccountMetadata({
     this.id,
     this.mask,
     this.name,
@@ -28,7 +28,7 @@ class AccountMetadata {
 }
 
 /// The metadata object for the onSuccess callback
-class SuccessMetadata {
+class LinkSuccessMetadata {
   /// A unique identifier associated with a user's actions and events through the Link flow. Include this identifier when opening a support ticket for faster turnaround.
   final String linkSessionId;
 
@@ -39,9 +39,9 @@ class SuccessMetadata {
   final String institutionName;
 
   /// A list of account objects
-  final List<AccountMetadata> accounts;
+  final List<LinkAccountMetadata> accounts;
 
-  SuccessMetadata({
+  LinkSuccessMetadata({
     this.linkSessionId,
     this.institutionId,
     this.institutionName,
@@ -52,7 +52,7 @@ class SuccessMetadata {
     String description =
         "linkSessionId: $linkSessionId, institutionId: $institutionId, institutionName: $institutionName, accounts: ";
 
-    for (AccountMetadata a in accounts) {
+    for (LinkAccountMetadata a in accounts) {
       description += a.description();
     }
 
@@ -61,7 +61,7 @@ class SuccessMetadata {
 }
 
 /// The metadata object for the onExit callback
-class ExitMetadata {
+class LinkExitMetadata {
   /// The value of the status key indicates the point at which the user exited the Link flow. Can be one of the following values:
   /// - requires_questions: User prompted to answer security question(s)
   /// - requires_selections: User prompted to answer multiple choice question(s)
@@ -83,7 +83,7 @@ class ExitMetadata {
   /// The full institution name, such as 'Bank of America'
   final String institutionName;
 
-  ExitMetadata({
+  LinkExitMetadata({
     this.status,
     this.requestId,
     this.linkSessionId,
@@ -97,7 +97,7 @@ class ExitMetadata {
 }
 
 /// The metadata object for the onEvent callback
-class EventMetadata {
+class LinkEventMetadata {
   /// The name of the view that is being transitioned to. Emitted by: TRANSITION_VIEW.
   final String viewName;
 
@@ -134,7 +134,7 @@ class EventMetadata {
   /// The error message that the user encountered. Emitted by: ERROR, EXIT.
   final String errorMesssage;
 
-  EventMetadata({
+  LinkEventMetadata({
     this.viewName,
     this.exitStatus,
     this.mfaType,
