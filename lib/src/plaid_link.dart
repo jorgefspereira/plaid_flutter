@@ -33,8 +33,8 @@ class PlaidLink {
   /// A configuration to support the old Plaid flow that required a static public_key.
   ///
   /// To upgrade to the new link_token flow check the following link: https://plaid.com/docs/upgrade-to-link-tokens/
-  final LinkConfiguration configuration;
-
+  LinkConfiguration configuration;
+  
   /// Called on a successfull account link.
   ///
   /// Two arguments are returned.
