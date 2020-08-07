@@ -34,7 +34,7 @@ class PlaidLink {
   ///
   /// To upgrade to the new link_token flow check the following link: https://plaid.com/docs/upgrade-to-link-tokens/
   LinkConfiguration configuration;
-  
+
   /// Called on a successfull account link.
   ///
   /// Two arguments are returned.
