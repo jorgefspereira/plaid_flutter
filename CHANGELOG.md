@@ -1,3 +1,10 @@
+## 1.1.0
+
+* Breaking change: added the prefix 'Link' to the metadata objects.
+* Fixed exit event not being triggered in some occasions.
+* Locked Plaid iOS SDK version to avoid conflits when integrating the plugin.
+* Fixed issue with institution not being correctly parsed on the events metadata.
+
 ## 1.0.0
 
 * Added support for the new link_token flow.
