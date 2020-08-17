@@ -264,9 +264,12 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
   private Map<String, Object> createMapFromConnectionMetadata(LinkSuccessMetadata data) {
     Map<String, Object> result = new HashMap<>();
 
-    result.put("institution_name", data.getInstitutionName());
+    Map<String, String> institution = new HashMap<>();
+    institution.put("name", data.getInstitutionName());
+    institution.put("institution_id", data.getInstitutionId());
+
+    result.put("institution", institution);
     result.put("link_session_id", data.getLinkSessionId());
-    result.put("institution_id", data.getInstitutionId());
 
     ArrayList<Object> accounts = new ArrayList<>();
 
@@ -285,13 +288,16 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
     return result;
   }
 
-  private Map<String, String> createMapFromExitMetadata(LinkExitMetadata data) {
-    Map<String, String> result = new HashMap<>();
+  private Map<String, Object> createMapFromExitMetadata(LinkExitMetadata data) {
+    Map<String, Object> result = new HashMap<>();
 
-    result.put("institution_name", data.getInstitutionName());
+    Map<String, String> institution = new HashMap<>();
+    institution.put("name", data.getInstitutionName());
+    institution.put("institution_id", data.getInstitutionId());
+
+    result.put("institution", institution);
     result.put("request_id", data.getRequestId());
     result.put("link_session_id", data.getLinkSessionId());
-    result.put("institution_id", data.getInstitutionId());
     result.put("status", data.getExitStatus());
 
     return result;
