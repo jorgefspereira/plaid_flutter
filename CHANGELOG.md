@@ -1,3 +1,7 @@
+## 1.1.1
+
+* Institution metadata (name, id) is now parsed correctly on Android.
+
 ## 1.1.0
 
 * Breaking change: added the prefix 'Link' to the metadata objects.
