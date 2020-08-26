@@ -1,3 +1,7 @@
+## 1.1.2
+
+* Added a close method to allow Link re-initialization.
+
 ## 1.1.1
 
 * Institution metadata (name, id) is now parsed correctly on Android.
