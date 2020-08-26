@@ -135,6 +135,12 @@ static NSString* const kEventKey = @"event";
         [_rootViewController presentViewController:_linkViewController animated:YES completion:nil];
       
   }
+  else if ([@"close" isEqualToString:call.method]) {
+    [_rootViewController dismissViewControllerAnimated:YES completion:^{
+        self->_linkViewController.delegate = nil;
+        self->_linkViewController = nil;
+    }];
+  } 
   else {
     result(FlutterMethodNotImplemented);
   }

@@ -185,4 +185,9 @@ class PlaidLink {
       },
     );
   }
+
+  // Closes Plaid Link View
+  void close() {
+    _channel.invokeMethod('close');
+  }
 }

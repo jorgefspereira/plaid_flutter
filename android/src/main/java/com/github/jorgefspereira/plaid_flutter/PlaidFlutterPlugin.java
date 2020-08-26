@@ -124,7 +124,6 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     if(call.method.equals("open")) {
-
       Plaid.setLinkEventListener(new Function1<LinkEvent, Unit>() {
         @Override
         public Unit invoke(LinkEvent e) {
@@ -140,8 +139,11 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
       Map<String, Object> arguments = call.arguments();
       LinkConfiguration configuration = arguments.get(LINK_TOKEN) != null ? getNewLinkConfiguration(arguments) : getLegacyLinkConfiguration(arguments);
       Plaid.openLink(activity, configuration);
-
-    } else {
+    }
+    else if(call.method.equals("close")) {
+      
+    }
+    else {
       result.notImplemented();
     }
   }
