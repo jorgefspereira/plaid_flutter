@@ -1,6 +1,7 @@
 # Plaid Link for Flutter
 
 [![pub](https://img.shields.io/pub/v/plaid_flutter.svg)](https://pub.dev/packages/plaid_flutter)
+[![donate](https://img.shields.io/badge/Buy%20me%20a%20beer-orange.svg)](https://www.buymeacoffee.com/jpereira)
 
 A Flutter plugin for [Plaid Link](https://github.com/plaid/link).
 
@@ -8,10 +9,6 @@ This plugin integrates the native SDKs:
 
 - [Plaid Link iOS SDK](https://github.com/plaid/plaid-link-ios)
 - [Plaid Link Android SDK](https://github.com/plaid/plaid-link-android)
-
-If you like this plugin and find it useful, I would be forever grateful for your support:
-
-<a href="https://www.buymeacoffee.com/jpereira" target="_blank"><img width="140" src="https://bmc-cdn.nyc3.digitaloceanspaces.com/BMC-button-images/custom_images/orange_img.png" alt="Buy Me A Coffee"></a>
 
 Feel free to leave any feedback [here](https://github.com/jorgefspereira/plaid_flutter/issues).
 
@@ -91,6 +88,6 @@ Before creating the release build of your app (which is the default setting when
 *NOTE: The example app is updated with a Proguard rules file(`proguard-rules.pro`)[here](https://github.com/jorgefspereira/plaid_flutter/tree/master/example/android/app/proguard-rules.pro).*
 
 ## TODOs
-
+- [ ] Web support 
 - [ ] [Avoid iOS Prepare for distribution configuration](https://plaid.com/docs/link/ios/#prepare-distribution-script)
 - [ ] Implement tests

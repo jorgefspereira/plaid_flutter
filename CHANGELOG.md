@@ -1,3 +1,8 @@
+## 1.1.3
+
+* Updated Plaid iOS SDK to version 1.1.36
+* Updated Plaid Android SDK to version 2.2.0
+
 ## 1.1.2
 
 * Added a close method to allow Link re-initialization.
