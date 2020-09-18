@@ -14,16 +14,24 @@ class LinkAccountMetadata {
   /// The account subtype
   final String subtype;
 
+  /// When all Auth features are enabled, verification_status is also present with one of the possible values:
+  /// - null: the Item was added through Instant Match or Instant Auth
+  /// - pending_automatic_verification: an Item is pending automated microdeposit verfication
+  /// - pending_manual_verification: an Item is pending manual microdeposit verification
+  /// - manually_verified: an Item was successfully manually verified
+  final String verificationStatus;
+
   LinkAccountMetadata({
     this.id,
     this.mask,
     this.name,
     this.type,
     this.subtype,
+    this.verificationStatus,
   });
 
   String description() {
-    return "[id: $id, mask: $mask, name: $name, type: $type, subtype: $subtype]";
+    return "[id: $id, mask: $mask, name: $name, type: $type, subtype: $subtype, verification_status: $verificationStatus]";
   }
 }
 

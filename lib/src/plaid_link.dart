@@ -91,6 +91,7 @@ class PlaidLink {
               name: account["name"],
               type: account["type"],
               subtype: account["subtype"],
+              verificationStatus: account["verification_status"],
             );
             accountsMetadata.add(accountMetadata);
           }
