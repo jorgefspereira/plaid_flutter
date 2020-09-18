@@ -1,3 +1,7 @@
+## 1.1.4
+
+* Added verification_status to onSuccess callback
+
 ## 1.1.3
 
 * Updated Plaid iOS SDK to version 1.1.36
