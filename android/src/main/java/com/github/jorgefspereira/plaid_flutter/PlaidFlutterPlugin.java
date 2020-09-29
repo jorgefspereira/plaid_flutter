@@ -176,7 +176,7 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
     String userEmailAddress = (String) arguments.get(USER_EMAIL_ADDRESS);
     String userPhoneNumber = (String) arguments.get(USER_PHONE_NUMBER);
     String paymentToken = (String) arguments.get(PAYMENT_TOKEN);
-    String publicToken = (String) arguments.get(LINK_TOKEN);
+    String token = (String) arguments.get(LINK_TOKEN);
     ArrayList<String> countryCodes = (ArrayList<String>) arguments.get(COUNTRY_CODES);
     ArrayList<?> productsObjects = (ArrayList<?>)arguments.get(PRODUCTS);
     Map<String, ArrayList<String>> accountSubtypes = (Map<String, ArrayList<String>>) arguments.get(ACCOUNT_SUBTYPES);
@@ -242,8 +242,8 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
       configuration.userPhoneNumber(userPhoneNumber);
     }
     
-    if(publicToken != null) {
-      configuration.publicToken(publicToken);
+    if(token != null) {
+      configuration.token(token);
     }
 
     return configuration.build();
