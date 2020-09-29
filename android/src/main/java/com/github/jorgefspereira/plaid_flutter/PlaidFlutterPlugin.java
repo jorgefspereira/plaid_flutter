@@ -137,7 +137,8 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
       });
 
       Map<String, Object> arguments = call.arguments();
-      LinkConfiguration configuration = arguments.get(LINK_TOKEN) != null && arguments.get(LINK_TOKEN).startsWith("link-") ? getNewLinkConfiguration(arguments) : getLegacyLinkConfiguration(arguments);
+      String linkToken = arguments.get(LINK_TOKEN);
+      LinkConfiguration configuration = linkToken != null && linkToken.startsWith("link-") ? getNewLinkConfiguration(arguments) : getLegacyLinkConfiguration(arguments);
       Plaid.openLink(activity, configuration);
     }
     else if(call.method.equals("close")) {
