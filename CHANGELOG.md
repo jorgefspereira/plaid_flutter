@@ -1,6 +1,7 @@
 ## 1.1.4
 
-* Added verification_status to onSuccess callback
+* Added verification_status to onSuccess callback.
+* Support for legacy update mode (which uses a token). Thank you @jaredanderton.
 
 ## 1.1.3
 
