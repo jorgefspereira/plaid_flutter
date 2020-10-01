@@ -79,7 +79,7 @@ static NSString* const kEventKey = @"event";
       
         id<PLKPlaidLinkViewDelegate> linkViewDelegate  = self;
         BOOL usingLinkToken = [linkToken isKindOfClass:[NSString class]];
-        PLKConfiguration* linkConfiguration = usingLinkToken ?
+        PLKConfiguration* linkConfiguration = usingLinkToken && [linkToken hasPrefix:@"link-"] ?
                                             [self getNewLinkConfigurationWithArguments:call.arguments] :
                                             [self getLegacyLinkConfigurationWithArguments:call.arguments];
         

@@ -137,7 +137,8 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
       });
 
       Map<String, Object> arguments = call.arguments();
-      LinkConfiguration configuration = arguments.get(LINK_TOKEN) != null ? getNewLinkConfiguration(arguments) : getLegacyLinkConfiguration(arguments);
+      String linkToken = (String) arguments.get(LINK_TOKEN);
+      LinkConfiguration configuration = linkToken != null && linkToken.startsWith("link-") ? getNewLinkConfiguration(arguments) : getLegacyLinkConfiguration(arguments);
       Plaid.openLink(activity, configuration);
     }
     else if(call.method.equals("close")) {
@@ -175,6 +176,7 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
     String userEmailAddress = (String) arguments.get(USER_EMAIL_ADDRESS);
     String userPhoneNumber = (String) arguments.get(USER_PHONE_NUMBER);
     String paymentToken = (String) arguments.get(PAYMENT_TOKEN);
+    String token = (String) arguments.get(LINK_TOKEN);
     ArrayList<String> countryCodes = (ArrayList<String>) arguments.get(COUNTRY_CODES);
     ArrayList<?> productsObjects = (ArrayList<?>)arguments.get(PRODUCTS);
     Map<String, ArrayList<String>> accountSubtypes = (Map<String, ArrayList<String>>) arguments.get(ACCOUNT_SUBTYPES);
@@ -238,6 +240,10 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
 
     if(userPhoneNumber != null) {
       configuration.userPhoneNumber(userPhoneNumber);
+    }
+    
+    if(token != null) {
+      configuration.token(token);
     }
 
     return configuration.build();
