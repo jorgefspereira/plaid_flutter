@@ -288,6 +288,7 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
       aux.put("name", a.getAccountName());
       aux.put("type", a.getAccountType());
       aux.put("subtype", a.getAccountSubType());
+      aux.put("verification_status", a.getVerificationStatus());
       accounts.add(aux);
     }
 
