@@ -1,3 +1,7 @@
+## 1.1.5
+
+* Bug fix: verification status always null on android.
+
 ## 1.1.4
 
 * Added verification_status to onSuccess callback.
