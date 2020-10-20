@@ -42,7 +42,10 @@ enum LinkProduct {
   liabilities,
 
   /// Account and transaction data to better serve users.
-  transactions
+  transactions,
+
+  /// asdsad
+  paymentInitiation
 }
 
 /// The LinkConfiguration class defines properties to be used by Plaid API.

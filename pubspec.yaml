@@ -1,6 +1,6 @@
 name: plaid_flutter
 description: Plaid Link for Flutter. Integrates the native iOS and Android SDKs.
-version: 1.1.5
+version: 1.1.6
 homepage: https://github.com/jorgefspereira/plaid_flutter
 
 environment:
