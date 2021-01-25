@@ -1,82 +1,42 @@
-/// The available environments to use.
-enum LinkEnv {
-  /// For testing use,
-  ///
-  /// A stateful sandbox environment; use test credentials and build out and test your integration
-  sandbox,
+import 'types.dart';
 
-  /// For development use
-  ///
-  /// Test your integration with live credentials; you will need to request access before you can use Plaid's Development environment
-  development,
-
-  /// For production use only
-  ///
-  /// Production API environment; all requests are billed
-  production
-}
-
-/// Options for specifying the Plaid products to use.
-///
-/// For more information visit the Plaid Products page (https://plaid.com/products/).
-enum LinkProduct {
-  /// Historical snapshots, real-time summaries, and auditable copies.
-  assets,
-
-  /// Verify accounts for payments without micro-deposits.
-  auth,
-
-  /// Verify real-time account balances
-  balance,
-
-  /// Verify user identities with bank account data to reduce fraud.
-  identity,
-
-  /// Validate income and verify employer info more accurately.
-  income,
-
-  /// Build a holistic view of a user’s investments
-  investments,
-
-  /// Access liabilities data for student loans and credit cards
-  liabilities,
-
-  /// Account and transaction data to better serve users.
-  transactions,
-
-  /// Gives clients access to details of their users' investment accounts like holdings and buy/sell transactions
-  paymentInitiation,
-}
-
-/// The LinkConfiguration class defines properties to be used by Plaid API.
-/// It still supports the old Plaid flow that required a static public_key.
+/// The LinkConfiguration only needs a link_token which is a new type of token that is created by your app's
+/// server and passed to your app's client to initialize Link. The Link configuration parameters that were
+/// previously set within Link itself are now set via parameters passed to /link/token/create and conveyed
+/// to Link via the link_token. (https://plaid.com/docs/link/link-token-migration-guide)
 class LinkConfiguration {
-  /// Create a LinkConfiguration.
-  LinkConfiguration({
-    this.linkToken,
+  final String token;
+
+  LinkConfiguration({this.token});
+
+  /// Returns a representation of this object as a JSON object.
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'token': token,
+    };
+  }
+}
+
+/// The LegacyLinkConfiguration class defines properties to support the
+/// old Plaid flow that required a static [publicKey]
+class LegacyLinkConfiguration extends LinkConfiguration {
+  /// Create a LinkLegacyConfiguration.
+  LegacyLinkConfiguration({
+    String token,
     this.publicKey,
     this.clientName,
-    this.env,
+    this.environment,
     this.products,
     this.webhook,
-    this.accountSubtypes,
-    this.oauthRedirectUri,
-    this.oauthNonce,
     this.linkCustomizationName,
     this.language,
     this.countryCodes,
     this.userLegalName,
     this.userEmailAddress,
     this.userPhoneNumber,
-    this.institution,
-    this.oauthStateId,
-    this.paymentToken,
-  });
-
-  /// A link_token received from /link/token/create.
-  ///
-  /// For more information: https://plaid.com/docs/#create-link-token
-  final String linkToken;
+    this.accountSubtypes,
+    this.oauthConfiguration,
+  }) : super(token: token);
 
   /// Your Plaid public_key available from the Plaid dashboard (https://dashboard.plaid.com/team/keys).
   ///
@@ -87,29 +47,19 @@ class LinkConfiguration {
   final String clientName;
 
   /// The API environment to use. Selects the Plaid servers with which LinkKit communicates.
-  final LinkEnv env;
+  final LinkEnvironment environment;
 
   /// The webhook will receive notifications once a userʼs transactions have been processed and are ready for use.
   final String webhook;
 
-  /// An URL that has been registered with Plaid for OpenBanking App-to-App authentication
-  /// and is set up as an Apple universal link for your application.
-  final String oauthRedirectUri;
-
-  /// The oauthNonce must be uniquely generated per login, it must not be contained within the oauthRedirectUri,
-  /// and must be separate from any user identifiers you pass with the oauthRedirectUri.
-  final String oauthNonce;
-
-  /// The value of the oauth_state_id query parameter from the URL passed via the browsing web activity.
-  final String oauthStateId;
-
   /// The list of Plaid products you would like to use.
   final List<LinkProduct> products;
 
-  /// Map of account types and subtypes, used to show only institutions with these following account subtypes
-  ///
-  /// For more information: https://plaid.com/docs/#auth-filtering-institutions-in-link
-  final Map<String, List<String>> accountSubtypes;
+  /// By default, Link will only display account types that are compatible with all products
+  /// supplied in the product parameter. You can further limit the accounts shown in Link by
+  /// using accountSubtypes to specify the account subtypes to be shown in Link.
+  /// Only the specified subtypes will be shown.
+  final List<LinkAccountSubtype> accountSubtypes;
 
   /// Allows non default customization to be retrieved by name.
   final String linkCustomizationName;
@@ -129,10 +79,38 @@ class LinkConfiguration {
   /// The phone number of the end-user, used for returning user experience.
   final String userPhoneNumber;
 
-  /// The Plaid identifier for a financial institution.
-  final String institution;
+  /// Values used to configure the application for OAuth
+  final LinkOAuthConfiguration oauthConfiguration;
 
-  /// An payment token to launch Link in payment initiation mode.
-  /// More info: https://plaid.com/docs/#payment-initiation
-  final String paymentToken;
+  /// Returns a representation of this object as a JSON object.
+  Map<String, dynamic> toJson() {
+    List<String> productsArray = [];
+    List<Map<String, String>> accountSubtypesArray = [];
+
+    if (products != null) {
+      productsArray = products.map((p) => p.toString().split('.').last).toList();
+    }
+
+    if (accountSubtypes != null) {
+      accountSubtypesArray = accountSubtypes.map((a) => a.toJson()).toList();
+    }
+
+    return <String, dynamic>{
+      'token': token,
+      'publicKey': publicKey,
+      'clientName': clientName,
+      'webhook': webhook,
+      'environment': environment.toString().split('.').last,
+      'linkCustomizationName': linkCustomizationName,
+      'language': language,
+      'userLegalName': userLegalName,
+      'userEmailAddress': userEmailAddress,
+      'userPhoneNumber': userPhoneNumber,
+      'countryCodes': countryCodes,
+      'oauthRedirectUri': oauthConfiguration?.redirectUri,
+      'oauthNonce': oauthConfiguration?.nonce,
+      'products': productsArray,
+      'accountSubtypes': accountSubtypesArray,
+    };
+  }
 }

@@ -1,3 +1,7 @@
+## 2.0.0
+
+* iOS: migration 1.x SDK to the 2.0.9 SDK.
+
 ## 1.1.6
 
 * Added support for payment initiation product type. Thank you @teerryn

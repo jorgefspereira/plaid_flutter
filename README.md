@@ -43,23 +43,18 @@ Add `plaid_flutter` as a [dependency in your pubspec.yaml file](https://flutter.
 
 ## iOS
 
-### 1. Project configuration
+### Requirements
 
-Go to your xcode project and make sure you are targeting iOS version >= 9.0
+- iOS version >= 11.0
+- Xcode 11.5 or greater
 
-### 2. Configure to Release
+### Optional
 
-Add a Run Script build phase *(name it Prepare for Distribution for example)* with the script below. Be sure to run this build phase after the Embed Frameworks build phase (or [CP] Embed Pods Frameworks build phase when integrating using CocoaPods)
-
-``` sh
-LINK_ROOT=${PODS_ROOT:+$PODS_ROOT/Plaid}
-cp "${LINK_ROOT:-$PROJECT_DIR}"/LinkKit.framework/prepare_for_distribution.sh "${CODESIGNING_FOLDER_PATH}"/Frameworks/LinkKit.framework/prepare_for_distribution.sh
-"${CODESIGNING_FOLDER_PATH}"/Frameworks/LinkKit.framework/prepare_for_distribution.sh
-```
-
-![](https://raw.githubusercontent.com/jorgefspereira/plaid_flutter/master/doc/images/edit_run_script_build_phase.jpg)
-
-The script below removes any non-iOS device code from the framework which is included to support running LinkKit in the Simulator but may not be distributed via the App Store.
+Registering a redirect URI is required when working with OAuth, which is used for European integrations as well as integrations with some US financial institutions. To register your redirect app URI:
+- Log into your Plaid Dashboard at the API page
+- Next to Allowed redirect URIs click Configure then Add New URI
+- Enter your redirect URI, for example www.plaid.com/redirect
+- Click Save Changes. You may be prompted to re-enter your password.
 
 *NOTE: More info at [https://plaid.com/docs/link/ios](https://plaid.com/docs/link/ios).*
 
@@ -79,5 +74,4 @@ Go to the project level `android/app/build.gradle` and make sure you are using a
 
 ## TODOs
 - [ ] Web support
-- [ ] [Avoid iOS Prepare for distribution configuration](https://plaid.com/docs/link/ios/#prepare-distribution-script)
 - [ ] Implement tests

@@ -15,25 +15,22 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    LinkConfiguration publicKeyConfiguration = LinkConfiguration(
+    LegacyLinkConfiguration publicKeyConfiguration = LegacyLinkConfiguration(
       clientName: "CLIENT_NAME",
       publicKey: "PUBLIC_KEY",
-      env: LinkEnv.sandbox,
+      environment: LinkEnvironment.sandbox,
       products: <LinkProduct>[
         LinkProduct.auth,
       ],
-      accountSubtypes: {
-        "depository": ["checking", "savings"],
-      },
       language: "en",
       countryCodes: ['US'],
       userLegalName: "John Appleseed",
       userEmailAddress: "jappleseed@youapp.com",
       userPhoneNumber: "+1 (512) 555-1234",
     );
-
+    
     LinkConfiguration linkTokenConfiguration = LinkConfiguration(
-      linkToken: "GENERATED_LINK_TOKEN",
+      token: "GENERATED_LINK_TOKEN",
     );
 
     _plaidPublicKey = PlaidLink(
@@ -59,8 +56,8 @@ class _MyAppState extends State<MyApp> {
     print("onEvent: $event, metadata: ${metadata.description()}");
   }
 
-  void _onExitCallback(String error, LinkExitMetadata metadata) {
-    print("onExit: $error, metadata: ${metadata.description()}");
+  void _onExitCallback(LinkError error, LinkExitMetadata metadata) {
+    print("onExit: ${error.description()}, metadata: ${metadata.description()}");
   }
 
   @override

@@ -5,34 +5,26 @@ import 'metadata.dart';
 
 typedef void SuccessCallback(String publicToken, LinkSuccessMetadata metadata);
 
-typedef void ExitCallback(String error, LinkExitMetadata metadata);
+typedef void ExitCallback(LinkError error, LinkExitMetadata metadata);
 
-typedef void EventCallback(String event, LinkEventMetadata metadata);
+typedef void EventCallback(String eventName, LinkEventMetadata metadata);
 
 /// Provides Plaid Link drop in functionality.
 class PlaidLink {
-  /// Create a Plaid Link.
-  ///
-  /// A [publicKey] or a [linkToken] is required.
-  ///
-  /// For more information: https://plaid.com/docs/link/ios/
+  /// The Plaid Link object.
   PlaidLink({
     this.configuration,
     this.onSuccess,
     this.onExit,
     this.onEvent,
-  })  : _channel = MethodChannel('plugins.flutter.io/plaid_flutter'),
-        assert(configuration.publicKey != null ||
-            configuration.linkToken != null) {
+  })  : _channel = MethodChannel('plugins.flutter.io/plaid_flutter') {
     _channel.setMethodCallHandler(_onMethodCall);
   }
 
   /// The [MethodChannel] over which this class communicates.
   final MethodChannel _channel;
 
-  /// A configuration to support the old Plaid flow that required a static public_key.
-  ///
-  /// To upgrade to the new link_token flow check the following link: https://plaid.com/docs/upgrade-to-link-tokens/
+  /// A configuration to support the legacy public_key Plaid flow and the the link_token process.
   LinkConfiguration configuration;
 
   /// Called on a successfull account link.
@@ -81,72 +73,27 @@ class PlaidLink {
       case 'onSuccess':
         if (this.onSuccess != null) {
           final metadata = call.arguments['metadata'];
-          final accounts = metadata["accounts"];
-          List<LinkAccountMetadata> accountsMetadata = [];
+          final publicToken = call.arguments['publicToken'];
 
-          for (dynamic account in accounts) {
-            final accountMetadata = LinkAccountMetadata(
-              id: account["id"],
-              mask: account["mask"],
-              name: account["name"],
-              type: account["type"],
-              subtype: account["subtype"],
-              verificationStatus: account["verification_status"],
-            );
-            accountsMetadata.add(accountMetadata);
-          }
-
-          final institution = metadata["institution"];
-
-          final successMetadata = LinkSuccessMetadata(
-            linkSessionId: metadata["link_session_id"],
-            institutionName: institution != null ? institution["name"] : null,
-            institutionId:
-                institution != null ? institution["institution_id"] : null,
-            accounts: accountsMetadata,
-          );
-
-          this.onSuccess(call.arguments['publicToken'], successMetadata);
+          this.onSuccess(publicToken, LinkSuccessMetadata.fromJson(metadata));
         }
         return null;
 
       case 'onExit':
         if (this.onExit != null) {
+          final error = call.arguments['error'];
           final metadata = call.arguments['metadata'];
-          final institution = metadata["institution"];
-
-          final exitMetadata = LinkExitMetadata(
-            status: metadata["status"],
-            requestId: metadata["request_id"],
-            linkSessionId: metadata["link_session_id"],
-            institutionName: institution != null ? institution["name"] : null,
-            institutionId:
-                institution != null ? institution["institution_id"] : null,
-          );
-
-          this.onExit(call.arguments['error'], exitMetadata);
+      
+          this.onExit(LinkError.fromJson(error), LinkExitMetadata.fromJson(metadata));
         }
         return null;
 
       case 'onEvent':
         if (this.onEvent != null) {
+          final eventName = call.arguments['event'];
           final metadata = call.arguments['metadata'];
-          final eventMetadata = LinkEventMetadata(
-            viewName: metadata["view_name"],
-            exitStatus: metadata["exit_status"],
-            mfaType: metadata["mfa_type"],
-            requestId: metadata["request_id"],
-            timestamp: metadata["timestamp"],
-            linkSessionId: metadata["link_session_id"],
-            institutionName: metadata["institution_name"],
-            institutionId: metadata["institution_id"],
-            institutionSearchQuery: metadata["institution_search_query"],
-            errorType: metadata["error_type"],
-            errorCode: metadata["error_code"],
-            errorMesssage: metadata["error_message"],
-          );
 
-          this.onEvent(call.arguments['event'], eventMetadata);
+          this.onEvent(eventName, LinkEventMetadata.fromJson(metadata));
         }
         return null;
     }
@@ -156,35 +103,7 @@ class PlaidLink {
 
   /// Initializes the Plaid Link flow on the device.
   void open() {
-    _channel.invokeMethod(
-      'open',
-      <String, dynamic>{
-        'linkToken': configuration.linkToken,
-        'publicKey': configuration.publicKey,
-        'clientName': configuration.clientName,
-        'webhook': configuration.webhook,
-        'oauthRedirectUri': configuration.oauthRedirectUri,
-        'oauthNonce': configuration.oauthNonce,
-        'env': configuration.env != null
-            ? configuration.env.toString().split('.').last
-            : "sandbox",
-        'products': configuration.products != null
-            ? configuration.products
-                .map((p) => p.toString().split('.').last)
-                .toList()
-            : [],
-        'accountSubtypes': configuration.accountSubtypes,
-        'linkCustomizationName': configuration.linkCustomizationName,
-        'language': configuration.language,
-        'countryCodes': configuration.countryCodes,
-        'userLegalName': configuration.userLegalName,
-        'userEmailAddress': configuration.userEmailAddress,
-        'userPhoneNumber': configuration.userPhoneNumber,
-        'institution': configuration.institution,
-        'paymentToken': configuration.paymentToken,
-        'oauthStateId': configuration.oauthStateId,
-      },
-    );
+    _channel.invokeMethod('open', configuration.toJson());
   }
 
   // Closes Plaid Link View

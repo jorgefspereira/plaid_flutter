@@ -1,4 +1,67 @@
-class LinkAccountMetadata {
+/// The error object
+class LinkError {
+  /// The error code that the user encountered.
+  /// Each errorCode has an associated errorType, which is a broad categorization of the error.
+  final String code;
+
+  /// The error type that the user encountered.
+  final String type;
+
+  /// A developer-friendly representation of the error code.
+  final String message;
+
+  /// A user-friendly representation of the error code or nil if the error is not related to user action.
+  /// This may change over time and is not safe for programmatic use.
+  final String displayMessage;
+
+  LinkError({
+    this.code,
+    this.type,
+    this.message,
+    this.displayMessage,
+  });
+
+  factory LinkError.fromJson(dynamic json) {
+    return LinkError(
+      code: json["errorCode"],
+      type: json["errorType"],
+      message: json["errorMessage"],
+      displayMessage: json["errorDisplayMessage"],
+    );
+  }
+
+  String description() {
+    return "[code: $code, type: $type, message: $message, displayMessage: $displayMessage]";
+  }
+}
+
+/// The institution object
+class LinkInstitution {
+  /// The Plaid institution identifier
+  final String id;
+
+  /// The full institution name, such as 'Bank of America'
+  final String name;
+
+  LinkInstitution({
+    this.id,
+    this.name,
+  });
+
+  factory LinkInstitution.fromJson(dynamic json) {
+    return LinkInstitution(
+      id: json["id"],
+      name: json["name"],
+    );
+  }
+
+  String description() {
+    return "id: $id, name: $name";
+  }
+}
+
+/// The account object
+class LinkAccount {
   /// The id of the selected account
   final String id;
 
@@ -14,14 +77,16 @@ class LinkAccountMetadata {
   /// The account subtype
   final String subtype;
 
-  /// When all Auth features are enabled, verification_status is also present with one of the possible values:
-  /// - null: the Item was added through Instant Match or Instant Auth
-  /// - pending_automatic_verification: an Item is pending automated microdeposit verfication
-  /// - pending_manual_verification: an Item is pending manual microdeposit verification
-  /// - manually_verified: an Item was successfully manually verified
+  /// When micro-deposit-based verification is being used, the accounts object includes an Item's verification_status. Possible values are:
+  /// - pending_automatic_verification: The Item is pending automatic verification.
+  /// - pending_manual_verification: The Item is pending manual micro-deposit verification. Items remain in this state until the user successfully verifies the two amounts.
+  /// - automatically_verified: The Item has successfully been automatically verified.
+  /// - manually_verified: The Item has successfully been manually verified.
+  /// - verification_expired: Plaid was unable to automatically verify the deposit within 7 calendar days and will no longer attempt to validate the Item. Users may retry by submitting their information again through Link.
+  /// - verification_failed: The Item failed manual micro-deposit verification because the user exhausted all 3 verification attempts. Users may retry by submitting their information again through Link.
   final String verificationStatus;
 
-  LinkAccountMetadata({
+  LinkAccount({
     this.id,
     this.mask,
     this.name,
@@ -29,6 +94,17 @@ class LinkAccountMetadata {
     this.subtype,
     this.verificationStatus,
   });
+
+  factory LinkAccount.fromJson(dynamic json) {
+    return LinkAccount(
+      id: json["id"],
+      name: json["name"],
+      mask: json["mask"],
+      type: json["type"],
+      subtype: json["subtype"],
+      verificationStatus: json["verificationStatus"],
+    );
+  }
 
   String description() {
     return "[id: $id, mask: $mask, name: $name, type: $type, subtype: $subtype, verification_status: $verificationStatus]";
@@ -40,27 +116,37 @@ class LinkSuccessMetadata {
   /// A unique identifier associated with a user's actions and events through the Link flow. Include this identifier when opening a support ticket for faster turnaround.
   final String linkSessionId;
 
-  /// The institution ID, such as ins_100000
-  final String institutionId;
+  /// An institution object
+  final LinkInstitution institution;
 
-  /// The full institution name, such as 'Bank of America'
-  final String institutionName;
-
-  /// A list of account objects
-  final List<LinkAccountMetadata> accounts;
+  /// A list of accounts attached to the connected Item
+  final List<LinkAccount> accounts;
 
   LinkSuccessMetadata({
     this.linkSessionId,
-    this.institutionId,
-    this.institutionName,
+    this.institution,
     this.accounts,
   });
 
+  factory LinkSuccessMetadata.fromJson(dynamic json) {
+    List<LinkAccount> accountsArray = [];
+
+    for (dynamic accountInfo in json["accounts"]) {
+      accountsArray.add(LinkAccount.fromJson(accountInfo));
+    }
+
+    return LinkSuccessMetadata(
+      linkSessionId: json["linkSessionId"],
+      institution: LinkInstitution.fromJson(json["institution"]),
+      accounts: accountsArray,
+    );
+  }
+
   String description() {
     String description =
-        "linkSessionId: $linkSessionId, institutionId: $institutionId, institutionName: $institutionName, accounts: ";
+        "linkSessionId: $linkSessionId, institution.id: ${institution.id}, institution.name: ${institution.name}, accounts: ";
 
-    for (LinkAccountMetadata a in accounts) {
+    for (LinkAccount a in accounts) {
       description += a.description();
     }
 
@@ -77,40 +163,64 @@ class LinkExitMetadata {
   /// - choose_device: User prompted to select a device on which to receive a one-time passcode
   /// - requires_credentials:	User prompted to provide credentials for the selected financial institution or has not yet selected a financial institution
   /// - institution_not_found: User exited the Link flow after unsuccessfully (no results returned) searching for a financial institution
+  /// - unknown: The exit status has not been defined in the current version of the SDK. The unknown case has an associated value carrying the original exit status as sent by the Plaid API.
   final String status;
 
-  /// The request ID for the last request made by Link. This can be shared with Plaid Support to expedite investigation. Emitted by: all events.
+  /// The request ID for the last request made by Link. This can be shared with Plaid Support to expedite investigation.
   final String requestId;
 
   /// A unique identifier associated with a user's actions and events through the Link flow. Include this identifier when opening a support ticket for faster turnaround.
   final String linkSessionId;
 
-  /// The institution ID, such as ins_100000
-  final String institutionId;
-
-  /// The full institution name, such as 'Bank of America'
-  final String institutionName;
+  /// An institution object
+  final LinkInstitution institution;
 
   LinkExitMetadata({
     this.status,
     this.requestId,
     this.linkSessionId,
-    this.institutionId,
-    this.institutionName,
+    this.institution,
   });
 
+  factory LinkExitMetadata.fromJson(dynamic json) {
+    return LinkExitMetadata(
+      status: json["status"],
+      requestId: json["requestId"],
+      linkSessionId: json["linkSessionId"],
+      institution: LinkInstitution.fromJson(json["institution"]),
+    );
+  }
+
   String description() {
-    return "status: $status, linkSessionId: $linkSessionId, institutionId: $institutionId, institutionName: $institutionName, requestId: $requestId,";
+    return "status: $status, linkSessionId: $linkSessionId, requestId: $requestId, institution.id: ${institution.id}, institution.name: ${institution.name}";
   }
 }
 
 /// The metadata object for the onEvent callback
 class LinkEventMetadata {
-  /// The name of the view that is being transitioned to. Emitted by: TRANSITION_VIEW.
-  final String viewName;
+  /// The error code that the user encountered. Emitted by: ERROR, EXIT.
+  final String errorCode;
+
+  /// The error message that the user encountered. Emitted by: ERROR, EXIT.
+  final String errorMesssage;
+
+  /// The error type that the user encountered. Emitted by: ERROR, EXIT.
+  final String errorType;
 
   /// The status key indicates the point at which the user exited the Link flow. Emitted by: EXIT.
   final String exitStatus;
+
+  /// The ID of the selected institution. Emitted by: all events.
+  final String institutionId;
+
+  /// The name of the selected institution. Emitted by: all events.
+  final String institutionName;
+
+  /// The query used to search for institutions. Emitted by: SEARCH_INSTITUTION.
+  final String institutionSearchQuery;
+
+  /// The link_session_id is a unique identifier for a single session of Link. It's always available and will stay constant throughout the flow. Emitted by: all events.
+  final String linkSessionId;
 
   /// If set, the user has encountered one of the following MFA types: code, device, questions, selections. Emitted by: SUBMIT_MFA and TRANSITION_VIEW when view_name is MFA.
   final String mfaType;
@@ -121,26 +231,8 @@ class LinkEventMetadata {
   /// An ISO 8601 representation of when the event occurred. For example 2017-09-14T14:42:19.350Z. Emitted by: all events.
   final String timestamp;
 
-  /// The link_session_id is a unique identifier for a single session of Link. It's always available and will stay constant throughout the flow. Emitted by: all events.
-  final String linkSessionId;
-
-  /// The name of the selected institution. Emitted by: all events.
-  final String institutionName;
-
-  /// The ID of the selected institution. Emitted by: all events.
-  final String institutionId;
-
-  /// The query used to search for institutions. Emitted by: SEARCH_INSTITUTION.
-  final String institutionSearchQuery;
-
-  /// The error type that the user encountered. Emitted by: ERROR, EXIT.
-  final String errorType;
-
-  /// The error code that the user encountered. Emitted by: ERROR, EXIT.
-  final String errorCode;
-
-  /// The error message that the user encountered. Emitted by: ERROR, EXIT.
-  final String errorMesssage;
+  /// The name of the view that is being transitioned to. Emitted by: TRANSITION_VIEW.
+  final String viewName;
 
   LinkEventMetadata({
     this.viewName,
@@ -156,6 +248,23 @@ class LinkEventMetadata {
     this.errorCode,
     this.errorMesssage,
   });
+
+  factory LinkEventMetadata.fromJson(dynamic json) {
+    return LinkEventMetadata(
+      viewName: json["viewName"],
+      exitStatus: json["exitStatus"],
+      mfaType: json["mfaType"],
+      requestId: json["requestId"],
+      timestamp: json["timestamp"],
+      linkSessionId: json["linkSessionId"],
+      institutionName: json["institutionName"],
+      institutionId: json["institutionId"],
+      institutionSearchQuery: json["institutionSearchQuery"],
+      errorType: json["errorType"],
+      errorCode: json["errorCode"],
+      errorMesssage: json["errorMessage"],
+    );
+  }
 
   String description() {
     return "viewName: $viewName, exitStatus: $exitStatus, mfaType: $mfaType, requestId: $requestId, timestamp: $timestamp, linkSessionId: $linkSessionId, institutionId: $institutionId, institutionName: $institutionName, institutionSearchQuery: $institutionSearchQuery, errorType: $errorType, errorCode: $errorCode, errorMesssage: $errorMesssage";
