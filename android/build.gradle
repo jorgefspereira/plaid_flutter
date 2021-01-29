@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.2'
+        classpath 'com.android.tools.build:gradle:3.6.2'
     }
 }
 
@@ -33,6 +33,11 @@ android {
     }
 
     dependencies {
-        implementation 'com.plaid.link:sdk-core:2.2.0'
+        implementation 'com.plaid.link:sdk-core:3.2.2'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
