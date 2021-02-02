@@ -74,4 +74,4 @@ Go to the project level `android/app/build.gradle` and make sure you are using a
 
 ## TODOs
 - [ ] Web support
-- [ ] Implement tests
+- [ ] Migrate to null safety (https://medium.com/flutter/announcing-dart-null-safety-beta-4491da22077a)

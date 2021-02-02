@@ -1,6 +1,7 @@
 package com.github.jorgefspereira.plaid_flutter;
 
-import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
@@ -8,12 +9,15 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
 import io.flutter.plugin.common.BinaryMessenger;
 
 import kotlin.Unit;
@@ -32,7 +36,7 @@ import com.plaid.link.result.LinkSuccessMetadata;
 import com.plaid.link.result.LinkResultHandler;
 
 /** PlaidFlutterPlugin */
-public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.ActivityResultListener {
+public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware, ActivityResultListener {
 
   private static final String CHANNEL_NAME = "plugins.flutter.io/plaid_flutter";
 
@@ -53,8 +57,6 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
   private static final String TYPE = "type";
   private static final String SUBTYPE = "subtype";
 
-  private static final String LINK_TOKEN_PREFIX = "link-";
-
   /// LinkResultHandler
   private static final String METHOD_ON_SUCCESS = "onSuccess";
   private static final String METHOD_ON_EXIT = "onExit";
@@ -64,7 +66,11 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
   private static final String KEY_PUBLIC_TOKEN = "publicToken";
   private static final String KEY_EVENT = "event";
 
-  private Activity activity;
+  // Prefix
+  private static final String LINK_TOKEN_PREFIX = "link-";
+
+  private ActivityPluginBinding binding;
+  private Context context;
   private MethodChannel channel;
 
   private LinkResultHandler resultHandler = new LinkResultHandler(
@@ -93,25 +99,29 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
   );
 
   public static void registerWith(Registrar registrar) {
-    if (registrar.activity() == null) {
-      return;
-    }
-
     final PlaidFlutterPlugin plugin = new PlaidFlutterPlugin();
-    plugin.initializePlugin(registrar.activity(), registrar.messenger());
-    registrar.addActivityResultListener(plugin);
+    plugin.onAttachedToEngine(registrar.context(), registrar.messenger());
   }
 
-  private void initializePlugin(Activity activity, BinaryMessenger messenger) {
-    if (channel != null) {
-      channel.setMethodCallHandler(null);
-      channel = null;
-    }
-
-    this.activity = activity;
-    channel = new MethodChannel(messenger, CHANNEL_NAME);
-    channel.setMethodCallHandler(this);
+  @Override
+  public void onAttachedToEngine(FlutterPluginBinding binding) {
+    onAttachedToEngine(binding.getApplicationContext(), binding.getBinaryMessenger());
   }
+
+  @Override
+  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+    this.context = null;
+    this.channel.setMethodCallHandler(null);
+    this.channel = null;
+  }
+
+  private void onAttachedToEngine(Context context, BinaryMessenger messenger) {
+    this.context = context;
+    this.channel = new MethodChannel(messenger, CHANNEL_NAME);
+    this.channel.setMethodCallHandler(this);
+  }
+
+  /// MethodCallHandler
 
   @Override
   public void onMethodCall(MethodCall call, Result result) {
@@ -126,12 +136,44 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
     }
   }
 
+  /// ActivityAware
+
+  @Override
+  public void onAttachedToActivity(ActivityPluginBinding binding) {
+    this.binding = binding;
+    this.binding.addActivityResultListener(this);
+  }
+
+  @Override
+  public void onDetachedFromActivity() {
+    this.binding.removeActivityResultListener(this);
+    this.binding = null;
+  }
+
+  @Override
+  public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+    onAttachedToActivity(binding);
+  }
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {
+    onDetachedFromActivity();
+  }
+
+  /// ActivityResultListener
+
   @Override
   public boolean onActivityResult(int requestCode, int resultCode, Intent intent) {
     return resultHandler.onActivityResult(requestCode, resultCode, intent);
   }
 
   private void open(Map<String, Object> arguments) {
+
+    if (binding == null || binding.getActivity() == null) {
+      Log.w("PlaidFlutterPlugin", "Activity not attached");
+      throw new IllegalStateException("Activity not attached");
+    }
+
     Plaid.setLinkEventListener( linkEvent -> {
       Map<String, Object> data = new HashMap<>();
       data.put(KEY_EVENT, linkEvent.getEventName().toString());
@@ -150,11 +192,12 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
     }
 
     if(publicKey != null) {
+      Log.d("PlaidFlutterPlugin", "OPEN");
       try {
         Plaid.create(
-                activity.getApplication(),
+                (Application)context.getApplicationContext(),
                 getLegacyLinkConfiguration(arguments)
-        ).open(activity);
+        ).open(binding.getActivity());
 
         return;
       } catch (Exception e) {
@@ -165,9 +208,9 @@ public class PlaidFlutterPlugin implements MethodCallHandler, PluginRegistry.Act
 
     if(token != null) {
       Plaid.create(
-              activity.getApplication(),
+              (Application)context.getApplicationContext(),
               getLinkTokenConfiguration(arguments)
-      ).open(activity);
+      ).open(binding.getActivity());
       return;
     }
   }

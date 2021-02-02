@@ -1,7 +1,8 @@
 ## 2.0.0
 
 * iOS: migration 1.x SDK to the 2.0.9 SDK.
-
+* Android: migration 2.x SDK to the 3.2.2 SDK.
+* Supporting the new Android plugins APIs
 ## 1.1.6
 
 * Added support for payment initiation product type. Thank you @teerryn
