@@ -4,7 +4,7 @@
 [![points](https://badges.bar/plaid_flutter/pub%20points)](https://pub.dev/packages/plaid_flutter)
 [![popularity](https://badges.bar/plaid_flutter/popularity)](https://pub.dev/packages/plaid_flutter)
 [![likes](https://badges.bar/plaid_flutter/likes)](https://pub.dev/packages/plaid_flutter)
-[![donate(https://img.shields.io/badge/Buy%20me%20a%20beer-orange.svg)](https://www.buymeacoffee.com/jpereira)
+[![donate](https://img.shields.io/badge/Buy%20me%20a%20beer-orange.svg)](https://www.buymeacoffee.com/jpereira)
 
 A Flutter plugin for [Plaid Link](https://github.com/plaid/link).
 
