@@ -6,12 +6,12 @@
 [![likes](https://badges.bar/plaid_flutter/likes)](https://pub.dev/packages/plaid_flutter)
 [![donate](https://img.shields.io/badge/Buy%20me%20a%20beer-orange.svg)](https://www.buymeacoffee.com/jpereira)
 
-A Flutter plugin for [Plaid Link](https://github.com/plaid/link).
+A Flutter plugin for [Plaid Link](https://plaid.com/docs/link).
 
 This plugin integrates the native SDKs:
 
-- [Plaid Link iOS SDK](https://github.com/plaid/plaid-link-ios)
-- [Plaid Link Android SDK](https://github.com/plaid/plaid-link-android)
+- [Plaid Link iOS SDK](https://plaid.com/docs/link/ios)
+- [Plaid Link Android SDK](https://plaid.com/docs/link/android)
 - [Plaid Link JavaScript SDK](https://plaid.com/docs/link/web)
 
 Feel free to leave any feedback [here](https://github.com/jorgefspereira/plaid_flutter/issues).
