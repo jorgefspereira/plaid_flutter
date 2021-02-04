@@ -19,7 +19,10 @@ class PlaidFlutterPlugin {
   }
 
   static void registerWith(Registrar registrar) {
-    final MethodChannel channel = MethodChannel('plugins.flutter.io/plaid_flutter', const StandardMethodCodec(), registrar);
+    final MethodChannel channel = MethodChannel(
+        'plugins.flutter.io/plaid_flutter',
+        const StandardMethodCodec(),
+        registrar);
     PlaidFlutterPlugin(channel);
   }
 
@@ -37,7 +40,8 @@ class PlaidFlutterPlugin {
       default:
         throw PlatformException(
           code: 'Unimplemented',
-          details: 'plaid_flutter for web doesn\'t implement \'${call.method}\'',
+          details:
+              'plaid_flutter for web doesn\'t implement \'${call.method}\'',
         );
     }
   }
@@ -74,20 +78,28 @@ class PlaidFlutterPlugin {
       userEmailAddress: userEmailAddress,
       userPhoneNumber: userPhoneNumber,
       onEvent: allowInterop((event, metadata) {
-        Map<String, dynamic> arguments = {'event': event, 'metadata': mapFromEventMetadata(jsToMap(metadata))};
+        Map<String, dynamic> arguments = {
+          'event': event,
+          'metadata': mapFromEventMetadata(jsToMap(metadata))
+        };
         _channel.invokeMethod('onEvent', arguments);
       }),
       onSuccess: allowInterop((publicToken, metadata) {
-        Map<String, dynamic> arguments = {'publicToken': publicToken, 'metadata': mapFromSuccessMetadata(jsToMap(metadata))};
+        Map<String, dynamic> arguments = {
+          'publicToken': publicToken,
+          'metadata': mapFromSuccessMetadata(jsToMap(metadata))
+        };
         _channel.invokeMethod('onSuccess', arguments);
       }),
       onExit: allowInterop((error, metadata) {
-        Map<String, dynamic> arguments = {'metadata': mapFromExitMetadata(jsToMap(metadata))};
+        Map<String, dynamic> arguments = {
+          'metadata': mapFromExitMetadata(jsToMap(metadata))
+        };
 
-        if(error != null) {
+        if (error != null) {
           arguments["error"] = mapFromError(jsToMap(error));
         }
-        
+
         _channel.invokeMethod('onExit', arguments);
       }),
       onLoad: allowInterop(() {}),
@@ -97,7 +109,7 @@ class PlaidFlutterPlugin {
   }
 
   void close() {}
-  
+
   Map<String, dynamic> mapFromError(Map<dynamic, dynamic> data) {
     Map<String, dynamic> result = {};
 
@@ -113,10 +125,13 @@ class PlaidFlutterPlugin {
     Map<String, dynamic> result = {};
 
     Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
-    
-    result["institution"] = { "id": institutionMap["institution_id"], "name": institutionMap["name"]};
+
+    result["institution"] = {
+      "id": institutionMap["institution_id"],
+      "name": institutionMap["name"]
+    };
     result["linkSessionId"] = data["link_session_id"];
-    
+
     List<dynamic> accountsList = [];
 
     for (dynamic item in data["accounts"]) {
@@ -140,14 +155,17 @@ class PlaidFlutterPlugin {
 
   Map<String, dynamic> mapFromExitMetadata(Map<dynamic, dynamic> data) {
     Map<String, dynamic> result = {};
-    
+
     Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
-    
-    result["institution"] = { "id": institutionMap["institution_id"], "name": institutionMap["name"]};
+
+    result["institution"] = {
+      "id": institutionMap["institution_id"],
+      "name": institutionMap["name"]
+    };
     result["requestId"] = data["request_id"];
     result["linkSessionId"] = data["link_session_id"];
     result["status"] = data["status"];
-    
+
     return result;
   }
 

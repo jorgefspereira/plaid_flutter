@@ -17,7 +17,7 @@ class PlaidLink {
     this.onSuccess,
     this.onExit,
     this.onEvent,
-  })  : _channel = MethodChannel('plugins.flutter.io/plaid_flutter') {
+  }) : _channel = MethodChannel('plugins.flutter.io/plaid_flutter') {
     _channel.setMethodCallHandler(_onMethodCall);
   }
 
@@ -83,8 +83,9 @@ class PlaidLink {
         if (this.onExit != null) {
           final error = call.arguments['error'];
           final metadata = call.arguments['metadata'];
-      
-          this.onExit(LinkError.fromJson(error), LinkExitMetadata.fromJson(metadata));
+
+          this.onExit(
+              LinkError.fromJson(error), LinkExitMetadata.fromJson(metadata));
         }
         return null;
 

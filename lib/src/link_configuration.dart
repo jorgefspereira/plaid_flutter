@@ -88,7 +88,8 @@ class LegacyLinkConfiguration extends LinkConfiguration {
     List<Map<String, String>> accountSubtypesArray = [];
 
     if (products != null) {
-      productsArray = products.map((p) => p.toString().split('.').last).toList();
+      productsArray =
+          products.map((p) => p.toString().split('.').last).toList();
     }
 
     if (accountSubtypes != null) {
