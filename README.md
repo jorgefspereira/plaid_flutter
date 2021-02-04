@@ -1,10 +1,10 @@
 # Plaid Link for Flutter
 
 [![pub](https://img.shields.io/pub/v/plaid_flutter.svg)](https://pub.dev/packages/plaid_flutter)
-[![points](https://badges.bar/plaid_flutter/pub%20points)]
-[![popularity](https://badges.bar/plaid_flutter/popularity)]
-[![likes](https://badges.bar/plaid_flutter/likes)]
-[![donate](https://img.shields.io/badge/Buy%20me%20a%20beer-orange.svg)](https://www.buymeacoffee.com/jpereira)
+[![points(https://badges.bar/plaid_flutter/pub%20points)](https://pub.dev/packages/plaid_flutter)
+[![popularity(https://badges.bar/plaid_flutter/popularity)](https://pub.dev/packages/plaid_flutter)
+[![likes(https://badges.bar/plaid_flutter/likes)](https://pub.dev/packages/plaid_flutter)
+[![donate(https://img.shields.io/badge/Buy%20me%20a%20beer-orange.svg)](https://www.buymeacoffee.com/jpereira)
 
 A Flutter plugin for [Plaid Link](https://github.com/plaid/link).
 
@@ -60,7 +60,7 @@ Registering a redirect URI is required when working with OAuth, which is used fo
 - Enter your redirect URI, for example www.plaid.com/redirect
 - Click Save Changes. You may be prompted to re-enter your password.
 
-*NOTE: More info at [https://plaid.com/docs/link/ios](https://plaid.com/docs/link/ios).*
+*More info at [https://plaid.com/docs/link/ios](https://plaid.com/docs/link/ios).*
 
 ## Android
 
@@ -79,7 +79,7 @@ Go to the project level `android/app/build.gradle` and make sure you are using a
 ![](https://raw.githubusercontent.com/jorgefspereira/plaid_flutter/master/doc/images/register-app-id.png)
 
 
-*NOTE: More info at [https://plaid.com/docs/link/android](https://plaid.com/docs/link/android).*
+*More info at [https://plaid.com/docs/link/android](https://plaid.com/docs/link/android).*
 
 ## Web
 
@@ -92,6 +92,8 @@ Include the Plaid Link initialize script on your main HTML page.
 <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
 
 ```
+
+*More info at [https://plaid.com/docs/link/web](https://plaid.com/docs/link/web).*
 
 ## TODOs
 - Migrate to null safety (https://medium.com/flutter/announcing-dart-null-safety-beta-4491da22077a)
