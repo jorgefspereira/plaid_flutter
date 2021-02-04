@@ -108,7 +108,7 @@ class PlaidLink {
   }
 
   // Closes Plaid Link View
-  Future<void> close() async  {
+  Future<void> close() async {
     await _channel.invokeMethod('close');
   }
 }
