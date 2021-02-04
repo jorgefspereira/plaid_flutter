@@ -103,12 +103,12 @@ class PlaidLink {
   }
 
   /// Initializes the Plaid Link flow on the device.
-  void open() {
-    _channel.invokeMethod('open', configuration.toJson());
+  Future<void> open() async {
+    await _channel.invokeMethod('open', configuration.toJson());
   }
 
   // Closes Plaid Link View
-  void close() {
-    _channel.invokeMethod('close');
+  Future<void> close() async  {
+    await _channel.invokeMethod('close');
   }
 }
