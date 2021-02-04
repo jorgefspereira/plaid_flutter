@@ -1,5 +1,5 @@
 name: plaid_flutter
-description: Plaid Link for Flutter. Integrates the native iOS and Android SDKs.
+description: Plaid Link for Flutter. Integrates the native iOS, Android and Web SDKs.
 version: 2.0.0
 homepage: https://github.com/jorgefspereira/plaid_flutter
 
@@ -10,11 +10,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  js: ^0.6.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+ 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
 
@@ -32,7 +35,10 @@ flutter:
         pluginClass: PlaidFlutterPlugin
       ios:
         pluginClass: PlaidFlutterPlugin
-        
+      web:
+        pluginClass: PlaidFlutterPlugin
+        fileName: plaid_flutter_web.dart
+
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg

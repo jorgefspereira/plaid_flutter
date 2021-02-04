@@ -57,7 +57,11 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _onExitCallback(LinkError error, LinkExitMetadata metadata) {
-    print("onExit: ${error.description()}, metadata: ${metadata.description()}");
+    print("onExit metadata: ${metadata.description()}");
+
+    if (error != null) {
+      print("onExit error: ${error.description()}");
+    }
   }
 
   @override
@@ -74,6 +78,7 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () => _plaidPublicKey.open(),
                 child: Text("Open Plaid Link (Public Key)"),
               ),
+              SizedBox(height: 15),
               RaisedButton(
                 onPressed: () => _plaidLinkToken.open(),
                 child: Text("Open Plaid Link (Link Token)"),

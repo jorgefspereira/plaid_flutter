@@ -1,6 +1,9 @@
 # Plaid Link for Flutter
 
 [![pub](https://img.shields.io/pub/v/plaid_flutter.svg)](https://pub.dev/packages/plaid_flutter)
+[![points](https://badges.bar/plaid_flutter/pub%20points)]
+[![popularity](https://badges.bar/plaid_flutter/popularity)]
+[![likes](https://badges.bar/plaid_flutter/likes)]
 [![donate](https://img.shields.io/badge/Buy%20me%20a%20beer-orange.svg)](https://www.buymeacoffee.com/jpereira)
 
 A Flutter plugin for [Plaid Link](https://github.com/plaid/link).
@@ -9,6 +12,7 @@ This plugin integrates the native SDKs:
 
 - [Plaid Link iOS SDK](https://github.com/plaid/plaid-link-ios)
 - [Plaid Link Android SDK](https://github.com/plaid/plaid-link-android)
+- [Plaid Link JavaScript SDK](https://plaid.com/docs/link/web)
 
 Feel free to leave any feedback [here](https://github.com/jorgefspereira/plaid_flutter/issues).
 
@@ -48,7 +52,7 @@ Add `plaid_flutter` as a [dependency in your pubspec.yaml file](https://flutter.
 - iOS version >= 11.0
 - Xcode 11.5 or greater
 
-### Optional
+### (Optional) - Register your redirect URI
 
 Registering a redirect URI is required when working with OAuth, which is used for European integrations as well as integrations with some US financial institutions. To register your redirect app URI:
 - Log into your Plaid Dashboard at the API page
@@ -60,18 +64,34 @@ Registering a redirect URI is required when working with OAuth, which is used fo
 
 ## Android
 
-### 1. Register Package Name
-
-Log into your Plaid Dashboard at the API page and add a new Allowed Android package name *(for example com.plaid.example)*
-
-![](https://raw.githubusercontent.com/jorgefspereira/plaid_flutter/master/doc/images/register-app-id.png)
-
-### 2. Gradle Configuration
+### Requirements
+#### Gradle Configuration
 
 Go to the project level `android/app/build.gradle` and make sure you are using a minSdk >= 21
 
+#### Register your App ID
+
+- Log into your Plaid Dashboard at the API page
+- Next to Allowed Android Package Names click Configure then Add New Android Package Name
+- Enter your package name, for example com.plaid.example
+- Click Save Changes, you may be prompted to re-enter your password
+
+![](https://raw.githubusercontent.com/jorgefspereira/plaid_flutter/master/doc/images/register-app-id.png)
+
+
 *NOTE: More info at [https://plaid.com/docs/link/android](https://plaid.com/docs/link/android).*
 
+## Web
+
+### Requirements
+
+Include the Plaid Link initialize script on your main HTML page.
+
+``` html
+
+<script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+
+```
+
 ## TODOs
-- [ ] Web support
-- [ ] Migrate to null safety (https://medium.com/flutter/announcing-dart-null-safety-beta-4491da22077a)
+- Migrate to null safety (https://medium.com/flutter/announcing-dart-null-safety-beta-4491da22077a)

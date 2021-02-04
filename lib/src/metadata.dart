@@ -22,12 +22,15 @@ class LinkError {
   });
 
   factory LinkError.fromJson(dynamic json) {
-    return LinkError(
-      code: json["errorCode"],
-      type: json["errorType"],
-      message: json["errorMessage"],
-      displayMessage: json["errorDisplayMessage"],
-    );
+    if (json != null) {
+      return LinkError(
+        code: json["errorCode"],
+        type: json["errorType"],
+        message: json["errorMessage"],
+        displayMessage: json["errorDisplayMessage"],
+      );
+    }
+    return null;
   }
 
   String description() {
