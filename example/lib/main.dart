@@ -28,7 +28,7 @@ class _MyAppState extends State<MyApp> {
       userEmailAddress: "jappleseed@youapp.com",
       userPhoneNumber: "+1 (512) 555-1234",
     );
-    
+
     LinkConfiguration linkTokenConfiguration = LinkConfiguration(
       token: "GENERATED_LINK_TOKEN",
     );
