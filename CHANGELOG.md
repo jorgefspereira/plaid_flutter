@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Updated iOS SDK to version 2.0.10
+
 ## 2.0.0
 
 * iOS: migration 1.x SDK to the 2.0.9 SDK.
