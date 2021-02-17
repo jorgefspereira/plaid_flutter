@@ -21,7 +21,7 @@ class PlaidFlutterPlugin {
     final MethodChannel channel = MethodChannel(
         'plugins.flutter.io/plaid_flutter',
         const StandardMethodCodec(),
-        registrar);
+        registrar.messenger);
     PlaidFlutterPlugin(channel);
   }
 
