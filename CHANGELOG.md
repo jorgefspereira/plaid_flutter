@@ -1,3 +1,8 @@
+## 2.0.2
+
+* Updated iOS SDK to version 2.0.11
+* Updated Android SDK to version 3.2.4
+
 ## 2.0.1
 
 * Updated iOS SDK to version 2.0.10
