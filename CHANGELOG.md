@@ -1,3 +1,7 @@
+## 2.0.2+1
+
+* Added analysis_options.yaml to exclude generated files
+
 ## 2.0.2
 
 * Updated iOS SDK to version 2.0.11
