@@ -70,16 +70,16 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         body: Container(
           width: double.infinity,
-          color: Colors.lightBlue,
+          color: Colors.grey[200],
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => _plaidPublicKey.open(),
                 child: Text("Open Plaid Link (Public Key)"),
               ),
               SizedBox(height: 15),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => _plaidLinkToken.open(),
                 child: Text("Open Plaid Link (Link Token)"),
               ),
