@@ -488,7 +488,7 @@ static NSString* const kEventKey = @"event";
 
 + (NSDictionary *)dictionaryFromSuccessMetadata:(PLKSuccessMetadata *)metadata {
     return @{@"linkSessionId": metadata.linkSessionID ?: @"",
-             @"institution": [PlaidFlutterPlugin dictionaryFromInstitution:metadata.insitution] ?: @"",
+             @"institution": [PlaidFlutterPlugin dictionaryFromInstitution:metadata.institution] ?: @"",
              @"accounts": [PlaidFlutterPlugin accountsDictionariesFromAccounts:metadata.accounts] ?: @[],
              @"metadataJson": metadata.metadataJSON ?: @"",
     };
