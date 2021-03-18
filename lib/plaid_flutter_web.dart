@@ -57,10 +57,10 @@ class PlaidFlutterPlugin {
     final String userPhoneNumber = arguments['userPhoneNumber'];
     final String oauthNonce = arguments['oauthNonce'];
     final String oauthRedirectUri = arguments['oauthRedirectUri'];
-    List<String> countryCodes = List<String>.from(arguments['countryCodes']) == null
+    List<String> countryCodes = arguments['countryCodes'] == null
         ? ['']
         : List<String>.from(arguments['countryCodes']);
-    List<String> products = List<String>.from(arguments['products']) == null
+    List<String> products = arguments['products'] == null
         ? ['']
         : List<String>.from(arguments['products']);
 
