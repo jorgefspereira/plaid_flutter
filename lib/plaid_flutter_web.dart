@@ -1,4 +1,5 @@
 import 'dart:async';
+
 // In order to *not* need this ignore, consider extracting the "web" version
 // of your plugin as a separate package, instead of inlining it in the same
 // package as the core of your plugin.
@@ -7,6 +8,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:js/js.dart';
+
 import 'src/plaid_js_map.dart';
 
 /// A web implementation of the PlaidFlutter plugin.
@@ -19,9 +21,7 @@ class PlaidFlutterPlugin {
 
   static void registerWith(Registrar registrar) {
     final MethodChannel channel = MethodChannel(
-        'plugins.flutter.io/plaid_flutter',
-        const StandardMethodCodec(),
-        registrar.messenger);
+        'plugins.flutter.io/plaid_flutter', const StandardMethodCodec(), registrar.messenger);
     PlaidFlutterPlugin(channel);
   }
 
@@ -39,8 +39,7 @@ class PlaidFlutterPlugin {
       default:
         throw PlatformException(
           code: 'Unimplemented',
-          details:
-              'plaid_flutter for web doesn\'t implement \'${call.method}\'',
+          details: 'plaid_flutter for web doesn\'t implement \'${call.method}\'',
         );
     }
   }
@@ -51,15 +50,19 @@ class PlaidFlutterPlugin {
     final String clientName = arguments['clientName'];
     final String environment = arguments['environment'];
     final String linkCustomizationName = arguments['linkCustomizationName'];
-    final String language = arguments['language'];
+    final String language = arguments['language'] == null ? 'en' : arguments['language'];
     final String webhook = arguments['webhook'];
     final String userLegalName = arguments['userLegalName'];
     final String userEmailAddress = arguments['userEmailAddress'];
     final String userPhoneNumber = arguments['userPhoneNumber'];
     final String oauthNonce = arguments['oauthNonce'];
     final String oauthRedirectUri = arguments['oauthRedirectUri'];
-    List<String> countryCodes = List<String>.from(arguments['countryCodes']);
-    List<String> products = List<String>.from(arguments['products']);
+    List<String> countryCodes = arguments['countryCodes'] == null
+        ? ['']
+        : List<String>.from(arguments['countryCodes']);
+    List<String> products = arguments['products'] == null
+        ? ['']
+        : List<String>.from(arguments['products']);
 
     Configuration options = Configuration(
       clientName: clientName,
@@ -91,9 +94,7 @@ class PlaidFlutterPlugin {
         _channel.invokeMethod('onSuccess', arguments);
       }),
       onExit: allowInterop((error, metadata) {
-        Map<String, dynamic> arguments = {
-          'metadata': mapFromExitMetadata(jsToMap(metadata))
-        };
+        Map<String, dynamic> arguments = {'metadata': mapFromExitMetadata(jsToMap(metadata))};
 
         if (error != null) {
           arguments["error"] = mapFromError(jsToMap(error));
