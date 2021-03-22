@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
       userPhoneNumber: "+1 (512) 555-1234",
     );
 
-    LinkConfiguration linkTokenConfiguration = LinkConfiguration(
+    LinkTokenConfiguration linkTokenConfiguration = LinkTokenConfiguration(
       token: "GENERATED_LINK_TOKEN",
     );
 

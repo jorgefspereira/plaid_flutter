@@ -20,8 +20,7 @@ class PlaidFlutterPlugin {
   }
 
   static void registerWith(Registrar registrar) {
-    final MethodChannel channel = MethodChannel(
-        'plugins.flutter.io/plaid_flutter', const StandardMethodCodec(), registrar.messenger);
+    final channel = MethodChannel('plugins.flutter.io/plaid_flutter');
     PlaidFlutterPlugin(channel);
   }
 
@@ -32,10 +31,8 @@ class PlaidFlutterPlugin {
     switch (call.method) {
       case 'open':
         return open(call.arguments);
-        break;
       case 'close':
         return close();
-        break;
       default:
         throw PlatformException(
           code: 'Unimplemented',
@@ -45,18 +42,18 @@ class PlaidFlutterPlugin {
   }
 
   void open(Map<dynamic, dynamic> arguments) {
-    final String token = arguments['token'];
-    final String publicKey = arguments['publicKey'];
-    final String clientName = arguments['clientName'];
-    final String environment = arguments['environment'];
-    final String linkCustomizationName = arguments['linkCustomizationName'];
-    final String language = arguments['language'] == null ? 'en' : arguments['language'];
-    final String webhook = arguments['webhook'];
-    final String userLegalName = arguments['userLegalName'];
-    final String userEmailAddress = arguments['userEmailAddress'];
-    final String userPhoneNumber = arguments['userPhoneNumber'];
-    final String oauthNonce = arguments['oauthNonce'];
-    final String oauthRedirectUri = arguments['oauthRedirectUri'];
+    final String? token = arguments['token'];
+    final String? publicKey = arguments['publicKey'];
+    final String? clientName = arguments['clientName'];
+    final String? environment = arguments['environment'];
+    final String? linkCustomizationName = arguments['linkCustomizationName'];
+    final String? language = arguments['language'] == null ? 'en' : arguments['language'];
+    final String? webhook = arguments['webhook'];
+    final String? userLegalName = arguments['userLegalName'];
+    final String? userEmailAddress = arguments['userEmailAddress'];
+    final String? userPhoneNumber = arguments['userPhoneNumber'];
+    final String? oauthNonce = arguments['oauthNonce'];
+    final String? oauthRedirectUri = arguments['oauthRedirectUri'];
     List<String> countryCodes = arguments['countryCodes'] == null
         ? ['']
         : List<String>.from(arguments['countryCodes']);
