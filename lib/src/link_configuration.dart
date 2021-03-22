@@ -9,7 +9,7 @@ abstract class LinkConfiguration {
 /// server and passed to your app's client to initialize Link. The Link configuration parameters that were
 /// previously set within Link itself are now set via parameters passed to /link/token/create and conveyed
 /// to Link via the link_token. (https://plaid.com/docs/link/link-token-migration-guide)
-class LinkTokenConfiguration implements LinkConfiguration{
+class LinkTokenConfiguration implements LinkConfiguration {
   final String token;
 
   LinkTokenConfiguration({required this.token});
@@ -49,11 +49,11 @@ class LegacyLinkConfiguration implements LinkConfiguration {
   final String publicKey;
 
   /// Token can take 3 different formats:
-  /// * [public_token] to launch Link in update mode for a particular Item. 
+  /// * [public_token] to launch Link in update mode for a particular Item.
   /// * [payment_token] to Link initialization to enter the payment initiation flow
   /// * [deposit_switch_token] to enable the deposit switch feature.
   final String? token;
-  
+
   /// Displayed to the user once they have successfully linked their account
   final String? clientName;
 
@@ -95,9 +95,11 @@ class LegacyLinkConfiguration implements LinkConfiguration {
 
   /// Returns a representation of this object as a JSON object.
   Map<String, dynamic> toJson() {
-    List<String> productsArray = products?.map((p) => p.toString().split('.').last).toList() ?? [];
-    List<Map<String, String>> accountSubtypesArray = accountSubtypes?.map((a) => a.toJson()).toList() ?? [];
-    
+    List<String> productsArray =
+        products?.map((p) => p.toString().split('.').last).toList() ?? [];
+    List<Map<String, String>> accountSubtypesArray =
+        accountSubtypes?.map((a) => a.toJson()).toList() ?? [];
+
     return <String, dynamic>{
       'token': token,
       'publicKey': publicKey,
