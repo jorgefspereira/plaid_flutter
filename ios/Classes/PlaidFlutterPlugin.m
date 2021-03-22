@@ -495,27 +495,27 @@ static NSString* const kEventKey = @"event";
 }
 
 + (NSDictionary *)dictionaryFromEventMetadata:(PLKEventMetadata *)metadata {
-    return @{@"errorType": [PlaidFlutterPlugin errorTypeStringFromError:metadata.error],
-             @"errorCode": [PlaidFlutterPlugin errorCodeStringFromError:metadata.error],
-             @"errorMessage": [PlaidFlutterPlugin errorMessageFromError:metadata.error],
-             @"exitStatus": [PlaidFlutterPlugin stringForExitStatus:metadata.exitStatus],
-             @"institutionId": metadata.institutionID,
-             @"institutionName": metadata.institutionName,
-             @"institutionSearchQuery": metadata.institutionSearchQuery,
-             @"mfaType": [PlaidFlutterPlugin stringForMfaType:metadata.mfaType],
-             @"requestId": metadata.requestID,
-             @"viewName": [PlaidFlutterPlugin stringForViewName:metadata.viewName],
+    return @{@"errorType": [PlaidFlutterPlugin errorTypeStringFromError:metadata.error] ?: @"",
+             @"errorCode": [PlaidFlutterPlugin errorCodeStringFromError:metadata.error] ?: @"",
+             @"errorMessage": [PlaidFlutterPlugin errorMessageFromError:metadata.error] ?: @"",
+             @"exitStatus": [PlaidFlutterPlugin stringForExitStatus:metadata.exitStatus] ?: @"",
+             @"institutionId": metadata.institutionID ?: @"",
+             @"institutionName": metadata.institutionName ?: @"",
+             @"institutionSearchQuery": metadata.institutionSearchQuery ?: @"",
              @"linkSessionId": metadata.linkSessionID ?: @"",
+             @"mfaType": [PlaidFlutterPlugin stringForMfaType:metadata.mfaType] ?: @"",
+             @"requestId": metadata.requestID ?: @"",
              @"timestamp": [PlaidFlutterPlugin iso8601StringFromDate:metadata.timestamp] ?: @"",
+             @"viewName": [PlaidFlutterPlugin stringForViewName:metadata.viewName] ?: @"",
              @"metadataJson": metadata.metadataJSON ?: @"",
     };
 }
 
 + (NSDictionary *)dictionaryFromExitMetadata:(PLKExitMetadata *)metadata {
-    return @{@"status": [PlaidFlutterPlugin stringForExitStatus:metadata.status],
+    return @{@"status": [PlaidFlutterPlugin stringForExitStatus:metadata.status] ?: @"",
              @"institution": [PlaidFlutterPlugin dictionaryFromInstitution:metadata.institution],
-             @"requestId": metadata.requestID,
-             @"linkSessionId": metadata.linkSessionID,
+             @"requestId": metadata.requestID ?: @"",
+             @"linkSessionId": metadata.linkSessionID ?: @"",
              @"metadataJson": metadata.metadataJSON ?: @"",
     };
 }
@@ -525,7 +525,7 @@ static NSString* const kEventKey = @"event";
         @"errorType": [PlaidFlutterPlugin errorTypeStringFromError:error] ?: @"",
         @"errorCode": [PlaidFlutterPlugin errorCodeStringFromError:error] ?: @"",
         @"errorMessage": [PlaidFlutterPlugin errorMessageFromError:error] ?: @"",
-        @"errorDisplayMessage": [PlaidFlutterPlugin errorDisplayMessageFromError:error],
+        @"errorDisplayMessage": [PlaidFlutterPlugin errorDisplayMessageFromError:error] ?: @"",
     };
 }
 
@@ -540,10 +540,10 @@ static NSString* const kEventKey = @"event";
     return @{
         @"id": account.ID ?: @"",
         @"name": account.name ?: @"",
-        @"mask": account.mask,
+        @"mask": account.mask ?: @"",
         @"subtype": [PlaidFlutterPlugin subtypeNameForAccountSubtype:account.subtype] ?: @"",
         @"type": [PlaidFlutterPlugin typeNameForAccountSubtype:account.subtype] ?: @"",
-        @"verificationStatus": [PlaidFlutterPlugin stringForVerificationStatus:account.verificationStatus],
+        @"verificationStatus": [PlaidFlutterPlugin stringForVerificationStatus:account.verificationStatus] ?: @"",
     };
 }
 
@@ -638,110 +638,107 @@ static NSString* const kEventKey = @"event";
             return @"selections";
     }
 
-    return nil;
+    return @"unknown";
 }
 
 + (NSString *)stringForExitStatus:(PLKExitStatus *)exitStatus {
-    if (exitStatus) {
-        
-        if (exitStatus.unknownStringValue) {
-            return exitStatus.unknownStringValue;
-        }
-
-        switch (exitStatus.value) {
-            case PLKExitStatusValueNone:
-                return @"";
-            case PLKExitStatusValueRequiresQuestions:
-                return @"requires_questions";
-            case PLKExitStatusValueRequiresSelections:
-                return @"requires_selections";
-            case PLKExitStatusValueRequiresCode:
-                return @"requires_code";
-            case PLKExitStatusValueChooseDevice:
-                return @"choose_device";
-            case PLKExitStatusValueRequiresCredentials:
-                return @"requires_credentials";
-            case PLKExitStatusValueInstitutionNotFound:
-                return @"institution_not_found";
-        }
-        
-        return @"unknown";
+    if (!exitStatus) {
+        return @"";
     }
-    return nil;
+
+    if (exitStatus.unknownStringValue) {
+        return exitStatus.unknownStringValue;
+    }
+
+    switch (exitStatus.value) {
+        case PLKExitStatusValueNone:
+            return @"";
+        case PLKExitStatusValueRequiresQuestions:
+            return @"requires_questions";
+        case PLKExitStatusValueRequiresSelections:
+            return @"requires_selections";
+        case PLKExitStatusValueRequiresCode:
+            return @"requires_code";
+        case PLKExitStatusValueChooseDevice:
+            return @"choose_device";
+        case PLKExitStatusValueRequiresCredentials:
+            return @"requires_credentials";
+        case PLKExitStatusValueInstitutionNotFound:
+            return @"institution_not_found";
+    }
+    return @"unknown";
 }
 
 + (NSString *)stringForViewName:(PLKViewName *)viewName {
-    if (viewName) {
-
-        if (viewName.unknownStringValue) {
-            return viewName.unknownStringValue;
-        }
-
-        switch (viewName.value) {
-            case PLKViewNameValueNone:
-                return @"";
-            case PLKViewNameValueConnected:
-                return @"CONNECTED";
-            case PLKViewNameValueConsent:
-                return @"CONSENT";
-            case PLKViewNameValueCredential:
-                return @"CREDENTIAL";
-            case PLKViewNameValueError:
-                return @"ERROR";
-            case PLKViewNameValueExit:
-                return @"EXIT";
-            case PLKViewNameValueLoading:
-                return @"LOADING";
-            case PLKViewNameValueMFA:
-                return @"MFA";
-            case PLKViewNameValueNumbers:
-                return @"NUMBERS";
-            case PLKViewNameValueRecaptcha:
-                return @"RECAPTCHA";
-            case PLKViewNameValueSelectAccount:
-                return @"SELECT_ACCOUNT";
-            case PLKViewNameValueSelectInstitution:
-                return @"SELECT_INSTITUTION";
-        }
-
-        return @"unknown";
+    if (!viewName) {
+        return @"";
     }
-    
-    return nil;
+
+    if (viewName.unknownStringValue) {
+        return viewName.unknownStringValue;
+    }
+
+    switch (viewName.value) {
+        case PLKViewNameValueNone:
+            return @"";
+        case PLKViewNameValueConnected:
+            return @"CONNECTED";
+        case PLKViewNameValueConsent:
+            return @"CONSENT";
+        case PLKViewNameValueCredential:
+            return @"CREDENTIAL";
+        case PLKViewNameValueError:
+            return @"ERROR";
+        case PLKViewNameValueExit:
+            return @"EXIT";
+        case PLKViewNameValueLoading:
+            return @"LOADING";
+        case PLKViewNameValueMFA:
+            return @"MFA";
+        case PLKViewNameValueNumbers:
+            return @"NUMBERS";
+        case PLKViewNameValueRecaptcha:
+            return @"RECAPTCHA";
+        case PLKViewNameValueSelectAccount:
+            return @"SELECT_ACCOUNT";
+        case PLKViewNameValueSelectInstitution:
+            return @"SELECT_INSTITUTION";
+    }
+
+    return @"unknown";
 }
 
 + (NSString *)stringForVerificationStatus:(PLKVerificationStatus *)verificationStatus {
-    if (verificationStatus) {
-        
-        if (verificationStatus.unknownStringValue) {
-            return verificationStatus.unknownStringValue;
-        }
-
-        switch (verificationStatus.value) {
-            case PLKVerificationStatusValueNone:
-                return @"";
-            case PLKVerificationStatusValuePendingAutomaticVerification:
-                return @"pending_automatic_verification";
-            case PLKVerificationStatusValuePendingManualVerification:
-                return @"pending_manual_verification";
-            case PLKVerificationStatusValueManuallyVerified:
-                return @"manually_verified";
-        }
-
-        return @"unknown";
+    if (!verificationStatus) {
+        return @"";
     }
-    
-    return nil;
+
+    if (verificationStatus.unknownStringValue) {
+        return verificationStatus.unknownStringValue;
+    }
+
+    switch (verificationStatus.value) {
+        case PLKVerificationStatusValueNone:
+            return @"";
+        case PLKVerificationStatusValuePendingAutomaticVerification:
+            return @"pending_automatic_verification";
+        case PLKVerificationStatusValuePendingManualVerification:
+            return @"pending_manual_verification";
+        case PLKVerificationStatusValueManuallyVerified:
+            return @"manually_verified";
+    }
+
+    return @"unknown";
 }
 
 + (NSString *)errorDisplayMessageFromError:(PLKExitError *)error {
-    return error.userInfo[kPLKExitErrorDisplayMessageKey];
+    return error.userInfo[kPLKExitErrorDisplayMessageKey] ?: @"";
 }
 
 + (NSString *)errorTypeStringFromError:(PLKExitError *)error {
     NSString *errorDomain = error.domain;
     if (!error || !errorDomain) {
-        return nil;
+        return @"";
     }
     
     NSString *normalizedErrorDomain = errorDomain;
@@ -764,13 +761,13 @@ static NSString* const kEventKey = @"event";
    NSString *errorDomain = error.domain;
 
     if (!error || !errorDomain) {
-        return nil;
+        return @"";
     }
     return error.userInfo[kPLKExitErrorCodeKey];
 }
 
 + (NSString *)errorMessageFromError:(PLKExitError *)error {
-    return error.userInfo[kPLKExitErrorMessageKey];
+    return error.userInfo[kPLKExitErrorMessageKey] ?: @"";
 }
 
 + (NSString *)iso8601StringFromDate:(NSDate *)date {
