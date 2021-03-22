@@ -21,7 +21,9 @@ class PlaidFlutterPlugin {
 
   static void registerWith(Registrar registrar) {
     final MethodChannel channel = MethodChannel(
-        'plugins.flutter.io/plaid_flutter', const StandardMethodCodec(), registrar.messenger);
+        'plugins.flutter.io/plaid_flutter',
+        const StandardMethodCodec(),
+        registrar);
     PlaidFlutterPlugin(channel);
   }
 
@@ -32,31 +34,31 @@ class PlaidFlutterPlugin {
     switch (call.method) {
       case 'open':
         return open(call.arguments);
-        break;
       case 'close':
         return close();
-        break;
       default:
         throw PlatformException(
           code: 'Unimplemented',
-          details: 'plaid_flutter for web doesn\'t implement \'${call.method}\'',
+          details:
+              'plaid_flutter for web doesn\'t implement \'${call.method}\'',
         );
     }
   }
 
   void open(Map<dynamic, dynamic> arguments) {
-    final String token = arguments['token'];
-    final String publicKey = arguments['publicKey'];
-    final String clientName = arguments['clientName'];
-    final String environment = arguments['environment'];
-    final String linkCustomizationName = arguments['linkCustomizationName'];
-    final String language = arguments['language'] == null ? 'en' : arguments['language'];
-    final String webhook = arguments['webhook'];
-    final String userLegalName = arguments['userLegalName'];
-    final String userEmailAddress = arguments['userEmailAddress'];
-    final String userPhoneNumber = arguments['userPhoneNumber'];
-    final String oauthNonce = arguments['oauthNonce'];
-    final String oauthRedirectUri = arguments['oauthRedirectUri'];
+    final String? token = arguments['token'];
+    final String? publicKey = arguments['publicKey'];
+    final String? clientName = arguments['clientName'];
+    final String? environment = arguments['environment'];
+    final String? linkCustomizationName = arguments['linkCustomizationName'];
+    final String? language =
+        arguments['language'] == null ? 'en' : arguments['language'];
+    final String? webhook = arguments['webhook'];
+    final String? userLegalName = arguments['userLegalName'];
+    final String? userEmailAddress = arguments['userEmailAddress'];
+    final String? userPhoneNumber = arguments['userPhoneNumber'];
+    final String? oauthNonce = arguments['oauthNonce'];
+    final String? oauthRedirectUri = arguments['oauthRedirectUri'];
     List<String> countryCodes = arguments['countryCodes'] == null
         ? ['']
         : List<String>.from(arguments['countryCodes']);
@@ -94,7 +96,9 @@ class PlaidFlutterPlugin {
         _channel.invokeMethod('onSuccess', arguments);
       }),
       onExit: allowInterop((error, metadata) {
-        Map<String, dynamic> arguments = {'metadata': mapFromExitMetadata(jsToMap(metadata))};
+        Map<String, dynamic> arguments = {
+          'metadata': mapFromExitMetadata(jsToMap(metadata))
+        };
 
         if (error != null) {
           arguments["error"] = mapFromError(jsToMap(error));

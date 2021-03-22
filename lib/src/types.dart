@@ -53,12 +53,12 @@ class LinkOAuthConfiguration {
   /// An oauthRedirectUri is required to support OAuth authentication flows when launching
   /// Link on a mobile device and using one or more European country codes. Note that
   /// any redirect URI must also be added to the Allowed redirect URIs list in the developer dashboard.
-  final String redirectUri;
+  final String? redirectUri;
 
   /// An oauthNonce is required to support OAuth authentication flows when launching or
   /// re-launching Link on a mobile device and using one or more European country codes.
   /// The nonce must be at least 16 characters long.
-  final String nonce;
+  final String? nonce;
 
   LinkOAuthConfiguration({
     this.redirectUri,
@@ -74,7 +74,7 @@ class LinkAccountSubtype {
   /// The account subtype.
   final String subtype;
 
-  const LinkAccountSubtype({this.type, this.subtype});
+  const LinkAccountSubtype({required this.type, required this.subtype});
 
   /// Returns a representation of this object as a JSON object.
   Map<String, String> toJson() {

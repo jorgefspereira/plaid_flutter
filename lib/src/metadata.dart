@@ -15,22 +15,19 @@ class LinkError {
   final String displayMessage;
 
   LinkError({
-    this.code,
-    this.type,
-    this.message,
-    this.displayMessage,
+    required this.code,
+    required this.type,
+    required this.message,
+    required this.displayMessage,
   });
 
   factory LinkError.fromJson(dynamic json) {
-    if (json != null) {
-      return LinkError(
-        code: json["errorCode"],
-        type: json["errorType"],
-        message: json["errorMessage"],
-        displayMessage: json["errorDisplayMessage"],
-      );
-    }
-    return null;
+    return LinkError(
+      code: json["errorCode"],
+      type: json["errorType"],
+      message: json["errorMessage"],
+      displayMessage: json["errorDisplayMessage"],
+    );
   }
 
   String description() {
@@ -47,8 +44,8 @@ class LinkInstitution {
   final String name;
 
   LinkInstitution({
-    this.id,
-    this.name,
+    required this.id,
+    required this.name,
   });
 
   factory LinkInstitution.fromJson(dynamic json) {
@@ -90,12 +87,12 @@ class LinkAccount {
   final String verificationStatus;
 
   LinkAccount({
-    this.id,
-    this.mask,
-    this.name,
-    this.type,
-    this.subtype,
-    this.verificationStatus,
+    required this.id,
+    required this.mask,
+    required this.name,
+    required this.type,
+    required this.subtype,
+    required this.verificationStatus,
   });
 
   factory LinkAccount.fromJson(dynamic json) {
@@ -126,9 +123,9 @@ class LinkSuccessMetadata {
   final List<LinkAccount> accounts;
 
   LinkSuccessMetadata({
-    this.linkSessionId,
-    this.institution,
-    this.accounts,
+    required this.linkSessionId,
+    required this.institution,
+    required this.accounts,
   });
 
   factory LinkSuccessMetadata.fromJson(dynamic json) {
@@ -179,10 +176,10 @@ class LinkExitMetadata {
   final LinkInstitution institution;
 
   LinkExitMetadata({
-    this.status,
-    this.requestId,
-    this.linkSessionId,
-    this.institution,
+    required this.status,
+    required this.requestId,
+    required this.linkSessionId,
+    required this.institution,
   });
 
   factory LinkExitMetadata.fromJson(dynamic json) {
@@ -238,18 +235,18 @@ class LinkEventMetadata {
   final String viewName;
 
   LinkEventMetadata({
-    this.viewName,
-    this.exitStatus,
-    this.mfaType,
-    this.requestId,
-    this.timestamp,
-    this.linkSessionId,
-    this.institutionName,
-    this.institutionId,
-    this.institutionSearchQuery,
-    this.errorType,
-    this.errorCode,
-    this.errorMesssage,
+    required this.viewName,
+    required this.exitStatus,
+    required this.mfaType,
+    required this.requestId,
+    required this.timestamp,
+    required this.linkSessionId,
+    required this.institutionName,
+    required this.institutionId,
+    required this.institutionSearchQuery,
+    required this.errorType,
+    required this.errorCode,
+    required this.errorMesssage,
   });
 
   factory LinkEventMetadata.fromJson(dynamic json) {

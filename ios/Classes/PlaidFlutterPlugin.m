@@ -513,7 +513,7 @@ static NSString* const kEventKey = @"event";
 
 + (NSDictionary *)dictionaryFromExitMetadata:(PLKExitMetadata *)metadata {
     return @{@"status": [PlaidFlutterPlugin stringForExitStatus:metadata.status] ?: @"",
-             @"institution": [PlaidFlutterPlugin dictionaryFromInstitution:metadata.institution] ?: @"",
+             @"institution": [PlaidFlutterPlugin dictionaryFromInstitution:metadata.institution],
              @"requestId": metadata.requestID ?: @"",
              @"linkSessionId": metadata.linkSessionID ?: @"",
              @"metadataJson": metadata.metadataJSON ?: @"",
