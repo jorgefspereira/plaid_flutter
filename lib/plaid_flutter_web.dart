@@ -20,7 +20,8 @@ class PlaidFlutterPlugin {
   }
 
   static void registerWith(Registrar registrar) {
-    final channel = MethodChannel('plugins.flutter.io/plaid_flutter');
+     final MethodChannel channel = MethodChannel(
+        'plugins.flutter.io/plaid_flutter', const StandardMethodCodec(), registrar);
     PlaidFlutterPlugin(channel);
   }
 
