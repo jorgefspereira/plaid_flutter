@@ -1,3 +1,10 @@
+## 2.1.0
+
+* Updated iOS SDK to version 2.1.0
+* Fix: elements not iterable on web. Thank you @cwesterhold
+* Migration to null safety. New minimum dart sdk version: 2.12
+* BREAKING CHANGE: Renamed LinkConfiguration to LinkTokenConfiguration
+
 ## 2.0.2+1
 
 * Added analysis_options.yaml to exclude generated files
