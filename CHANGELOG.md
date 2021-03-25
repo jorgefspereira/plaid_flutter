@@ -1,3 +1,7 @@
+## 2.1.0+1
+
+* Small edit to README file
+
 ## 2.1.0
 
 * Updated iOS SDK to version 2.1.0

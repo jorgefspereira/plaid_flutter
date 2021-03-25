@@ -95,5 +95,3 @@ Include the Plaid Link initialize script on your main HTML page.
 
 *More info at [https://plaid.com/docs/link/web](https://plaid.com/docs/link/web).*
 
-## TODOs
-- Migrate to null safety (https://medium.com/flutter/announcing-dart-null-safety-beta-4491da22077a)
