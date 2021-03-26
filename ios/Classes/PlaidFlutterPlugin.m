@@ -46,15 +46,36 @@ static NSString* const kEventKey = @"event";
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/plaid_flutter"
                                                                 binaryMessenger:[registrar messenger]];
-    UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
-    PlaidFlutterPlugin *instance = [[PlaidFlutterPlugin alloc] initWithRootViewController:rootViewController channel:channel];
+    PlaidFlutterPlugin *instance = [[PlaidFlutterPlugin alloc] initWithChannel:channel];
     [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)initWithRootViewController:(UIViewController *)rootViewController channel:(FlutterMethodChannel*)channel{
++ (UIViewController *) _findRootViewController {
+    NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
+
+    NSArray<UIWindow*>* activeWindows = [windows filteredArrayUsingPredicate: [NSPredicate predicateWithBlock:^BOOL(UIWindow* object, NSDictionary *bindings) {
+        return object.isHidden == NO;
+    }]];
+
+    UIWindow* firstActiveWindow = activeWindows.firstObject;
+    if (firstActiveWindow == nil) {
+        [NSException raise:@"NilWindow" format:@"Unable to retrieve active window"];
+        return nil;
+    }
+
+    UIViewController* rootViewController = firstActiveWindow.rootViewController;
+    if (rootViewController == nil) {
+        [NSException raise:@"NilRootViewController" format:@"Unable to retrieve rootViewController"];
+        return nil;
+    }
+
+    return rootViewController;
+}
+
+- (instancetype)initWithChannel:(FlutterMethodChannel*)channel{
     self = [super init];
     if (self) {
-        _rootViewController = rootViewController;
+        _rootViewController = [PlaidFlutterPlugin _findRootViewController];
         _channel = channel;
     }
     return self;
