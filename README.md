@@ -23,7 +23,7 @@ In order to initialize Plaid Link, you will need to create a link_token at [/lin
 ``` dart
 ...
 
-LinkConfiguration configuration = LinkConfiguration(
+LinkConfiguration configuration = LinkTokenConfiguration(
     linkToken: "<GENERATED_LINK_TOKEN>",
 );
 
