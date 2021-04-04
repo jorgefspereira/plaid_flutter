@@ -88,9 +88,10 @@ class PlaidLink {
         final metadata = call.arguments['metadata'];
         onEvent?.call(eventName, LinkEventMetadata.fromJson(metadata));
         break;
+
+      default:
+        throw MissingPluginException('${call.method} was invoked but has no handler');
     }
-    throw MissingPluginException(
-        '${call.method} was invoked but has no handler');
   }
 
   /// Initializes the Plaid Link flow on the device.
