@@ -90,7 +90,8 @@ class PlaidLink {
         break;
 
       default:
-        throw MissingPluginException('${call.method} was invoked but has no handler');
+        throw MissingPluginException(
+            '${call.method} was invoked but has no handler');
     }
   }
 
