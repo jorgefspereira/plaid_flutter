@@ -117,10 +117,10 @@ class PlaidFlutterPlugin {
   Map<String, dynamic> mapFromError(Map<dynamic, dynamic> data) {
     Map<String, dynamic> result = {};
 
-    result["errorType"] = data["error_type"];
-    result["errorCode"] = data["error_code"];
-    result["errorMessage"] = data["error_message"];
-    result["errorType"] = data["error_type"];
+    result["errorType"] = data["error_type"] ?? "";
+    result["errorCode"] = data["error_code"] ?? "";
+    result["errorMessage"] = data["error_message"] ?? "";
+    result["errorType"] = data["error_type"] ?? "";
 
     return result;
   }
@@ -131,10 +131,10 @@ class PlaidFlutterPlugin {
     Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
 
     result["institution"] = {
-      "id": institutionMap["institution_id"],
-      "name": institutionMap["name"]
+      "id": institutionMap["institution_id"] ?? "",
+      "name": institutionMap["name"] ?? ""
     };
-    result["linkSessionId"] = data["link_session_id"];
+    result["linkSessionId"] = data["link_session_id"] ?? "";
 
     List<dynamic> accountsList = [];
 
@@ -142,12 +142,12 @@ class PlaidFlutterPlugin {
       Map<dynamic, dynamic> accountMap = jsToMap(item);
       Map<String, dynamic> account = {};
 
-      account["id"] = accountMap["id"];
-      account["mask"] = accountMap["mask"];
-      account["name"] = accountMap["name"];
-      account["type"] = accountMap["type"];
-      account["subtype"] = accountMap["subtype"];
-      account["verificationStatus"] = accountMap["verification_status"];
+      account["id"] = accountMap["id"] ?? "";
+      account["mask"] = accountMap["mask"] ?? "";
+      account["name"] = accountMap["name"] ?? "";
+      account["type"] = accountMap["type"] ?? "";
+      account["subtype"] = accountMap["subtype"] ?? "";
+      account["verificationStatus"] = accountMap["verification_status"] ?? "";
 
       accountsList.add(account);
     }
@@ -163,12 +163,12 @@ class PlaidFlutterPlugin {
     Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
 
     result["institution"] = {
-      "id": institutionMap["institution_id"],
-      "name": institutionMap["name"]
+      "id": institutionMap["institution_id"] ?? "",
+      "name": institutionMap["name"] ?? ""
     };
-    result["requestId"] = data["request_id"];
-    result["linkSessionId"] = data["link_session_id"];
-    result["status"] = data["status"];
+    result["requestId"] = data["request_id"] ?? "";
+    result["linkSessionId"] = data["link_session_id"] ?? "";
+    result["status"] = data["status"] ?? "";
 
     return result;
   }
@@ -176,18 +176,18 @@ class PlaidFlutterPlugin {
   Map<String, dynamic> mapFromEventMetadata(Map<dynamic, dynamic> data) {
     Map<String, dynamic> result = {};
 
-    result['errorCode'] = data['error_code'];
-    result['errorMessage'] = data['error_message'];
-    result['errorType'] = data['error_type'];
-    result['exitStatus'] = data['exit_status'];
-    result['institutionSearchQuery'] = data['institution_search_query'];
-    result['institutionName'] = data['institution_name'];
-    result['institutionId'] = data['institution_id'];
-    result['linkSessionId'] = data['link_session_id'];
-    result['mfaType'] = data['mfa_type'];
-    result['viewName'] = data['view_name'];
-    result['requestId'] = data['request_id'];
-    result['timestamp'] = data['timestamp'];
+    result['errorCode'] = data['error_code'] ?? "";
+    result['errorMessage'] = data['error_message'] ?? "";
+    result['errorType'] = data['error_type'] ?? "";
+    result['exitStatus'] = data['exit_status'] ?? "";
+    result['institutionSearchQuery'] = data['institution_search_query'] ?? "";
+    result['institutionName'] = data['institution_name'] ?? "";
+    result['institutionId'] = data['institution_id'] ?? "";
+    result['linkSessionId'] = data['link_session_id'] ?? "";
+    result['mfaType'] = data['mfa_type'] ?? "";
+    result['viewName'] = data['view_name'] ?? "";
+    result['requestId'] = data['request_id'] ?? "";
+    result['timestamp'] = data['timestamp'] ?? "";
 
     return result;
   }
