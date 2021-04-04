@@ -1,3 +1,8 @@
+## 2.1.1
+
+* Fixes MissingPluginException issue #42
+* Fixes metada conversion on Plaid Web version
+
 ## 2.1.0+1
 
 * Small edit to README file
