@@ -1,3 +1,7 @@
+## 2.1.2
+
+* Exposing continueWithRedirectUri function.
+
 ## 2.1.1
 
 * Fixes MissingPluginException issue #42
