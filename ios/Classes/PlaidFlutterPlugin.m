@@ -76,7 +76,6 @@ static NSString* const kEventKey = @"event";
     }
     else if([@"continueFromRedirectUri" isEqualToString:call.method]) {
         NSString* redirectUri = call.arguments[kContinueRedirectUriKey];
-        
         [self continueFromRedirectUriString:redirectUri];
     }
     else {

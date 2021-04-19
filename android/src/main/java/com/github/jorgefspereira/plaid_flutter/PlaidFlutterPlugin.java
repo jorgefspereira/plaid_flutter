@@ -168,7 +168,6 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
   }
 
   private void open(Map<String, Object> arguments) {
-
     if (binding == null || binding.getActivity() == null) {
       Log.w("PlaidFlutterPlugin", "Activity not attached");
       throw new IllegalStateException("Activity not attached");
@@ -198,7 +197,6 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
                 (Application)context.getApplicationContext(),
                 getLegacyLinkConfiguration(arguments)
         ).open(binding.getActivity());
-
         return;
       } catch (Exception e) {
         Log.w("PlaidFlutterPlugin", e.getMessage());

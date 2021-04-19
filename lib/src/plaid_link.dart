@@ -100,8 +100,16 @@ class PlaidLink {
     await _channel.invokeMethod('open', configuration.toJson());
   }
 
-  // Closes Plaid Link View
+  /// Closes Plaid Link View
   Future<void> close() async {
     await _channel.invokeMethod('close');
+  }
+
+  /// Continue with redirect uri
+  Future<void> continueWithRedirectUri(String redirectUri) async {
+    await _channel.invokeMethod(
+      'continueFromRedirectUri',
+      {"redirectUri": redirectUri},
+    );
   }
 }
