@@ -1,3 +1,10 @@
+## 2.1.3
+
+* Updated iOS SDK to version 2.1.3
+* Using LinkKit openWithPresentationHandler.
+* Check for a token input with the public- prefix.
+* Updated Android SDK to version 3.4.0
+
 ## 2.1.2
 
 * Exposing continueWithRedirectUri function.
