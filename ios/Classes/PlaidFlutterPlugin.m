@@ -24,6 +24,7 @@ static NSString* const kLinkTokenPrefix = @"link-";
 static NSString* const kItemAddTokenPrefix = @"item-add-";
 static NSString* const kPaymentTokenPrefix = @"payment";
 static NSString* const kDepositSwitchTokenPrefix = @"deposit-switch-";
+static NSString* const kPublicTokenPrefix = @"public-";
 
 static NSString* const kOnSuccessMethod = @"onSuccess";
 static NSString* const kOnExitMethod = @"onExit";
@@ -139,7 +140,14 @@ static NSString* const kEventKey = @"event";
     if (_linkHandler) {
         NSDictionary *options = [institution isKindOfClass:[NSString class]] ? @{@"institution_id": institution} : @{};
         
-        [_linkHandler openWithContextViewController:_rootViewController options:options];
+        void(^presentationHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
+            [_rootViewController presentViewController:linkViewController animated:YES completion:nil];
+        };
+        void(^dismissalHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
+            [weakSelf close];
+        };
+
+        [_linkHandler openWithPresentationHandler:presentationHandler dismissalHandler:dismissalHandler options:options];
     } else if(creationError) {
         NSLog(@"Unable to create PLKHandler due to: %@", [creationError localizedDescription]);
         [_channel invokeMethod:kOnExitMethod arguments:@{kErrorKey : @{
@@ -195,6 +203,7 @@ static NSString* const kEventKey = @"event";
     BOOL isPaymentToken = [token isKindOfClass:[NSString class]] && [token hasPrefix:kPaymentTokenPrefix];
     BOOL isItemAddToken = [token isKindOfClass:[NSString class]] && [token hasPrefix:kItemAddTokenPrefix];
     BOOL isDepositSwitchToken = [token isKindOfClass:[NSString class]] && [token hasPrefix:kDepositSwitchTokenPrefix];
+    BOOL isPublicToken = [token isKindOfClass:[NSString class]] && [token hasPrefix:kPublicTokenPrefix];
     
     if (isPaymentToken) {
         configurationToken = [PLKLinkPublicKeyConfigurationToken createWithPaymentToken:token publicKey:publicKey];
@@ -202,6 +211,8 @@ static NSString* const kEventKey = @"event";
         configurationToken = [PLKLinkPublicKeyConfigurationToken createWithPublicToken:token publicKey:publicKey];
     } else if (isDepositSwitchToken) {
         configurationToken = [PLKLinkPublicKeyConfigurationToken createWithDepositSwitchToken:token publicKey:publicKey];
+    } else if (isPublicToken) {
+        configurationToken = [PLKLinkPublicKeyConfigurationToken createWithPublicToken:token publicKey:publicKey];
     } else {
         configurationToken = [PLKLinkPublicKeyConfigurationToken createWithPublicKey:publicKey];
     }
