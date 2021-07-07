@@ -39,7 +39,6 @@ static NSString* const kEventKey = @"event";
 //static NSString* const kOAuthStateIdKey = @"oauthStateId";
 
 @implementation PlaidFlutterPlugin {
-    UIViewController *_rootViewController;
     FlutterMethodChannel *_channel;
     id<PLKHandler> _linkHandler;
 }
@@ -47,15 +46,13 @@ static NSString* const kEventKey = @"event";
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/plaid_flutter"
                                                                 binaryMessenger:[registrar messenger]];
-    UIViewController *rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
-    PlaidFlutterPlugin *instance = [[PlaidFlutterPlugin alloc] initWithRootViewController:rootViewController channel:channel];
+    PlaidFlutterPlugin *instance = [[PlaidFlutterPlugin alloc] initWithChannel:channel];
     [registrar addMethodCallDelegate:instance channel:channel];
 }
 
-- (instancetype)initWithRootViewController:(UIViewController *)rootViewController channel:(FlutterMethodChannel*)channel{
+- (instancetype)initWithChannel:(FlutterMethodChannel*)channel{
     self = [super init];
     if (self) {
-        _rootViewController = rootViewController;
         _channel = channel;
     }
     return self;
@@ -64,7 +61,6 @@ static NSString* const kEventKey = @"event";
 - (void)dealloc {
   [_channel setMethodCallHandler:nil];
   _channel = nil;
-  _rootViewController = nil;
   _linkHandler = nil;
 }
 
@@ -141,13 +137,16 @@ static NSString* const kEventKey = @"event";
         NSDictionary *options = [institution isKindOfClass:[NSString class]] ? @{@"institution_id": institution} : @{};
         
         void(^presentationHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
-            [_rootViewController presentViewController:linkViewController animated:YES completion:nil];
+            UIViewController* rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
+            [rootViewController presentViewController:linkViewController animated:YES completion:nil];
         };
+        
         void(^dismissalHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
             [weakSelf close];
         };
 
         [_linkHandler openWithPresentationHandler:presentationHandler dismissalHandler:dismissalHandler options:options];
+
     } else if(creationError) {
         NSLog(@"Unable to create PLKHandler due to: %@", [creationError localizedDescription]);
         [_channel invokeMethod:kOnExitMethod arguments:@{kErrorKey : @{
@@ -162,7 +161,8 @@ static NSString* const kEventKey = @"event";
 }
 
 - (void) close {
-    [_rootViewController dismissViewControllerAnimated:YES completion:nil];
+    UIViewController* rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
+    [rootViewController dismissViewControllerAnimated:YES completion:nil];
     _linkHandler = nil;
 }
 
