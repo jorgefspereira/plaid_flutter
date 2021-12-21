@@ -56,6 +56,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
   private static final String USER_PHONE_NUMBER = "userPhoneNumber";
   private static final String TYPE = "type";
   private static final String SUBTYPE = "subtype";
+  private static final String NO_LOADING_STATE = "noLoadingState";
 
   /// LinkResultHandler
   private static final String METHOD_ON_SUCCESS = "onSuccess";
@@ -228,9 +229,15 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
       return null;
     }
 
-    return new LinkTokenConfiguration.Builder()
-            .token(token)
-            .build();
+    LinkTokenConfiguration.Builder configuration = new LinkTokenConfiguration.Builder();
+
+    configuration.token(token);
+
+    if (arguments.containsKey(NO_LOADING_STATE)) {
+      configuration.noLoadingState((boolean) arguments.get(NO_LOADING_STATE));
+    }
+
+    return configuration.build();
   }
 
   private LinkPublicKeyConfiguration getLegacyLinkConfiguration(Map<String, Object> arguments) {
