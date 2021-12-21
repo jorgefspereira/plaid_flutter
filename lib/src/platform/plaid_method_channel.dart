@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
+
 import '../core/link_configuration.dart';
 import '../core/metadata.dart';
-
 import 'plaid_platform_interface.dart';
 
 class PlaidMethodChannel extends PlaidPlatformInterface {
