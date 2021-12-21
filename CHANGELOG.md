@@ -1,3 +1,11 @@
+## 2.2.0
+
+* BREAKING CHANGE: All PlaidLink methods are now static (check example provided)
+* BREAKING CHANGE: Renamed callbacks to handlers (e.g. SuccessCallback -> LinkSuccessHandler)
+* Added noLoadingState property to LinkTokenConfiguration.
+* Updated iOS SDK to version 2.3.1
+* Updated Android SDK to version 3.6.2
+
 ## 2.1.4
 
 * Updated iOS SDK to version 2.2.0
