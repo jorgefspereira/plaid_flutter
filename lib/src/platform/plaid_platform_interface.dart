@@ -43,6 +43,7 @@ abstract class PlaidPlatformInterface extends PlatformInterface {
 
   /// Continue with redirect uri
   Future<void> continueWithRedirectUri(String redirectUri) async {
-    throw UnimplementedError('continueWithRedirectUri() has not been implemented.');
+    throw UnimplementedError(
+        'continueWithRedirectUri() has not been implemented.');
   }
 }

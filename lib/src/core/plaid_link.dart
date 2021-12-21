@@ -7,7 +7,8 @@ import 'types.dart';
 /// Provides Plaid Link drop in functionality.
 class PlaidLink {
   /// Platform interface
-  static PlaidPlatformInterface get _platform => PlaidPlatformInterface.instance;
+  static PlaidPlatformInterface get _platform =>
+      PlaidPlatformInterface.instance;
 
   /// Called on a successfull account link.
   ///
@@ -29,7 +30,8 @@ class PlaidLink {
   ///   * subtype: the account subtype
   ///
   /// For more information: https://plaid.com/docs/#onsuccess-callback
-  static void onSuccess(LinkSuccessHandler listener) => _platform.onSuccess = listener;
+  static void onSuccess(LinkSuccessHandler listener) =>
+      _platform.onSuccess = listener;
 
   /// Called when a user exits the Plaid Link flow.
   ///
@@ -47,7 +49,8 @@ class PlaidLink {
   ///   * [metadata] An [EventMetadata] object containing information about the event.
   ///
   /// For more information see https://plaid.com/docs/#onevent-callback
-  static void onEvent(LinkEventHandler listener) => _platform.onEvent = listener;
+  static void onEvent(LinkEventHandler listener) =>
+      _platform.onEvent = listener;
 
   /// Initializes the Plaid Link flow on the device.
   static Future<void> open({required LinkConfiguration configuration}) async {

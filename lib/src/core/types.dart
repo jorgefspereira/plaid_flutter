@@ -1,4 +1,3 @@
-
 import 'metadata.dart';
 
 /// Called on a successfull account link.
@@ -21,7 +20,8 @@ import 'metadata.dart';
 ///   * subtype: the account subtype
 ///
 /// For more information: https://plaid.com/docs/#onsuccess-callback
-typedef void LinkSuccessHandler(String publicToken, LinkSuccessMetadata metadata);
+typedef void LinkSuccessHandler(
+    String publicToken, LinkSuccessMetadata metadata);
 
 /// Called when a user exits the Plaid Link flow.
 ///
@@ -40,7 +40,6 @@ typedef void LinkExitHandler(LinkError? error, LinkExitMetadata metadata);
 ///
 /// For more information see https://plaid.com/docs/#onevent-callback
 typedef void LinkEventHandler(String eventName, LinkEventMetadata metadata);
-
 
 /// The available environments to use.
 enum LinkEnvironment {

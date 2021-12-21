@@ -5,7 +5,8 @@ import '../core/metadata.dart';
 import 'plaid_platform_interface.dart';
 
 class PlaidMethodChannel extends PlaidPlatformInterface {
-  final MethodChannel _channel = const MethodChannel('plugins.flutter.io/plaid_flutter');
+  final MethodChannel _channel =
+      const MethodChannel('plugins.flutter.io/plaid_flutter');
 
   MethodChannel get channel => _channel;
 
@@ -25,9 +26,10 @@ class PlaidMethodChannel extends PlaidPlatformInterface {
 
   /// Continue with redirect uri
   Future<void> continueWithRedirectUri(String redirectUri) async {
-    await _channel.invokeMethod('continueFromRedirectUri',{"redirectUri": redirectUri});
+    await _channel
+        .invokeMethod('continueFromRedirectUri', {"redirectUri": redirectUri});
   }
-  
+
   /// Handles receiving messages on the [MethodChannel]
   Future<dynamic> _onMethodCall(MethodCall call) async {
     switch (call.method) {
