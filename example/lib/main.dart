@@ -9,13 +9,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late PlaidLink _plaidPublicKey, _plaidLinkToken;
+  late LegacyLinkConfiguration _publicKeyConfiguration;
+  late LinkTokenConfiguration _linkTokenConfiguration;
 
   @override
   void initState() {
     super.initState();
 
-    LegacyLinkConfiguration publicKeyConfiguration = LegacyLinkConfiguration(
+    _publicKeyConfiguration = LegacyLinkConfiguration(
       clientName: "CLIENT_NAME",
       publicKey: "PUBLIC_KEY",
       environment: LinkEnvironment.sandbox,
@@ -29,23 +30,13 @@ class _MyAppState extends State<MyApp> {
       userPhoneNumber: "+1 (512) 555-1234",
     );
 
-    LinkTokenConfiguration linkTokenConfiguration = LinkTokenConfiguration(
+    _linkTokenConfiguration = LinkTokenConfiguration(
       token: "GENERATED_LINK_TOKEN",
     );
 
-    _plaidPublicKey = PlaidLink(
-      configuration: publicKeyConfiguration,
-      onSuccess: _onSuccessCallback,
-      onEvent: _onEventCallback,
-      onExit: _onExitCallback,
-    );
-
-    _plaidLinkToken = PlaidLink(
-      configuration: linkTokenConfiguration,
-      onSuccess: _onSuccessCallback,
-      onEvent: _onEventCallback,
-      onExit: _onExitCallback,
-    );
+    PlaidLink.onSuccess(_onSuccessCallback);
+    PlaidLink.onEvent(_onEventCallback);
+    PlaidLink.onExit(_onExitCallback);
   }
 
   void _onSuccessCallback(String publicToken, LinkSuccessMetadata metadata) {
@@ -75,12 +66,14 @@ class _MyAppState extends State<MyApp> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               ElevatedButton(
-                onPressed: () => _plaidPublicKey.open(),
+                onPressed: () =>
+                    PlaidLink.open(configuration: _publicKeyConfiguration),
                 child: Text("Open Plaid Link (Public Key)"),
               ),
               SizedBox(height: 15),
               ElevatedButton(
-                onPressed: () => _plaidLinkToken.open(),
+                onPressed: () =>
+                    PlaidLink.open(configuration: _linkTokenConfiguration),
                 child: Text("Open Plaid Link (Link Token)"),
               ),
             ],
