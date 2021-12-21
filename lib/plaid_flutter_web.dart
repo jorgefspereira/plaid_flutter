@@ -9,7 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:js/js.dart';
 
-import 'src/plaid_js_map.dart';
+import 'src/platform/plaid_js_map.dart';
 
 /// A web implementation of the PlaidFlutter plugin.
 class PlaidFlutterPlugin {

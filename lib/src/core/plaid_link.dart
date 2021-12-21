@@ -1,31 +1,13 @@
 import 'dart:async';
-import 'package:flutter/services.dart';
-import 'package:plaid_flutter/plaid_flutter.dart';
-import 'metadata.dart';
 
-typedef void SuccessCallback(String publicToken, LinkSuccessMetadata metadata);
-
-typedef void ExitCallback(LinkError? error, LinkExitMetadata metadata);
-
-typedef void EventCallback(String eventName, LinkEventMetadata metadata);
+import '../platform/plaid_platform_interface.dart';
+import 'link_configuration.dart';
+import 'types.dart';
 
 /// Provides Plaid Link drop in functionality.
 class PlaidLink {
-  /// The Plaid Link object.
-  PlaidLink({
-    required this.configuration,
-    this.onSuccess,
-    this.onExit,
-    this.onEvent,
-  }) : _channel = MethodChannel('plugins.flutter.io/plaid_flutter') {
-    _channel.setMethodCallHandler(_onMethodCall);
-  }
-
-  /// The [MethodChannel] over which this class communicates.
-  final MethodChannel _channel;
-
-  /// A configuration to support the legacy public_key Plaid flow and the the link_token process.
-  LinkConfiguration configuration;
+  /// Platform interface
+  static PlaidPlatformInterface get _platform => PlaidPlatformInterface.instance;
 
   /// Called on a successfull account link.
   ///
@@ -47,7 +29,7 @@ class PlaidLink {
   ///   * subtype: the account subtype
   ///
   /// For more information: https://plaid.com/docs/#onsuccess-callback
-  final SuccessCallback? onSuccess;
+  static void onSuccess(LinkSuccessHandler listener) => _platform.onSuccess = listener;
 
   /// Called when a user exits the Plaid Link flow.
   ///
@@ -56,8 +38,8 @@ class PlaidLink {
   ///   * [metadata] An [ExitMetadata] object containing information about the last error encountered by the user (if any), institution selected by the user, and the most recent API request ID, and the Link session ID.
   ///
   /// For more information see https://plaid.com/docs/#onexit-callback
-  final ExitCallback? onExit;
-  //
+  static void onExit(LinkExitHandler listener) => _platform.onExit = listener;
+
   /// Called when a Plaid Link event occurs.
   ///
   /// Two arguments are returned.
@@ -65,51 +47,20 @@ class PlaidLink {
   ///   * [metadata] An [EventMetadata] object containing information about the event.
   ///
   /// For more information see https://plaid.com/docs/#onevent-callback
-  final EventCallback? onEvent;
-
-  /// Handles receiving messages on the [MethodChannel]
-  Future<void> _onMethodCall(MethodCall call) async {
-    switch (call.method) {
-      case 'onSuccess':
-        final metadata = call.arguments['metadata'];
-        final publicToken = call.arguments['publicToken'];
-        onSuccess?.call(publicToken, LinkSuccessMetadata.fromJson(metadata));
-        break;
-
-      case 'onExit':
-        final error = call.arguments['error'];
-        final metadata = call.arguments['metadata'];
-        final linkError = error != null ? LinkError.fromJson(error) : null;
-        onExit?.call(linkError, LinkExitMetadata.fromJson(metadata));
-        break;
-
-      case 'onEvent':
-        final eventName = call.arguments['event'];
-        final metadata = call.arguments['metadata'];
-        onEvent?.call(eventName, LinkEventMetadata.fromJson(metadata));
-        break;
-
-      default:
-        throw MissingPluginException(
-            '${call.method} was invoked but has no handler');
-    }
-  }
+  static void onEvent(LinkEventHandler listener) => _platform.onEvent = listener;
 
   /// Initializes the Plaid Link flow on the device.
-  Future<void> open() async {
-    await _channel.invokeMethod('open', configuration.toJson());
+  static Future<void> open({required LinkConfiguration configuration}) async {
+    await _platform.open(configuration: configuration);
   }
 
   /// Closes Plaid Link View
-  Future<void> close() async {
-    await _channel.invokeMethod('close');
+  static Future<void> close() async {
+    await _platform.close();
   }
 
   /// Continue with redirect uri
-  Future<void> continueWithRedirectUri(String redirectUri) async {
-    await _channel.invokeMethod(
-      'continueFromRedirectUri',
-      {"redirectUri": redirectUri},
-    );
+  static Future<void> continueWithRedirectUri(String redirectUri) async {
+    await _platform.continueWithRedirectUri(redirectUri);
   }
 }
