@@ -12,12 +12,15 @@ abstract class LinkConfiguration {
 class LinkTokenConfiguration implements LinkConfiguration {
   final String token;
 
-  LinkTokenConfiguration({required this.token});
+  final bool noLoadingState;
+
+  LinkTokenConfiguration({required this.token, this.noLoadingState = false});
 
   /// Returns a representation of this object as a JSON object.
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'token': token,
+      'noLoadingState': noLoadingState,
     };
   }
 }
@@ -95,10 +98,8 @@ class LegacyLinkConfiguration implements LinkConfiguration {
 
   /// Returns a representation of this object as a JSON object.
   Map<String, dynamic> toJson() {
-    List<String> productsArray =
-        products?.map((p) => p.toString().split('.').last).toList() ?? [];
-    List<Map<String, String>> accountSubtypesArray =
-        accountSubtypes?.map((a) => a.toJson()).toList() ?? [];
+    List<String> productsArray = products?.map((p) => p.toString().split('.').last).toList() ?? [];
+    List<Map<String, String>> accountSubtypesArray = accountSubtypes?.map((a) => a.toJson()).toList() ?? [];
 
     return <String, dynamic>{
       'token': token,

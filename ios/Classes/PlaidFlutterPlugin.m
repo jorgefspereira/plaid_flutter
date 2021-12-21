@@ -19,6 +19,7 @@ static NSString* const kUserPhoneNumberKey = @"userPhoneNumber";
 static NSString* const kOAuthRedirectUriKey = @"oauthRedirectUri";
 static NSString* const kOAuthNonceKey = @"oauthNonce";
 static NSString* const kContinueRedirectUriKey = @"redirectUri";
+static NSString* const kNoLoadingStateKey = @"noLoadingState";
 
 static NSString* const kLinkTokenPrefix = @"link-";
 static NSString* const kItemAddTokenPrefix = @"item-add-";
@@ -123,7 +124,8 @@ static NSString* const kEventKey = @"event";
         PLKLinkTokenConfiguration *config = [self getLinkTokenConfigurationWithToken:token onSuccessHandler:successHandler];
         config.onEvent = eventHandler;
         config.onExit = exitHandler;
-        
+        config.noLoadingState = arguments[kNoLoadingStateKey];
+
         _linkHandler = [PLKPlaid createWithLinkTokenConfiguration:config error:&creationError];
     } else {
         PLKLinkPublicKeyConfiguration *config = [self getLegacyLinkConfigurationWithArguments:arguments onSuccessHandler:successHandler];
