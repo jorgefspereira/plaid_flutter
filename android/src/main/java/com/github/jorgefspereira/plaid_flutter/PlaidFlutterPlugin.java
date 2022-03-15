@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -125,7 +127,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
   /// MethodCallHandler
 
   @Override
-  public void onMethodCall(MethodCall call, Result result) {
+  public void onMethodCall(MethodCall call, @NonNull Result result) {
     if(call.method.equals("open")) {
       this.open(call.arguments());
     }
@@ -140,7 +142,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
   /// ActivityAware
 
   @Override
-  public void onAttachedToActivity(ActivityPluginBinding binding) {
+  public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
     this.binding = binding;
     this.binding.addActivityResultListener(this);
   }
@@ -152,7 +154,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
   }
 
   @Override
-  public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+  public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
     onAttachedToActivity(binding);
   }
 
@@ -169,7 +171,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
   }
 
   private void open(Map<String, Object> arguments) {
-    if (binding == null || binding.getActivity() == null) {
+    if (binding == null) {
       Log.w("PlaidFlutterPlugin", "Activity not attached");
       throw new IllegalStateException("Activity not attached");
     }
@@ -194,10 +196,8 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
     if(publicKey != null) {
       Log.d("PlaidFlutterPlugin", "OPEN");
       try {
-        Plaid.create(
-                (Application)context.getApplicationContext(),
-                getLegacyLinkConfiguration(arguments)
-        ).open(binding.getActivity());
+        LinkPublicKeyConfiguration config = getLegacyLinkConfiguration(arguments);
+        Plaid.create((Application)context.getApplicationContext(), config).open(binding.getActivity());
         return;
       } catch (Exception e) {
         Log.w("PlaidFlutterPlugin", e.getMessage());
@@ -205,17 +205,19 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
       }
     }
 
-    if(token != null) {
-      Plaid.create(
-              (Application)context.getApplicationContext(),
-              getLinkTokenConfiguration(arguments)
-      ).open(binding.getActivity());
-      return;
+    LinkTokenConfiguration config = getLinkTokenConfiguration(arguments);
+
+    if(config != null) {
+      Plaid.create((Application)context.getApplicationContext(),config).open(binding.getActivity());
     }
   }
 
   private void close() {
-
+    if (binding != null) {
+      Intent intent = new Intent(context.getApplicationContext(), binding.getActivity().getClass());
+      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+      binding.getActivity().startActivity(intent);
+    }
   }
 
   private LinkTokenConfiguration getLinkTokenConfiguration(Map<String, Object> arguments) {
@@ -331,7 +333,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
     Map<String, String> result = new HashMap<>();
 
     result.put("errorType", ""); //TODO:
-    result.put("errorCode", error.getErrorCode() == null ? "" : error.getErrorCode().getJson());
+    result.put("errorCode", error.getErrorCode().getJson());
     result.put("errorMessage", error.getErrorMessage());
     result.put("errorDisplayMessage", error.getDisplayMessage());
 
@@ -376,8 +378,8 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
       aux.put("id", a.getId());
       aux.put("mask", a.getMask());
       aux.put("name", a.getName());
-      aux.put("type", a.getSubtype() == null ? "" : a.getSubtype().getAccountType() == null ? "" : a.getSubtype().getAccountType().getJson());
-      aux.put("subtype", a.getSubtype() == null ? "" : a.getSubtype().getJson());
+      aux.put("type", a.getSubtype().getAccountType().getJson());
+      aux.put("subtype", a.getSubtype().getJson());
       aux.put("verificationStatus", a.getVerificationStatus() == null ? "" : a.getVerificationStatus().getJson());
       accounts.add(aux);
     }
