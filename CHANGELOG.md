@@ -1,3 +1,10 @@
+## 2.2.1
+
+* Added close method implementation
+* Updated Android SDK to 3.7.1
+* Update Gradle
+* Updated iOS SDK to 2.4.0
+
 ## 2.2.0
 
 * BREAKING CHANGE: All PlaidLink methods are now static (check example provided)
