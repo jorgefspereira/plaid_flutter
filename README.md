@@ -24,7 +24,7 @@ In order to initialize Plaid Link, you will need to create a link_token at [/lin
 ...
 
 LinkConfiguration configuration = LinkTokenConfiguration(
-    linkToken: "<GENERATED_LINK_TOKEN>",
+    token: "<GENERATED_LINK_TOKEN>",
 );
 
 _plaidLink = PlaidLink(
