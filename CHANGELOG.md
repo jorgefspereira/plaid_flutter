@@ -1,3 +1,9 @@
+## 2.2.2
+
+* Fixed enumerations not handled
+* Updated Android SDK to 3.10.0
+* Updated iOS SDK to 2.5.1
+
 ## 2.2.1
 
 * Added close method implementation
