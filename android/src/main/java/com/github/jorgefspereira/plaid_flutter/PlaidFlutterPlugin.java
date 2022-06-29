@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -18,7 +19,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
 import io.flutter.plugin.common.BinaryMessenger;
 
@@ -76,7 +76,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
   private Context context;
   private MethodChannel channel;
 
-  private LinkResultHandler resultHandler = new LinkResultHandler(
+  private final LinkResultHandler resultHandler = new LinkResultHandler(
       linkSuccess -> {
         Map<String, Object> data = new HashMap<>();
 
@@ -101,18 +101,15 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
       }
   );
 
-  public static void registerWith(Registrar registrar) {
-    final PlaidFlutterPlugin plugin = new PlaidFlutterPlugin();
-    plugin.onAttachedToEngine(registrar.context(), registrar.messenger());
-  }
+  /// FlutterPlugin
 
   @Override
-  public void onAttachedToEngine(FlutterPluginBinding binding) {
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
     onAttachedToEngine(binding.getApplicationContext(), binding.getBinaryMessenger());
   }
 
   @Override
-  public void onDetachedFromEngine(FlutterPluginBinding binding) {
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     this.context = null;
     this.channel.setMethodCallHandler(null);
     this.channel = null;
@@ -234,9 +231,11 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
     LinkTokenConfiguration.Builder configuration = new LinkTokenConfiguration.Builder();
 
     configuration.token(token);
+    configuration.noLoadingState(false);
 
     if (arguments.containsKey(NO_LOADING_STATE)) {
-      configuration.noLoadingState((boolean) arguments.get(NO_LOADING_STATE));
+      boolean state = (boolean) Objects.requireNonNull(arguments.get(NO_LOADING_STATE));
+      configuration.noLoadingState(state);
     }
 
     return configuration.build();
