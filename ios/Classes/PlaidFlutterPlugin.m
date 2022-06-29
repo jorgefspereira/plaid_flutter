@@ -172,7 +172,7 @@ static NSString* const kEventKey = @"event";
     NSURL *receivedRedirectUri = (id)redirectUriString == [NSNull null] ? nil : [NSURL URLWithString:redirectUriString];
 
     if (receivedRedirectUri && _linkHandler) {
-       [_linkHandler continueFromRedirectUri:receivedRedirectUri];
+       [_linkHandler continueWithRedirectUri:receivedRedirectUri];
     }
 }
 
@@ -606,6 +606,8 @@ static NSString* const kEventKey = @"event";
     switch (eventName.value) {
         case PLKEventNameValueNone:
             return @"";
+        case PLKEventNameValueBankIncomeInsightsCompleted:
+            return @"BANK_INCOME_INSIGHTS_COMPLETED";
         case PLKEventNameValueCloseOAuth:
             return @"CLOSE_OAUTH";
         case PLKEventNameValueError:
@@ -616,6 +618,10 @@ static NSString* const kEventKey = @"event";
             return @"FAIL_OAUTH";
         case PLKEventNameValueHandoff:
             return @"HANDOFF";
+        case PLKEventNameValueMatchedSelectInstitution:
+            return @"MATCHED_SELECT_INSTITUTION";
+        case PLKEventNameValueMatchedSelectVerifyMethod:
+            return @"MATCHED_SELECT_VERIFY_METHOD";
         case PLKEventNameValueOpen:
             return @"OPEN";
         case PLKEventNameValueOpenMyPlaid:
@@ -632,6 +638,10 @@ static NSString* const kEventKey = @"event";
             return @"SUBMIT_MFA";
         case PLKEventNameValueTransitionView:
             return @"TRANSITION_VIEW";
+        case PLKEventNameValueSelectDegradedInstitution:
+            return @"SELECT_DEGRADED_INSTITUTION";
+        case PLKEventNameValueSelectDownInstitution:
+            return @"SELECT_DOWN_INSTITUTION";
      }
      return @"unknown";
 }
@@ -677,6 +687,8 @@ static NSString* const kEventKey = @"event";
             return @"requires_credentials";
         case PLKExitStatusValueInstitutionNotFound:
             return @"institution_not_found";
+        case PLKExitStatusValueRequiresAccountSelection:
+            return @"requires_account_selection";
     }
     return @"unknown";
 }
@@ -705,6 +717,12 @@ static NSString* const kEventKey = @"event";
             return @"EXIT";
         case PLKViewNameValueLoading:
             return @"LOADING";
+        case PLKViewNameValueMatchedConsent:
+            return @"MATCHED_CONSENT";
+        case PLKViewNameValueMatchedCredential:
+            return @"MATCHED_CREDENTIAL";
+        case PLKViewNameValueMatchedMFA:
+            return @"MATCHED_MFA";
         case PLKViewNameValueMFA:
             return @"MFA";
         case PLKViewNameValueNumbers:
@@ -715,6 +733,14 @@ static NSString* const kEventKey = @"event";
             return @"SELECT_ACCOUNT";
         case PLKViewNameValueSelectInstitution:
             return @"SELECT_INSTITUTION";
+        case PLKViewNameValueUploadDocuments:
+            return @"UPLOAD_DOCUMENTS";
+        case PLKViewNameValueSubmitDocuments:
+            return @"SUBMIT_DOCUMENTS";
+        case PLKViewNameValueSubmitDocumentsSuccess:
+            return @"SUBMIT_DOCUMENTS_SUCCESS";
+        case PLKViewNameValueSubmitDocumentsError:
+            return @"SUBMIT_DOCUMENTS_ERROR";
     }
 
     return @"unknown";
