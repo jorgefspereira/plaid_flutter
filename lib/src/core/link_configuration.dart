@@ -10,17 +10,27 @@ abstract class LinkConfiguration {
 /// previously set within Link itself are now set via parameters passed to /link/token/create and conveyed
 /// to Link via the link_token. (https://plaid.com/docs/link/link-token-migration-guide)
 class LinkTokenConfiguration implements LinkConfiguration {
+  /// Specify a link_token to authenticate your app with Link. This is a short lived, one-time use token that should be unique for each Link session
   final String token;
 
+  /// MOBILE ONLY: A bool indicating that Link should skip displaying a loading animation and Link UI will be presented once it is fully loaded.
   final bool noLoadingState;
 
-  LinkTokenConfiguration({required this.token, this.noLoadingState = false});
+  /// WEB ONLY: A receivedRedirectUri is required to support OAuth authentication flows when re-launching Link on a mobile device.
+  String? receivedRedirectUri;
+
+  LinkTokenConfiguration({
+    required this.token,
+    this.noLoadingState = false,
+    this.receivedRedirectUri,
+  });
 
   /// Returns a representation of this object as a JSON object.
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'token': token,
       'noLoadingState': noLoadingState,
+      'receivedRedirectUri': receivedRedirectUri,
     };
   }
 }
@@ -98,16 +108,15 @@ class LegacyLinkConfiguration implements LinkConfiguration {
 
   /// Returns a representation of this object as a JSON object.
   Map<String, dynamic> toJson() {
-    List<String> productsArray =
-        products?.map((p) => p.toString().split('.').last).toList() ?? [];
-    List<Map<String, String>> accountSubtypesArray =
-        accountSubtypes?.map((a) => a.toJson()).toList() ?? [];
+    List<String> productsArray = products?.map((p) => p.toString().split('.').last).toList() ?? [];
+    List<Map<String, String>> accountSubtypesArray = accountSubtypes?.map((a) => a.toJson()).toList() ?? [];
 
     return <String, dynamic>{
       'token': token,
-      'publicKey': publicKey,
+      'key': publicKey,
       'clientName': clientName,
       'webhook': webhook,
+      'product': productsArray,
       'environment': environment.toString().split('.').last,
       'linkCustomizationName': linkCustomizationName,
       'language': language,
@@ -117,7 +126,6 @@ class LegacyLinkConfiguration implements LinkConfiguration {
       'countryCodes': countryCodes,
       'oauthRedirectUri': oauthConfiguration?.redirectUri,
       'oauthNonce': oauthConfiguration?.nonce,
-      'products': productsArray,
       'accountSubtypes': accountSubtypesArray,
     };
   }
