@@ -618,6 +618,28 @@ static NSString* const kEventKey = @"event";
             return @"FAIL_OAUTH";
         case PLKEventNameValueHandoff:
             return @"HANDOFF";
+        case PLKEventNameValueIdentityVerificationStartStep:
+            return @"IDENTITY_VERIFICATION_START_STEP";
+        case PLKEventNameValueIdentityVerificationPassStep:
+            return @"IDENTITY_VERIFICATION_PASS_STEP";
+        case PLKEventNameValueIdentityVerificationFailStep:
+            return @"IDENTITY_VERIFICATION_FAIL_STEP";
+        case PLKEventNameValueIdentityVerificationPendingReviewStep:
+            return @"IDENTITY_VERIFICATION_PENDING_REVIEW_STEP";
+        case PLKEventNameValueIdentityVerificationCreateSession:
+            return @"IDENTITY_VERIFICATION_CREATE_SESSION";
+        case PLKEventNameValueIdentityVerificationResumeSession:
+            return @"IDENTITY_VERIFICATION_RESUME_SESSION";
+        case PLKEventNameValueIdentityVerificationPassSession:
+            return @"IDENTITY_VERIFICATION_PASS_SESSION";
+        case PLKEventNameValueIdentityVerificationFailSession:
+            return @"IDENTITY_VERIFICATION_FAIL_SESSION";
+        case PLKEventNameValueIdentityVerificationOpenUI:
+            return @"IDENTITY_VERIFICATION_OPEN_UI";
+        case PLKEventNameValueIdentityVerificationResumeUI:
+            return @"IDENTITY_VERIFICATION_RESUME_UI";
+        case PLKEventNameValueIdentityVerificationCloseUI:
+            return @"IDENTITY_VERIFICATION_CLOSE_UI";
         case PLKEventNameValueMatchedSelectInstitution:
             return @"MATCHED_SELECT_INSTITUTION";
         case PLKEventNameValueMatchedSelectVerifyMethod:
@@ -642,7 +664,7 @@ static NSString* const kEventKey = @"event";
             return @"SELECT_DEGRADED_INSTITUTION";
         case PLKEventNameValueSelectDownInstitution:
             return @"SELECT_DOWN_INSTITUTION";
-     }
+    }
      return @"unknown";
 }
 
@@ -705,16 +727,22 @@ static NSString* const kEventKey = @"event";
     switch (viewName.value) {
         case PLKViewNameValueNone:
             return @"";
+        case PLKViewNameValueAcceptTOS:
+            return @"ACCEPT_TOS";
         case PLKViewNameValueConnected:
             return @"CONNECTED";
         case PLKViewNameValueConsent:
             return @"CONSENT";
         case PLKViewNameValueCredential:
             return @"CREDENTIAL";
+        case PLKViewNameValueDocumentaryVerification:
+            return @"DOCUMENTARY_VERIFICATION";
         case PLKViewNameValueError:
             return @"ERROR";
         case PLKViewNameValueExit:
             return @"EXIT";
+        case PLKViewNameValueKYCCheck:
+            return @"KYC_CHECK";
         case PLKViewNameValueLoading:
             return @"LOADING";
         case PLKViewNameValueMatchedConsent:
@@ -727,20 +755,30 @@ static NSString* const kEventKey = @"event";
             return @"MFA";
         case PLKViewNameValueNumbers:
             return @"NUMBERS";
+        case PLKViewNameValueOauth:
+            return @"OAUTH";
         case PLKViewNameValueRecaptcha:
             return @"RECAPTCHA";
+        case PLKViewNameValueRiskCheck:
+            return @"RISK_CHECK";
+        case PLKViewNameValueScreening:
+            return @"VALUE_SCREENING";
         case PLKViewNameValueSelectAccount:
             return @"SELECT_ACCOUNT";
         case PLKViewNameValueSelectInstitution:
             return @"SELECT_INSTITUTION";
-        case PLKViewNameValueUploadDocuments:
-            return @"UPLOAD_DOCUMENTS";
+        case PLKViewNameValueSelfieCheck:
+            return @"SELFIE_CHECK";
         case PLKViewNameValueSubmitDocuments:
             return @"SUBMIT_DOCUMENTS";
         case PLKViewNameValueSubmitDocumentsSuccess:
             return @"SUBMIT_DOCUMENTS_SUCCESS";
         case PLKViewNameValueSubmitDocumentsError:
             return @"SUBMIT_DOCUMENTS_ERROR";
+        case PLKViewNameValueUploadDocuments:
+            return @"UPLOAD_DOCUMENTS";
+        case PLKViewNameValueVerifySMS:
+            return @"VERIFY_SMS";
     }
 
     return @"unknown";
