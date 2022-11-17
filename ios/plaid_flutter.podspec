@@ -15,7 +15,7 @@ Enables Plaid in Flutter apps.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'Plaid', '2.5.1'
+  s.dependency 'Plaid', '4.0.1'
   s.static_framework = true
   s.ios.deployment_target = '11.0'
 end
