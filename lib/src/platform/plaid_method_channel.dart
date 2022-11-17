@@ -1,17 +1,33 @@
 import 'package:flutter/services.dart';
 
+import '../core/events.dart';
 import '../core/link_configuration.dart';
-import '../core/metadata.dart';
 import 'plaid_platform_interface.dart';
 
 class PlaidMethodChannel extends PlaidPlatformInterface {
-  final MethodChannel _channel =
-      const MethodChannel('plugins.flutter.io/plaid_flutter');
+  /// The method channel used to interact with the native platform.
+  final MethodChannel _channel = const MethodChannel('plugins.flutter.io/plaid_flutter');
 
-  MethodChannel get channel => _channel;
+  /// The event channel used to receive changes from the native platform.
+  final EventChannel _eventChannel = const EventChannel('plugins.flutter.io/plaid_flutter/events');
 
-  PlaidMethodChannel() {
-    _channel.setMethodCallHandler(_onMethodCall);
+  /// A broadcast stream from the native platform
+  Stream<LinkObject>? _onEvent;
+
+  @override
+  Stream<LinkObject> get onEvent {
+    _onEvent ??= _eventChannel.receiveBroadcastStream().map((dynamic event) {
+      switch (event['type']) {
+        case 'success':
+          return LinkSuccess.fromJson(event);
+        case 'exit':
+          return LinkExit.fromJson(event);
+        default:
+          return LinkEvent.fromJson(event);
+      }
+    });
+
+    return _onEvent!;
   }
 
   /// Initializes the Plaid Link flow on the device.
@@ -26,35 +42,9 @@ class PlaidMethodChannel extends PlaidPlatformInterface {
 
   /// Continue with redirect uri
   Future<void> continueWithRedirectUri(String redirectUri) async {
-    await _channel
-        .invokeMethod('continueFromRedirectUri', {"redirectUri": redirectUri});
-  }
-
-  /// Handles receiving messages on the [MethodChannel]
-  Future<dynamic> _onMethodCall(MethodCall call) async {
-    switch (call.method) {
-      case 'onSuccess':
-        final metadata = call.arguments['metadata'];
-        final publicToken = call.arguments['publicToken'];
-        onSuccess?.call(publicToken, LinkSuccessMetadata.fromJson(metadata));
-        break;
-
-      case 'onExit':
-        final error = call.arguments['error'];
-        final metadata = call.arguments['metadata'];
-        final linkError = error != null ? LinkError.fromJson(error) : null;
-        onExit?.call(linkError, LinkExitMetadata.fromJson(metadata));
-        break;
-
-      case 'onEvent':
-        final eventName = call.arguments['event'];
-        final metadata = call.arguments['metadata'];
-        onEvent?.call(eventName, LinkEventMetadata.fromJson(metadata));
-        break;
-
-      default:
-        throw MissingPluginException(
-            '${call.method} was invoked but has no handler');
-    }
+    await _channel.invokeMethod(
+      'continueFromRedirectUri',
+      {"redirectUri": redirectUri},
+    );
   }
 }

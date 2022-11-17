@@ -1,5 +1,4 @@
 #import "PlaidFlutterPlugin.h"
-/// Plaid Link Framework
 #import <LinkKit/LinkKit.h>
 
 static NSString* const kPublicKeyKey = @"publicKey";
@@ -16,10 +15,10 @@ static NSString* const kLanguageKey = @"language";
 static NSString* const kUserLegalNameKey = @"userLegalName";
 static NSString* const kUserEmailAddressKey = @"userEmailAddress";
 static NSString* const kUserPhoneNumberKey = @"userPhoneNumber";
+static NSString* const kNoLoadingStateKey = @"noLoadingState";
 static NSString* const kOAuthRedirectUriKey = @"oauthRedirectUri";
 static NSString* const kOAuthNonceKey = @"oauthNonce";
 static NSString* const kContinueRedirectUriKey = @"redirectUri";
-static NSString* const kNoLoadingStateKey = @"noLoadingState";
 
 static NSString* const kLinkTokenPrefix = @"link-";
 static NSString* const kItemAddTokenPrefix = @"item-add-";
@@ -27,74 +26,91 @@ static NSString* const kPaymentTokenPrefix = @"payment";
 static NSString* const kDepositSwitchTokenPrefix = @"deposit-switch-";
 static NSString* const kPublicTokenPrefix = @"public-";
 
-static NSString* const kOnSuccessMethod = @"onSuccess";
-static NSString* const kOnExitMethod = @"onExit";
-static NSString* const kOnEventMethod = @"onEvent";
+static NSString* const kOnSuccessType = @"success";
+static NSString* const kOnExitType = @"exit";
+static NSString* const kOnEventType = @"event";
 static NSString* const kErrorKey = @"error";
 static NSString* const kMetadataKey = @"metadata";
 static NSString* const kPublicTokenKey = @"publicToken";
-static NSString* const kEventKey = @"event";
+static NSString* const kNameKey = @"name";
+static NSString* const kTypeKey = @"type";
 
 //static NSString* const kSelectAccountKey = @"selectAccount";
 //static NSString* const kLongtailAuthKey = @"longtailAuth";
 //static NSString* const kOAuthStateIdKey = @"oauthStateId";
 
+@interface PlaidFlutterPlugin () <FlutterStreamHandler>
+@end
+
 @implementation PlaidFlutterPlugin {
-    FlutterMethodChannel *_channel;
+    FlutterEventSink _eventSink;
     id<PLKHandler> _linkHandler;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
-    FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/plaid_flutter"
+    FlutterMethodChannel *methodChannel = [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/plaid_flutter"
                                                                 binaryMessenger:[registrar messenger]];
-    PlaidFlutterPlugin *instance = [[PlaidFlutterPlugin alloc] initWithChannel:channel];
-    [registrar addMethodCallDelegate:instance channel:channel];
-}
-
-- (instancetype)initWithChannel:(FlutterMethodChannel*)channel{
-    self = [super init];
-    if (self) {
-        _channel = channel;
-    }
-    return self;
+    
+    FlutterEventChannel *eventChannel = [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/plaid_flutter/events"
+                                                                  binaryMessenger:[registrar messenger]];
+    
+    PlaidFlutterPlugin *instance = [[PlaidFlutterPlugin alloc] init];
+    [registrar addMethodCallDelegate:instance channel:methodChannel];
+    [eventChannel setStreamHandler:instance];
 }
 
 - (void)dealloc {
-  [_channel setMethodCallHandler:nil];
-  _channel = nil;
   _linkHandler = nil;
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-    if ([@"open" isEqualToString:call.method]) {
+    if ([@"open" isEqualToString:call.method])
         [self openWithArguments: call.arguments];
-    }
-    else if ([@"close" isEqualToString:call.method]) {
+    else if ([@"close" isEqualToString:call.method])
         [self close];
-    }
-    else if([@"continueFromRedirectUri" isEqualToString:call.method]) {
-        NSString* redirectUri = call.arguments[kContinueRedirectUriKey];
-        [self continueFromRedirectUriString:redirectUri];
-    }
-    else {
+    else if([@"continueFromRedirectUri" isEqualToString:call.method])
+        [self continueFromRedirectUriString:call.arguments];
+    else
         result(FlutterMethodNotImplemented);
-    }
+    
 }
 
-//MARK:- Exposed methods
+#pragma mark FlutterStreamHandler implementation
+
+- (void) sendEventWithArguments:(id _Nullable)arguments {
+    if (!_eventSink)
+        return;
+    
+    _eventSink(arguments);
+}
+
+- (FlutterError *)onListenWithArguments:(id)arguments
+                              eventSink:(FlutterEventSink)eventSink {
+    _eventSink = eventSink;
+    return nil;
+}
+
+- (FlutterError *)onCancelWithArguments:(id)arguments {
+    _eventSink = nil;
+    return nil;
+}
+
+#pragma mark Exposed methods
 
 - (void) openWithArguments: (id _Nullable)arguments  {
     
     NSString* institution = arguments[kInstitutionKey];
     NSString* token = arguments[kTokenKey];
+    BOOL noLoadingState = arguments[kNoLoadingStateKey];
     
     __weak typeof(self) weakSelf = self;
     
     PLKOnSuccessHandler successHandler = ^(PLKLinkSuccess *success) {
         __strong typeof(self) strongSelf = weakSelf;
         [strongSelf close];
-        [strongSelf->_channel invokeMethod:kOnSuccessMethod arguments:@{kPublicTokenKey: success.publicToken ?: @"",
-                                                                        kMetadataKey : [PlaidFlutterPlugin dictionaryFromSuccessMetadata:success.metadata]}];
+        [strongSelf sendEventWithArguments: @{kTypeKey: kOnSuccessType,
+                                              kPublicTokenKey: success.publicToken ?: @"",
+                                              kMetadataKey : [PlaidFlutterPlugin dictionaryFromSuccessMetadata:success.metadata]}];
     };
     
     PLKOnExitHandler exitHandler = ^(PLKLinkExit *exit) {
@@ -102,19 +118,21 @@ static NSString* const kEventKey = @"event";
         [strongSelf close];
         
         NSMutableDictionary* arguments = [[NSMutableDictionary alloc] init];
+        [arguments setObject:kOnExitType forKey:kTypeKey];
         [arguments setObject:[PlaidFlutterPlugin dictionaryFromExitMetadata: exit.metadata] forKey:kMetadataKey];
         
         if(exit.error) {
             [arguments setObject:[PlaidFlutterPlugin dictionaryFromError:exit.error] ?: @{} forKey:kErrorKey];
         }
         
-        [strongSelf->_channel invokeMethod:kOnExitMethod arguments:arguments];
+        [strongSelf sendEventWithArguments: arguments];
     };
     
     PLKOnEventHandler eventHandler = ^(PLKLinkEvent *event) {
         __strong typeof(self) strongSelf = weakSelf;
-        [strongSelf->_channel invokeMethod:kOnEventMethod arguments:@{kEventKey: [PlaidFlutterPlugin stringForEventName: event.eventName] ?: @"",
-                                                                      kMetadataKey : [PlaidFlutterPlugin dictionaryFromEventMetadata: event.eventMetadata]}];
+        [strongSelf sendEventWithArguments:@{kTypeKey: kOnEventType,
+                                             kNameKey: [PlaidFlutterPlugin stringForEventName: event.eventName] ?: @"",
+                                             kMetadataKey: [PlaidFlutterPlugin dictionaryFromEventMetadata: event.eventMetadata]}];
     };
     
     BOOL usingLinkToken = [token isKindOfClass:[NSString class]] && [token hasPrefix:kLinkTokenPrefix];
@@ -124,7 +142,7 @@ static NSString* const kEventKey = @"event";
         PLKLinkTokenConfiguration *config = [self getLinkTokenConfigurationWithToken:token onSuccessHandler:successHandler];
         config.onEvent = eventHandler;
         config.onExit = exitHandler;
-        config.noLoadingState = arguments[kNoLoadingStateKey];
+        config.noLoadingState = noLoadingState;
 
         _linkHandler = [PLKPlaid createWithLinkTokenConfiguration:config error:&creationError];
     } else {
@@ -137,26 +155,28 @@ static NSString* const kEventKey = @"event";
 
     if (_linkHandler) {
         NSDictionary *options = [institution isKindOfClass:[NSString class]] ? @{@"institution_id": institution} : @{};
+        __block bool didPresent = NO;
         
         void(^presentationHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
             UIViewController* rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
             [rootViewController presentViewController:linkViewController animated:YES completion:nil];
+            didPresent = YES;
         };
         
         void(^dismissalHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
-            [weakSelf close];
+            if (didPresent) {
+                [weakSelf close];
+                didPresent = NO;
+            }
         };
 
         [_linkHandler openWithPresentationHandler:presentationHandler dismissalHandler:dismissalHandler options:options];
 
     } else if(creationError) {
         NSLog(@"Unable to create PLKHandler due to: %@", [creationError localizedDescription]);
-        [_channel invokeMethod:kOnExitMethod arguments:@{kErrorKey : @{
-                                                                 @"errorCode": [NSString stringWithFormat:@"%lld", (long long)creationError.code] ?: @"",
-                                                                 @"errorType": [NSString stringWithFormat:@"%@", creationError.domain.uppercaseString] ?: @"",
-                                                                 @"errorMessage": [creationError localizedDescription] ?: @"",
-                                                                 @"errorDisplayMessage": @"Unable to create PLKHandler",
-        }}];
+        [self sendEventWithArguments: [FlutterError errorWithCode: [NSString stringWithFormat:@"%lld", (long long)creationError.code] ?: @""
+                                                          message: [creationError localizedDescription] ?: @""
+                                                          details: @"Unable to create PLKHandler"]];
     } else {
         NSLog(@"Unexpected Creation Error");
     }
@@ -168,22 +188,22 @@ static NSString* const kEventKey = @"event";
     _linkHandler = nil;
 }
 
-- (void) continueFromRedirectUriString: (NSString *)redirectUriString {
-    NSURL *receivedRedirectUri = (id)redirectUriString == [NSNull null] ? nil : [NSURL URLWithString:redirectUriString];
+- (void) continueFromRedirectUriString: (id _Nullable)arguments {
+    NSString* redirectUriString = arguments[kContinueRedirectUriKey];
+    NSURL *redirectUriURL = (id)redirectUriString == [NSNull null] ? nil : [NSURL URLWithString:redirectUriString];
 
-    if (receivedRedirectUri && _linkHandler) {
-       [_linkHandler continueWithRedirectUri:receivedRedirectUri];
+    if (redirectUriURL && _linkHandler) {
+       [_linkHandler continueWithRedirectUri:redirectUriURL];
     }
 }
 
-//MARK:- PLKConfiguration
+#pragma mark PLKConfiguration
 
 - (PLKLinkTokenConfiguration*)getLinkTokenConfigurationWithToken: (NSString *)token onSuccessHandler:(PLKOnSuccessHandler)successHandler{
     return [PLKLinkTokenConfiguration createWithToken:token onSuccess:successHandler];
 }
 
 - (PLKLinkPublicKeyConfiguration*)getLegacyLinkConfigurationWithArguments:(id _Nullable)arguments onSuccessHandler:(PLKOnSuccessHandler)successHandler{
-    
     NSString* token = arguments[kTokenKey];
     NSString* environment = arguments[kEnvironmentKey];
     NSString* publicKey = arguments[kPublicKeyKey];
@@ -199,7 +219,6 @@ static NSString* const kEventKey = @"event";
     NSArray<NSDictionary<NSString*,NSString*>*>* accountSubtypes = arguments[kAccountSubtypes];
     NSString* oauthRedirectUri = arguments[kOAuthRedirectUriKey];
     NSString* oauthNonce = arguments[kOAuthNonceKey];
-    
     
     PLKLinkPublicKeyConfigurationToken *configurationToken;
     BOOL isPaymentToken = [token isKindOfClass:[NSString class]] && [token hasPrefix:kPaymentTokenPrefix];
@@ -261,7 +280,7 @@ static NSString* const kEventKey = @"event";
     return linkConfiguration;
 }
 
-//MARK:- PLKConfiguration Parsing
+#pragma mark PLKConfiguration Parsing
 
 + (PLKEnvironment)environmentFromString:(NSString *)string {
     if ([string isEqualToString:@"production"]) {
@@ -496,7 +515,7 @@ static NSString* const kEventKey = @"event";
     return [PLKAccountSubtypeUnknown createWithRawTypeStringValue:typeString rawSubtypeStringValue:subtypeString];
 }
 
-//MARK:- Handlers Metadata Parsing
+#pragma mark Metadata Parsing
 
 + (NSDictionary *)dictionaryFromSuccessMetadata:(PLKSuccessMetadata *)metadata {
     return @{@"linkSessionId": metadata.linkSessionID ?: @"",
