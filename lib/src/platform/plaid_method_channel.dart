@@ -6,10 +6,12 @@ import 'plaid_platform_interface.dart';
 
 class PlaidMethodChannel extends PlaidPlatformInterface {
   /// The method channel used to interact with the native platform.
-  final MethodChannel _channel = const MethodChannel('plugins.flutter.io/plaid_flutter');
+  final MethodChannel _channel =
+      const MethodChannel('plugins.flutter.io/plaid_flutter');
 
   /// The event channel used to receive changes from the native platform.
-  final EventChannel _eventChannel = const EventChannel('plugins.flutter.io/plaid_flutter/events');
+  final EventChannel _eventChannel =
+      const EventChannel('plugins.flutter.io/plaid_flutter/events');
 
   /// A broadcast stream from the native platform
   Stream<LinkObject>? _onEvent;

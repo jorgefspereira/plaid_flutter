@@ -15,7 +15,6 @@ import 'plaid_platform_interface.dart';
 
 /// A web implementation of the PlaidFlutter plugin.
 class PlaidFlutterPlugin extends PlaidPlatformInterface {
-  
   /// Event stream controller
   StreamController<LinkObject>? _eventsController;
 
@@ -53,8 +52,10 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
     });
 
     /// onExit handler
-    options.onExit = allowInterop((error, metadata) {      
-      Map<String, dynamic> data = {'metadata': mapFromExitMetadata(jsToMap(metadata))};
+    options.onExit = allowInterop((error, metadata) {
+      Map<String, dynamic> data = {
+        'metadata': mapFromExitMetadata(jsToMap(metadata))
+      };
 
       if (error != null) {
         data["error"] = mapFromError(jsToMap(error));
@@ -67,7 +68,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
     options.onLoad = allowInterop(() {});
 
     if (configuration is LinkTokenConfiguration) {
-      options.token = configuration.token;  
+      options.token = configuration.token;
       options.receivedRedirectUri = configuration.receivedRedirectUri;
     } else if (configuration is LegacyLinkConfiguration) {
       options.token = configuration.token;
@@ -82,7 +83,10 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
       options.oauthNonce = configuration.oauthConfiguration?.nonce;
       options.oauthRedirectUri = configuration.oauthConfiguration?.redirectUri;
       options.countryCodes = configuration.countryCodes ?? [''];
-      options.product = configuration.products?.map((p) => p.toString().split('.').last).toList() ?? [''];
+      options.product = configuration.products
+              ?.map((p) => p.toString().split('.').last)
+              .toList() ??
+          [''];
     }
 
     Plaid.create(options).open();
@@ -125,7 +129,10 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
     Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
 
-    result["institution"] = {"id": institutionMap["institution_id"] ?? "", "name": institutionMap["name"] ?? ""};
+    result["institution"] = {
+      "id": institutionMap["institution_id"] ?? "",
+      "name": institutionMap["name"] ?? ""
+    };
     result["linkSessionId"] = data["link_session_id"] ?? "";
 
     List<dynamic> accountsList = [];
@@ -151,16 +158,19 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
   Map<String, dynamic> mapFromExitMetadata(Map<dynamic, dynamic> data) {
     Map<String, dynamic> result = {};
-    
+
     result["institution"] = {"id": "", "name": ""};
     result["requestId"] = data["request_id"] ?? "";
     result["linkSessionId"] = data["link_session_id"] ?? "";
     result["status"] = data["status"] ?? "";
-    
+
     if (data["institution"] != null) {
       Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
-      result["institution"] = {"id": institutionMap["institution_id"] ?? "", "name": institutionMap["name"] ?? ""};
-    }  
+      result["institution"] = {
+        "id": institutionMap["institution_id"] ?? "",
+        "name": institutionMap["name"] ?? ""
+      };
+    }
 
     return result;
   }

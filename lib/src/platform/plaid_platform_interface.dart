@@ -41,5 +41,4 @@ abstract class PlaidPlatformInterface extends PlatformInterface {
     throw UnimplementedError(
         'continueWithRedirectUri() has not been implemented.');
   }
-
 }

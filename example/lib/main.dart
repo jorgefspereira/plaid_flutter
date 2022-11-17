@@ -55,12 +55,15 @@ class _MyAppState extends State<MyApp> {
 
   void _onEvent(LinkObject event) {
     if (event is LinkEvent) {
-      print("onEvent: ${event.name}, metadata: ${event.metadata.description()}");
+      print(
+          "onEvent: ${event.name}, metadata: ${event.metadata.description()}");
     } else if (event is LinkSuccess) {
-      print("onSuccess: ${event.publicToken}, metadata: ${event.metadata.description()}");
+      print(
+          "onSuccess: ${event.publicToken}, metadata: ${event.metadata.description()}");
       setState(() => _successObject = event);
     } else if (event is LinkExit) {
-      print("onExit metadata: ${event.metadata.description()}, error: ${event.error?.description()}");
+      print(
+          "onExit metadata: ${event.metadata.description()}, error: ${event.error?.description()}");
     }
   }
 
@@ -93,7 +96,9 @@ class _MyAppState extends State<MyApp> {
               ),
               SizedBox(height: 15),
               ElevatedButton(
-                onPressed: _configuration != null ? () => PlaidLink.open(configuration: _configuration!) : null,
+                onPressed: _configuration != null
+                    ? () => PlaidLink.open(configuration: _configuration!)
+                    : null,
                 child: Text("Open"),
               ),
               Expanded(

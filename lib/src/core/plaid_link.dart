@@ -7,7 +7,8 @@ import 'link_configuration.dart';
 /// Provides Plaid Link drop in functionality.
 class PlaidLink {
   /// Platform interface
-  static PlaidPlatformInterface get _platform => PlaidPlatformInterface.instance;
+  static PlaidPlatformInterface get _platform =>
+      PlaidPlatformInterface.instance;
 
   /// A broadcast stream from the native platform
   ///

@@ -108,8 +108,10 @@ class LegacyLinkConfiguration implements LinkConfiguration {
 
   /// Returns a representation of this object as a JSON object.
   Map<String, dynamic> toJson() {
-    List<String> productsArray = products?.map((p) => p.toString().split('.').last).toList() ?? [];
-    List<Map<String, String>> accountSubtypesArray = accountSubtypes?.map((a) => a.toJson()).toList() ?? [];
+    List<String> productsArray =
+        products?.map((p) => p.toString().split('.').last).toList() ?? [];
+    List<Map<String, String>> accountSubtypesArray =
+        accountSubtypes?.map((a) => a.toJson()).toList() ?? [];
 
     return <String, dynamic>{
       'token': token,
