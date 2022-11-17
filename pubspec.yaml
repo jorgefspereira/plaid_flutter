@@ -10,9 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  plugin_platform_interface: ^2.1.2
   flutter_web_plugins:
     sdk: flutter
+  plugin_platform_interface: ^2.1.2
   js: ^0.6.3
 
 dev_dependencies:
@@ -38,7 +38,7 @@ flutter:
         pluginClass: PlaidFlutterPlugin
       web:
         pluginClass: PlaidFlutterPlugin
-        fileName: plaid_flutter_web.dart
+        fileName: src/platform/plaid_flutter_web.dart
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
