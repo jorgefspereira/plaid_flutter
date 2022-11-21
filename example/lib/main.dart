@@ -108,7 +108,9 @@ class _MyAppState extends State<MyApp> {
               ),
               SizedBox(height: 15),
               ElevatedButton(
-                onPressed: _configuration != null ? () => PlaidLink.open(configuration: _configuration!) : null,
+                onPressed: _configuration != null
+                    ? () => PlaidLink.open(configuration: _configuration!)
+                    : null,
                 child: Text("Open"),
               ),
               Expanded(
