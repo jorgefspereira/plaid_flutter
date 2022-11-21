@@ -1,3 +1,11 @@
+## 3.0.0
+
+* Added receivedRedirectUri property to Web
+* Added a new EventChannel to broadcast events from native platform
+* Changed jcenter to mavenCentral
+* Updated Android SDK to 3.10.1
+* Updated iOS SDK to 4.0.1
+
 ## 2.2.2
 
 * Fixed enumerations not handled
