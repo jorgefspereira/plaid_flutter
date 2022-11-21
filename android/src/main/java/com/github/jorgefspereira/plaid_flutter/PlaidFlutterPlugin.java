@@ -15,12 +15,13 @@ import java.util.Objects;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
+import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.EventChannel.EventSink;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
-import io.flutter.plugin.common.BinaryMessenger;
 
 import kotlin.Unit;
 
@@ -29,18 +30,19 @@ import com.plaid.link.configuration.LinkPublicKeyConfiguration;
 import com.plaid.link.configuration.LinkTokenConfiguration;
 import com.plaid.link.configuration.PlaidEnvironment;
 import com.plaid.link.configuration.PlaidProduct;
+import com.plaid.link.event.LinkEventMetadata;
 import com.plaid.link.result.LinkAccount;
 import com.plaid.link.result.LinkAccountSubtype;
 import com.plaid.link.result.LinkError;
 import com.plaid.link.result.LinkExitMetadata;
-import com.plaid.link.event.LinkEventMetadata;
 import com.plaid.link.result.LinkSuccessMetadata;
 import com.plaid.link.result.LinkResultHandler;
 
 /** PlaidFlutterPlugin */
-public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, ActivityAware, ActivityResultListener {
+public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, EventChannel.StreamHandler, ActivityAware, ActivityResultListener {
 
-  private static final String CHANNEL_NAME = "plugins.flutter.io/plaid_flutter";
+  private static final String METHOD_CHANNEL_NAME = "plugins.flutter.io/plaid_flutter";
+  private static final String EVENT_CHANNEL_NAME = "plugins.flutter.io/plaid_flutter/events";
 
   /// LinkConfiguration
   private static final String PUBLIC_KEY = "publicKey";
@@ -61,33 +63,40 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
   private static final String NO_LOADING_STATE = "noLoadingState";
 
   /// LinkResultHandler
-  private static final String METHOD_ON_SUCCESS = "onSuccess";
-  private static final String METHOD_ON_EXIT = "onExit";
-  private static final String METHOD_ON_EVENT = "onEvent";
+  private static final String EVENT_ON_SUCCESS = "success";
+  private static final String EVENT_ON_EXIT = "exit";
+  private static final String EVENT_ON_EVENT = "event";
   private static final String KEY_ERROR = "error";
   private static final String KEY_METADATA = "metadata";
   private static final String KEY_PUBLIC_TOKEN = "publicToken";
-  private static final String KEY_EVENT = "event";
+  private static final String KEY_NAME = "name";
+  private static final String KEY_TYPE = "type";
 
   // Prefix
   private static final String LINK_TOKEN_PREFIX = "link-";
 
   private ActivityPluginBinding binding;
   private Context context;
-  private MethodChannel channel;
+  private MethodChannel methodChannel;
+  private EventChannel eventChannel;
+  private EventSink eventSink;
 
+  /// Result handler
   private final LinkResultHandler resultHandler = new LinkResultHandler(
       linkSuccess -> {
         Map<String, Object> data = new HashMap<>();
 
+        data.put(KEY_TYPE, EVENT_ON_SUCCESS);
         data.put(KEY_PUBLIC_TOKEN, linkSuccess.getPublicToken());
         data.put(KEY_METADATA, mapFromSuccessMetadata(linkSuccess.getMetadata()));
 
-        channel.invokeMethod(METHOD_ON_SUCCESS, data);
+        sendEvent(data);
+
         return Unit.INSTANCE;
       },
       linkExit -> {
         Map<String, Object> data = new HashMap<>();
+        data.put(KEY_TYPE, EVENT_ON_EXIT);
         data.put(KEY_METADATA, mapFromExitMetadata(linkExit.getMetadata()));
 
         LinkError error = linkExit.getError();
@@ -96,7 +105,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
           data.put(KEY_ERROR, mapFromError(error));
         }
 
-        channel.invokeMethod(METHOD_ON_EXIT, data);
+        sendEvent(data);
         return Unit.INSTANCE;
       }
   );
@@ -105,20 +114,20 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-    onAttachedToEngine(binding.getApplicationContext(), binding.getBinaryMessenger());
+    this.context = binding.getApplicationContext();
+    this.methodChannel = new MethodChannel(binding.getBinaryMessenger(), METHOD_CHANNEL_NAME);
+    this.methodChannel.setMethodCallHandler(this);
+    this.eventChannel = new EventChannel(binding.getBinaryMessenger(), EVENT_CHANNEL_NAME);
+    this.eventChannel.setStreamHandler(this);
   }
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     this.context = null;
-    this.channel.setMethodCallHandler(null);
-    this.channel = null;
-  }
-
-  private void onAttachedToEngine(Context context, BinaryMessenger messenger) {
-    this.context = context;
-    this.channel = new MethodChannel(messenger, CHANNEL_NAME);
-    this.channel.setMethodCallHandler(this);
+    this.methodChannel.setMethodCallHandler(null);
+    this.methodChannel = null;
+    this.eventChannel.setStreamHandler(null);
+    this.eventChannel = null;
   }
 
   /// MethodCallHandler
@@ -167,18 +176,39 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
     return resultHandler.onActivityResult(requestCode, resultCode, intent);
   }
 
+  /// EventChannel.StreamHandler
+
+  @Override
+  public void onListen(Object arguments, EventChannel.EventSink events) {
+    eventSink = events;
+  }
+
+  @Override
+  public void onCancel(Object arguments) {
+    eventSink = null;
+  }
+
+  private void sendEvent(Object argument) {
+    if (eventSink != null) {
+      eventSink.success(argument);
+    }
+  }
+
+  /// Exposed methods
+
   private void open(Map<String, Object> arguments) {
     if (binding == null) {
       Log.w("PlaidFlutterPlugin", "Activity not attached");
       throw new IllegalStateException("Activity not attached");
     }
 
-    Plaid.setLinkEventListener( linkEvent -> {
+    Plaid.setLinkEventListener(linkEvent -> {
       Map<String, Object> data = new HashMap<>();
-      data.put(KEY_EVENT, linkEvent.getEventName().toString());
+      data.put(KEY_TYPE, EVENT_ON_EVENT);
+      data.put(KEY_NAME, linkEvent.getEventName().toString());
       data.put(KEY_METADATA, mapFromEventMetadata(linkEvent.getMetadata()));
 
-      channel.invokeMethod(METHOD_ON_EVENT, data);
+      sendEvent(data);
       return Unit.INSTANCE;
     });
 
@@ -216,6 +246,8 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
       binding.getActivity().startActivity(intent);
     }
   }
+
+  /// Configuration Parsing
 
   private LinkTokenConfiguration getLinkTokenConfiguration(Map<String, Object> arguments) {
     String token = (String) arguments.get(TOKEN);
@@ -328,6 +360,8 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
     return configuration.build();
   }
 
+  /// Metadata Parsing
+
   private Map<String, String> mapFromError(LinkError error) {
     Map<String, String> result = new HashMap<>();
 
@@ -403,5 +437,6 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Act
 
     return result;
   }
+
 }
 

@@ -1,6 +1,5 @@
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-
 import 'package:plaid_flutter/plaid_flutter.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'plaid_method_channel.dart';
 
@@ -22,14 +21,10 @@ abstract class PlaidPlatformInterface extends PlatformInterface {
     _instance = instance;
   }
 
-  /// Called on a successfull account link.
-  LinkSuccessHandler? onSuccess;
-
-  /// Called when a user exits the Plaid Link flow.
-  LinkExitHandler? onExit;
-
-  /// Called when a Plaid Link event occurs.
-  LinkEventHandler? onEvent;
+  /// A broadcast stream from the native platform
+  Stream<LinkObject> get onObject {
+    throw UnimplementedError('onObject has not been implemented.');
+  }
 
   /// Initializes the Plaid Link flow on the device.
   Future<void> open({required LinkConfiguration configuration}) async {

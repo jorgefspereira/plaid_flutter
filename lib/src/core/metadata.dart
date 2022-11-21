@@ -12,13 +12,13 @@ class LinkError {
 
   /// A user-friendly representation of the error code or nil if the error is not related to user action.
   /// This may change over time and is not safe for programmatic use.
-  final String displayMessage;
+  final String? displayMessage;
 
   LinkError({
     required this.code,
     required this.type,
     required this.message,
-    required this.displayMessage,
+    this.displayMessage,
   });
 
   factory LinkError.fromJson(dynamic json) {
@@ -116,10 +116,17 @@ class LinkSuccessMetadata {
   /// A unique identifier associated with a user's actions and events through the Link flow. Include this identifier when opening a support ticket for faster turnaround.
   final String linkSessionId;
 
-  /// An institution object
+  /// An object with two properties:
+  ///   * name: The full institution name, such as 'Bank of America'
+  ///   * institution_id: The institution ID, such as ins_100000
   final LinkInstitution institution;
 
-  /// A list of accounts attached to the connected Item
+  /// A list of objects with the following properties:
+  ///   * id: the id of the selected account
+  ///   * name: the name of the selected account
+  ///   * mask: the last 2-4 alphanumeric characters of an account's official account number. Note that the mask may be non-unique between an Item's accounts, it may also not match the mask that the bank displays to the user. This field is nullable.
+  ///   * type: the account type
+  ///   * subtype: the account subtype
   final List<LinkAccount> accounts;
 
   LinkSuccessMetadata({
@@ -172,7 +179,9 @@ class LinkExitMetadata {
   /// A unique identifier associated with a user's actions and events through the Link flow. Include this identifier when opening a support ticket for faster turnaround.
   final String linkSessionId;
 
-  /// An institution object
+  /// An object with two properties:
+  ///   * name: The full institution name, such as 'Bank of America'
+  ///   * institution_id: The institution ID, such as ins_100000
   final LinkInstitution institution;
 
   LinkExitMetadata({

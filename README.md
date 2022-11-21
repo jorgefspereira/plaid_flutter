@@ -1,9 +1,9 @@
 # Plaid Link for Flutter
 
 [![pub](https://img.shields.io/pub/v/plaid_flutter.svg)](https://pub.dev/packages/plaid_flutter)
-[![points](https://badges.bar/plaid_flutter/pub%20points)](https://pub.dev/packages/plaid_flutter)
-[![popularity](https://badges.bar/plaid_flutter/popularity)](https://pub.dev/packages/plaid_flutter)
-[![likes](https://badges.bar/plaid_flutter/likes)](https://pub.dev/packages/plaid_flutter)
+[![points](https://img.shields.io/pub/points/plaid_flutter)](https://pub.dev/packages/plaid_flutter)
+[![popularity](https://img.shields.io/pub/popularity/plaid_flutter)](https://pub.dev/packages/plaid_flutter)
+[![likes](https://img.shields.io/pub/likes/plaid_flutter)](https://pub.dev/packages/plaid_flutter)
 [![donate](https://img.shields.io/badge/Buy%20me%20a%20beer-orange.svg)](https://www.buymeacoffee.com/jpereira)
 
 A Flutter plugin for [Plaid Link](https://plaid.com/docs/link).
@@ -27,11 +27,7 @@ LinkConfiguration configuration = LinkTokenConfiguration(
     token: "<GENERATED_LINK_TOKEN>",
 );
 
-_plaidLink = PlaidLink(
-    configuration: configuration,
-);
-
-_plaidLink.open();
+PlaidLink.open(configuration: configuration)
 
 ...
 

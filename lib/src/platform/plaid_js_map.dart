@@ -6,7 +6,7 @@ import 'package:js/js_util.dart';
 
 @JS()
 class Plaid {
-  external static Plaid create(Configuration options);
+  external static Plaid create(WebConfiguration options);
 
   external void open();
   external void exit();
@@ -15,53 +15,29 @@ class Plaid {
 
 @JS()
 @anonymous
-class Configuration {
-  external String get clientName;
-  external String get env;
-  external String get key;
-  external List<dynamic> get product;
+class WebConfiguration {
+  external String? clientName;
+  external String? env;
+  external String? key;
+  external List<dynamic>? product;
+  external List<dynamic>? countryCodes;
+  external String? webhook;
+  external String? linkCustomizationName;
+  external String? language;
+  external String? oauthNonce;
+  external String? oauthRedirectUri;
+  external String? oauthStateId;
+  external String? token;
+  external String? paymentToken;
+  external String? userLegalName;
+  external String? userEmailAddress;
+  external String? userPhoneNumber;
+  external String? receivedRedirectUri;
 
-  external void Function(String publicToken, dynamic metadata) get onSuccess;
-  external void Function() get onLoad;
-  external void Function(dynamic error, dynamic metadata) get onExit;
-  external void Function(String eventName, dynamic metadata) get onEvent;
-
-  external List<dynamic> get countryCodes;
-  external String get webhook;
-  external String get linkCustomizationName;
-  external String get language;
-  external String get oauthNonce;
-  external String get oauthRedirectUri;
-  external String get oauthStateId;
-  external String get token;
-  external String get paymentToken;
-
-  external String get userLegalName;
-  external String get userEmailAddress;
-  external String get userPhoneNumber;
-
-  external factory Configuration({
-    String? clientName,
-    String? env,
-    String? key,
-    List<dynamic>? product,
-    List<dynamic>? countryCodes,
-    String? webhook,
-    String? linkCustomizationName,
-    String? language,
-    String? oauthNonce,
-    String? oauthRedirectUri,
-    String? oauthStateId,
-    String? token,
-    String? paymentToken,
-    String? userLegalName,
-    String? userEmailAddress,
-    String? userPhoneNumber,
-    void Function(String publicToken, dynamic metadata)? onSuccess,
-    void Function()? onLoad,
-    void Function(dynamic error, dynamic metadata)? onExit,
-    void Function(String eventName, dynamic metadata)? onEvent,
-  });
+  external void Function(String publicToken, dynamic metadata) onSuccess;
+  external void Function() onLoad;
+  external void Function(dynamic error, dynamic metadata) onExit;
+  external void Function(String eventName, dynamic metadata) onEvent;
 }
 
 /// A workaround to converting an object from JS to a Dart Map.

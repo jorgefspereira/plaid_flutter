@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:plaid_flutter/plaid_flutter.dart';
 
@@ -9,50 +11,72 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late LegacyLinkConfiguration _publicKeyConfiguration;
-  late LinkTokenConfiguration _linkTokenConfiguration;
+  LinkConfiguration? _configuration;
+  StreamSubscription<LinkEvent>? _streamEvent;
+  StreamSubscription<LinkExit>? _streamExit;
+  StreamSubscription<LinkSuccess>? _streamSuccess;
+  LinkObject? _successObject;
 
   @override
   void initState() {
     super.initState();
 
-    _publicKeyConfiguration = LegacyLinkConfiguration(
-      clientName: "CLIENT_NAME",
-      publicKey: "PUBLIC_KEY",
-      environment: LinkEnvironment.sandbox,
-      products: <LinkProduct>[
-        LinkProduct.auth,
-      ],
-      language: "en",
-      countryCodes: ['US'],
-      userLegalName: "John Appleseed",
-      userEmailAddress: "jappleseed@youapp.com",
-      userPhoneNumber: "+1 (512) 555-1234",
-    );
-
-    _linkTokenConfiguration = LinkTokenConfiguration(
-      token: "GENERATED_LINK_TOKEN",
-    );
-
-    PlaidLink.onSuccess(_onSuccessCallback);
-    PlaidLink.onEvent(_onEventCallback);
-    PlaidLink.onExit(_onExitCallback);
+    _streamEvent = PlaidLink.onEvent.listen(_onEvent);
+    _streamExit = PlaidLink.onExit.listen(_onExit);
+    _streamSuccess = PlaidLink.onSuccess.listen(_onSuccess);
   }
 
-  void _onSuccessCallback(String publicToken, LinkSuccessMetadata metadata) {
-    print("onSuccess: $publicToken, metadata: ${metadata.description()}");
+  @override
+  void dispose() {
+    _streamEvent?.cancel();
+    _streamExit?.cancel();
+    _streamSuccess?.cancel();
+    super.dispose();
   }
 
-  void _onEventCallback(String event, LinkEventMetadata metadata) {
-    print("onEvent: $event, metadata: ${metadata.description()}");
+  void _createLegacyTokenConfiguration() {
+    setState(() {
+      _configuration = LegacyLinkConfiguration(
+        clientName: "CLIENT_NAME",
+        publicKey: "PUBLIC_KEY",
+        environment: LinkEnvironment.sandbox,
+        products: <LinkProduct>[
+          LinkProduct.auth,
+        ],
+        language: "en",
+        countryCodes: ['US'],
+        userLegalName: "John Appleseed",
+        userEmailAddress: "jappleseed@youapp.com",
+        userPhoneNumber: "+1 (512) 555-1234",
+      );
+    });
   }
 
-  void _onExitCallback(LinkError? error, LinkExitMetadata metadata) {
-    print("onExit metadata: ${metadata.description()}");
+  void _createLinkTokenConfiguration() {
+    setState(() {
+      _configuration = LinkTokenConfiguration(
+        token: "GENERATED_LINK_TOKEN",
+      );
+    });
+  }
 
-    if (error != null) {
-      print("onExit error: ${error.description()}");
-    }
+  void _onEvent(LinkEvent event) {
+    final name = event.name;
+    final metadata = event.metadata.description();
+    print("onEvent: $name, metadata: $metadata");
+  }
+
+  void _onSuccess(LinkSuccess event) {
+    final token = event.publicToken;
+    final metadata = event.metadata.description();
+    print("onSuccess: $token, metadata: $metadata");
+    setState(() => _successObject = event);
+  }
+
+  void _onExit(LinkExit event) {
+    final metadata = event.metadata.description();
+    final error = event.error?.description();
+    print("onExit metadata: $metadata, error: $error");
   }
 
   @override
@@ -65,16 +89,37 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              Expanded(
+                child: Center(
+                  child: Text(
+                    _configuration?.toJson().toString() ?? "",
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
               ElevatedButton(
-                onPressed: () =>
-                    PlaidLink.open(configuration: _publicKeyConfiguration),
-                child: Text("Open Plaid Link (Public Key)"),
+                onPressed: _createLegacyTokenConfiguration,
+                child: Text("Create Legacy Token Configuration"),
               ),
               SizedBox(height: 15),
               ElevatedButton(
-                onPressed: () =>
-                    PlaidLink.open(configuration: _linkTokenConfiguration),
-                child: Text("Open Plaid Link (Link Token)"),
+                onPressed: _createLinkTokenConfiguration,
+                child: Text("Create Link Token Configuration"),
+              ),
+              SizedBox(height: 15),
+              ElevatedButton(
+                onPressed: _configuration != null
+                    ? () => PlaidLink.open(configuration: _configuration!)
+                    : null,
+                child: Text("Open"),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    _successObject?.toJson().toString() ?? "",
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
             ],
           ),
