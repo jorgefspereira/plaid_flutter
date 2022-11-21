@@ -22,8 +22,8 @@ abstract class PlaidPlatformInterface extends PlatformInterface {
   }
 
   /// A broadcast stream from the native platform
-  Stream<LinkObject> get onEvent {
-    throw UnimplementedError('onEvent has not been implemented.');
+  Stream<LinkObject> get onObject {
+    throw UnimplementedError('onObject has not been implemented.');
   }
 
   /// Initializes the Plaid Link flow on the device.

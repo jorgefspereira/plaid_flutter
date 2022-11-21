@@ -16,10 +16,10 @@ import 'plaid_platform_interface.dart';
 /// A web implementation of the PlaidFlutter plugin.
 class PlaidFlutterPlugin extends PlaidPlatformInterface {
   /// Event stream controller
-  StreamController<LinkObject>? _eventsController;
+  StreamController<LinkObject>? _onObjectsController;
 
   /// Event stream
-  late Stream<LinkObject> _events;
+  late Stream<LinkObject> _onObjects;
 
   /// Factory method that initializes the Plaid plugin platform with an instance
   /// of the plugin for the web.
@@ -53,9 +53,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
     /// onExit handler
     options.onExit = allowInterop((error, metadata) {
-      Map<String, dynamic> data = {
-        'metadata': mapFromExitMetadata(jsToMap(metadata))
-      };
+      Map<String, dynamic> data = {'metadata': mapFromExitMetadata(jsToMap(metadata))};
 
       if (error != null) {
         data["error"] = mapFromError(jsToMap(error));
@@ -83,10 +81,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
       options.oauthNonce = configuration.oauthConfiguration?.nonce;
       options.oauthRedirectUri = configuration.oauthConfiguration?.redirectUri;
       options.countryCodes = configuration.countryCodes ?? [''];
-      options.product = configuration.products
-              ?.map((p) => p.toString().split('.').last)
-              .toList() ??
-          [''];
+      options.product = configuration.products?.map((p) => p.toString().split('.').last).toList() ?? [''];
     }
 
     Plaid.create(options).open();
@@ -97,20 +92,20 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
   /// Send [LinkObject] event to stream
   void _sendEvent(LinkObject obj) {
-    if (_eventsController != null) {
-      _eventsController!.add(obj);
+    if (_onObjectsController != null) {
+      _onObjectsController!.add(obj);
     }
   }
 
   /// A broadcast stream for plaid events
   @override
-  Stream<LinkObject> get onEvent {
-    if (_eventsController == null) {
-      _eventsController = StreamController<LinkObject>();
-      _events = _eventsController!.stream.asBroadcastStream();
+  Stream<LinkObject> get onObject {
+    if (_onObjectsController == null) {
+      _onObjectsController = StreamController<LinkObject>();
+      _onObjects = _onObjectsController!.stream.asBroadcastStream();
     }
 
-    return _events;
+    return _onObjects;
   }
 
   Map<String, dynamic> mapFromError(Map<dynamic, dynamic> data) {
@@ -129,10 +124,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
     Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
 
-    result["institution"] = {
-      "id": institutionMap["institution_id"] ?? "",
-      "name": institutionMap["name"] ?? ""
-    };
+    result["institution"] = {"id": institutionMap["institution_id"] ?? "", "name": institutionMap["name"] ?? ""};
     result["linkSessionId"] = data["link_session_id"] ?? "";
 
     List<dynamic> accountsList = [];
@@ -166,10 +158,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
     if (data["institution"] != null) {
       Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
-      result["institution"] = {
-        "id": institutionMap["institution_id"] ?? "",
-        "name": institutionMap["name"] ?? ""
-      };
+      result["institution"] = {"id": institutionMap["institution_id"] ?? "", "name": institutionMap["name"] ?? ""};
     }
 
     return result;

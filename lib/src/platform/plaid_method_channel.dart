@@ -14,11 +14,11 @@ class PlaidMethodChannel extends PlaidPlatformInterface {
       const EventChannel('plugins.flutter.io/plaid_flutter/events');
 
   /// A broadcast stream from the native platform
-  Stream<LinkObject>? _onEvent;
+  Stream<LinkObject>? _onObject;
 
   @override
-  Stream<LinkObject> get onEvent {
-    _onEvent ??= _eventChannel.receiveBroadcastStream().map((dynamic event) {
+  Stream<LinkObject> get onObject {
+    _onObject ??= _eventChannel.receiveBroadcastStream().map((dynamic event) {
       switch (event['type']) {
         case 'success':
           return LinkSuccess.fromJson(event);
@@ -29,7 +29,7 @@ class PlaidMethodChannel extends PlaidPlatformInterface {
       }
     });
 
-    return _onEvent!;
+    return _onObject!;
   }
 
   /// Initializes the Plaid Link flow on the device.

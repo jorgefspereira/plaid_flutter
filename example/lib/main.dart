@@ -12,18 +12,25 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   LinkConfiguration? _configuration;
-  StreamSubscription<LinkObject>? _stream;
+  StreamSubscription<LinkEvent>? _streamEvent;
+  StreamSubscription<LinkExit>? _streamExit;
+  StreamSubscription<LinkSuccess>? _streamSuccess;
   LinkObject? _successObject;
 
   @override
   void initState() {
     super.initState();
-    _stream = PlaidLink.onEvent.listen(_onEvent);
+
+    _streamEvent = PlaidLink.onEvent.listen(_onEvent);
+    _streamExit = PlaidLink.onExit.listen(_onExit);
+    _streamSuccess = PlaidLink.onSuccess.listen(_onSuccess);
   }
 
   @override
   void dispose() {
-    _stream?.cancel();
+    _streamEvent?.cancel();
+    _streamExit?.cancel();
+    _streamSuccess?.cancel();
     super.dispose();
   }
 
@@ -53,18 +60,23 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void _onEvent(LinkObject event) {
-    if (event is LinkEvent) {
-      print(
-          "onEvent: ${event.name}, metadata: ${event.metadata.description()}");
-    } else if (event is LinkSuccess) {
-      print(
-          "onSuccess: ${event.publicToken}, metadata: ${event.metadata.description()}");
-      setState(() => _successObject = event);
-    } else if (event is LinkExit) {
-      print(
-          "onExit metadata: ${event.metadata.description()}, error: ${event.error?.description()}");
-    }
+  void _onEvent(LinkEvent event) {
+    final name = event.name;
+    final metadata = event.metadata.description();
+    print("onEvent: $name, metadata: $metadata");
+  }
+
+  void _onSuccess(LinkSuccess event) {
+    final token = event.publicToken;
+    final metadata = event.metadata.description();
+    print("onSuccess: $token, metadata: $metadata");
+    setState(() => _successObject = event);
+  }
+
+  void _onExit(LinkExit event) {
+    final metadata = event.metadata.description();
+    final error = event.error?.description();
+    print("onExit metadata: $metadata, error: $error");
   }
 
   @override
@@ -96,9 +108,7 @@ class _MyAppState extends State<MyApp> {
               ),
               SizedBox(height: 15),
               ElevatedButton(
-                onPressed: _configuration != null
-                    ? () => PlaidLink.open(configuration: _configuration!)
-                    : null,
+                onPressed: _configuration != null ? () => PlaidLink.open(configuration: _configuration!) : null,
                 child: Text("Open"),
               ),
               Expanded(
