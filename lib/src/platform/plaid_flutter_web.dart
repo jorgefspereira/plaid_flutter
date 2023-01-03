@@ -62,6 +62,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
       }
 
       _sendEvent(LinkExit.fromJson(data));
+      _dispose();
     });
 
     /// onLoad handler
@@ -95,11 +96,15 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
   /// Closes Plaid Link View
   Future<void> close() async {}
 
+  /// Dispose objects
+  void _dispose() {
+    _onObjectsController?.close();
+    _onObjectsController = null;
+  }
+
   /// Send [LinkObject] event to stream
   void _sendEvent(LinkObject obj) {
-    if (_onObjectsController != null) {
-      _onObjectsController!.add(obj);
-    }
+    _onObjectsController?.add(obj);
   }
 
   /// A broadcast stream for plaid events
@@ -142,11 +147,11 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
       Map<String, dynamic> account = {};
 
       account["id"] = accountMap["id"] ?? "";
-      account["mask"] = accountMap["mask"] ?? "";
       account["name"] = accountMap["name"] ?? "";
       account["type"] = accountMap["type"] ?? "";
       account["subtype"] = accountMap["subtype"] ?? "";
-      account["verificationStatus"] = accountMap["verification_status"] ?? "";
+      account["mask"] = accountMap["mask"];
+      account["verificationStatus"] = accountMap["verification_status"];
 
       accountsList.add(account);
     }
