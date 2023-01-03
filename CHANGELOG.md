@@ -1,3 +1,7 @@
+## 3.0.1
+
+* Changed LinkAccount parameters 'mask' and 'verificationStatus' to optional
+
 ## 3.0.0
 
 * Added receivedRedirectUri property to Web
