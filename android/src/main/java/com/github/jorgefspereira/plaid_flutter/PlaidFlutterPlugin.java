@@ -413,7 +413,11 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
       aux.put("name", a.getName());
       aux.put("type", a.getSubtype().getAccountType().getJson());
       aux.put("subtype", a.getSubtype().getJson());
-      aux.put("verificationStatus", a.getVerificationStatus() == null ? "" : a.getVerificationStatus().getJson());
+
+      if (a.getVerificationStatus() != null) {
+        aux.put("verificationStatus", a.getVerificationStatus().getJson());
+      }
+
       accounts.add(aux);
     }
 

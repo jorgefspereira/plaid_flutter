@@ -568,14 +568,22 @@ static NSString* const kTypeKey = @"type";
 }
 
 + (NSDictionary *)dictionaryFromAccount:(PLKAccount *)account {
-    return @{
-        @"id": account.ID ?: @"",
-        @"name": account.name ?: @"",
-        @"mask": account.mask ?: @"",
-        @"subtype": [PlaidFlutterPlugin subtypeNameForAccountSubtype:account.subtype] ?: @"",
-        @"type": [PlaidFlutterPlugin typeNameForAccountSubtype:account.subtype] ?: @"",
-        @"verificationStatus": [PlaidFlutterPlugin stringForVerificationStatus:account.verificationStatus] ?: @"",
-    };
+    NSMutableDictionary* result = [[NSMutableDictionary alloc] init];
+    
+    [result setObject:account.ID ?: @"" forKey:@"id"];
+    [result setObject:account.name ?: @"" forKey:@"name"];
+    [result setObject:[PlaidFlutterPlugin subtypeNameForAccountSubtype:account.subtype] ?: @"" forKey:@"subtype"];
+    [result setObject:[PlaidFlutterPlugin typeNameForAccountSubtype:account.subtype] ?: @"" forKey:@"type"];
+   
+    if(account.mask) {
+        [result setObject:account.mask forKey:@"mask"];
+    }
+    
+    if (account.verificationStatus) {
+        [result setObject:[PlaidFlutterPlugin stringForVerificationStatus:account.verificationStatus] ?: @"" forKey:@"verificationStatus"];
+    }
+    
+    return [result copy];
 }
 
 + (NSArray<NSDictionary *> *)accountsDictionariesFromAccounts:(NSArray<PLKAccount *> *)accounts {

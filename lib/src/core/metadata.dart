@@ -66,7 +66,7 @@ class LinkAccount {
   final String id;
 
   /// The last 2-4 alphanumeric characters of an account's official account number. Note that the mask may be non-unique between an Item's accounts, it may also not match the mask that the bank displays to the user. This field is nullable.
-  final String mask;
+  final String? mask;
 
   /// The name of the selected account
   final String name;
@@ -84,7 +84,7 @@ class LinkAccount {
   /// - manually_verified: The Item has successfully been manually verified.
   /// - verification_expired: Plaid was unable to automatically verify the deposit within 7 calendar days and will no longer attempt to validate the Item. Users may retry by submitting their information again through Link.
   /// - verification_failed: The Item failed manual micro-deposit verification because the user exhausted all 3 verification attempts. Users may retry by submitting their information again through Link.
-  final String verificationStatus;
+  final String? verificationStatus;
 
   LinkAccount({
     required this.id,
@@ -137,7 +137,7 @@ class LinkSuccessMetadata {
 
   factory LinkSuccessMetadata.fromJson(dynamic json) {
     List<LinkAccount> accountsArray = [];
-
+    
     for (dynamic accountInfo in json["accounts"]) {
       accountsArray.add(LinkAccount.fromJson(accountInfo));
     }
