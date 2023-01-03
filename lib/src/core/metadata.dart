@@ -137,7 +137,7 @@ class LinkSuccessMetadata {
 
   factory LinkSuccessMetadata.fromJson(dynamic json) {
     List<LinkAccount> accountsArray = [];
-    
+
     for (dynamic accountInfo in json["accounts"]) {
       accountsArray.add(LinkAccount.fromJson(accountInfo));
     }
