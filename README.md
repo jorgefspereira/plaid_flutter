@@ -16,6 +16,8 @@ This plugin integrates the native SDKs:
 
 Feel free to leave any feedback [here](https://github.com/jorgefspereira/plaid_flutter/issues).
 
+:warning: All integrations must migrate to version 3.1.0 or later (requires version 4.1.0 or later of the iOS LinkKit SDK) by June 30, 2023, to maintain support for Chase OAuth on iOS
+
 ## Requirements
 
 In order to initialize Plaid Link, you will need to create a link_token at [/link/token/create](https://plaid.com/docs/#create-link-token). After generating a link_token, you'll need to pass it into your app and use it to launch Link:
@@ -46,7 +48,7 @@ Add `plaid_flutter` as a [dependency in your pubspec.yaml file](https://flutter.
 ### Requirements
 
 - iOS version >= 11.0
-- Xcode 11.5 or greater
+- Xcode 14 or greater
 
 ### (Optional) - Register your redirect URI
 
@@ -64,6 +66,10 @@ Registering a redirect URI is required when working with OAuth, which is used fo
 #### Gradle Configuration
 
 Go to the project level `android/app/build.gradle` and make sure you are using a minSdk >= 21
+
+### Enable camera support (Identity Verification only)
+
+If your app uses Identity Verification, a user may need to take a picture of identity documentation or a selfie during the Link flow. To support this workflow, the CAMERA , WRITE_EXTERNAL_STORAGE, RECORD_AUDIO, and MODIFY_AUDIO_SETTINGS permissions need to be added to your application's AndroidManifest.xml.
 
 #### Register your App ID
 
