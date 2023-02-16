@@ -116,10 +116,10 @@ class LinkSuccessMetadata {
   /// A unique identifier associated with a user's actions and events through the Link flow. Include this identifier when opening a support ticket for faster turnaround.
   final String linkSessionId;
 
-  /// An object with two properties:
+  /// An institution object. If the Item was created via Same-Day micro-deposit verification, will be null.
   ///   * name: The full institution name, such as 'Bank of America'
   ///   * institution_id: The institution ID, such as ins_100000
-  final LinkInstitution institution;
+  final LinkInstitution? institution;
 
   /// A list of objects with the following properties:
   ///   * id: the id of the selected account
@@ -136,22 +136,16 @@ class LinkSuccessMetadata {
   });
 
   factory LinkSuccessMetadata.fromJson(dynamic json) {
-    List<LinkAccount> accountsArray = [];
-
-    for (dynamic accountInfo in json["accounts"]) {
-      accountsArray.add(LinkAccount.fromJson(accountInfo));
-    }
-
     return LinkSuccessMetadata(
       linkSessionId: json["linkSessionId"],
-      institution: LinkInstitution.fromJson(json["institution"]),
-      accounts: accountsArray,
+      institution: json["institution"] != null ? LinkInstitution.fromJson(json["institution"]) : null,
+      accounts: (json["accounts"] as List).map((info) => LinkAccount.fromJson(info)).toList(),
     );
   }
 
   String description() {
     String description =
-        "linkSessionId: $linkSessionId, institution.id: ${institution.id}, institution.name: ${institution.name}, accounts: ";
+        "linkSessionId: $linkSessionId, institution.id: ${institution?.id}, institution.name: ${institution?.name}, accounts: ";
 
     for (LinkAccount a in accounts) {
       description += a.description();
@@ -164,25 +158,26 @@ class LinkSuccessMetadata {
 /// The metadata object for the onExit callback
 class LinkExitMetadata {
   /// The value of the status key indicates the point at which the user exited the Link flow. Can be one of the following values:
-  /// - requires_questions: User prompted to answer security question(s)
-  /// - requires_selections: User prompted to answer multiple choice question(s)
-  /// - requires_code: User prompted to provide a one-time passcode
-  /// - choose_device: User prompted to select a device on which to receive a one-time passcode
-  /// - requires_credentials:	User prompted to provide credentials for the selected financial institution or has not yet selected a financial institution
-  /// - institution_not_found: User exited the Link flow after unsuccessfully (no results returned) searching for a financial institution
+  /// - requiresQuestions: User prompted to answer security question(s)
+  /// - requiresSelections: User prompted to answer multiple choice question(s)
+  /// - requiresCode: User prompted to provide a one-time passcode
+  /// - chooseDevice: User prompted to select a device on which to receive a one-time passcode
+  /// - requiresCredentials:	User prompted to provide credentials for the selected financial institution or has not yet selected a financial institution
+  /// - requiresAccountSelection: User prompted to select one or more financial accounts to share.
+  /// - institutionNotFound: User exited the Link flow after unsuccessfully (no results returned) searching for a financial institution
   /// - unknown: The exit status has not been defined in the current version of the SDK. The unknown case has an associated value carrying the original exit status as sent by the Plaid API.
-  final String status;
+  final String? status;
 
   /// The request ID for the last request made by Link. This can be shared with Plaid Support to expedite investigation.
-  final String requestId;
+  final String? requestId;
 
   /// A unique identifier associated with a user's actions and events through the Link flow. Include this identifier when opening a support ticket for faster turnaround.
-  final String linkSessionId;
+  final String? linkSessionId;
 
-  /// An object with two properties:
+  /// An institution object. If the Item was created via Same-Day micro-deposit verification, will be omitted.
   ///   * name: The full institution name, such as 'Bank of America'
   ///   * institution_id: The institution ID, such as ins_100000
-  final LinkInstitution institution;
+  final LinkInstitution? institution;
 
   LinkExitMetadata({
     required this.status,
@@ -196,52 +191,64 @@ class LinkExitMetadata {
       status: json["status"],
       requestId: json["requestId"],
       linkSessionId: json["linkSessionId"],
-      institution: LinkInstitution.fromJson(json["institution"]),
+      institution: json["institution"] != null ? LinkInstitution.fromJson(json["institution"]) : null,
     );
   }
 
   String description() {
-    return "status: $status, linkSessionId: $linkSessionId, requestId: $requestId, institution.id: ${institution.id}, institution.name: ${institution.name}";
+    return "status: $status, linkSessionId: $linkSessionId, requestId: $requestId, institution.id: ${institution?.id}, institution.name: ${institution?.name}";
   }
 }
 
 /// The metadata object for the onEvent callback
 class LinkEventMetadata {
   /// The error code that the user encountered. Emitted by: ERROR, EXIT.
-  final String errorCode;
+  final String? errorCode;
 
   /// The error message that the user encountered. Emitted by: ERROR, EXIT.
-  final String errorMesssage;
+  final String? errorMesssage;
 
   /// The error type that the user encountered. Emitted by: ERROR, EXIT.
-  final String errorType;
+  final String? errorType;
 
   /// The status key indicates the point at which the user exited the Link flow. Emitted by: EXIT.
-  final String exitStatus;
+  final String? exitStatus;
 
   /// The ID of the selected institution. Emitted by: all events.
-  final String institutionId;
+  final String? institutionId;
 
   /// The name of the selected institution. Emitted by: all events.
-  final String institutionName;
+  final String? institutionName;
 
   /// The query used to search for institutions. Emitted by: SEARCH_INSTITUTION.
-  final String institutionSearchQuery;
+  final String? institutionSearchQuery;
 
   /// The link_session_id is a unique identifier for a single session of Link. It's always available and will stay constant throughout the flow. Emitted by: all events.
   final String linkSessionId;
 
   /// If set, the user has encountered one of the following MFA types: code, device, questions, selections. Emitted by: SUBMIT_MFA and TRANSITION_VIEW when view_name is MFA.
-  final String mfaType;
+  final String? mfaType;
 
   /// The request ID for the last request made by Link. This can be shared with Plaid Support to expedite investigation. Emitted by: all events.
-  final String requestId;
+  final String? requestId;
 
   /// An ISO 8601 representation of when the event occurred. For example 2017-09-14T14:42:19.350Z. Emitted by: all events.
   final String timestamp;
 
   /// The name of the view that is being transitioned to. Emitted by: TRANSITION_VIEW.
-  final String viewName;
+  final String? viewName;
+
+  /// Either the verification method for a matched institution selected by the user or the Auth Type Select flow type selected by the user. If selection is used to describe selected verification method, then possible values are phoneotp or password;  if selection is used to describe the selected Auth Type Select flow, then possible values are flow_type_manual or flow_type_instant. Emitted by: MATCHED_SELECT_VERIFY_METHOD and SELECT_AUTH_TYPE.
+  final String? selection;
+
+  /// The routing number submitted by user at the micro-deposits routing number pane. Emitted by SUBMIT_ROUTING_NUMBER.
+  final String? routingNumber;
+
+  /// The reason this institution was matched, which will be either returning_user or routing_number. Emitted by: matchedSelectInstitution.
+  final String? matchReason;
+
+  /// The account number mask extracted from the user-provided account number. If the user-inputted account number is four digits long, account_number_mask is empty. Emitted by SUBMIT_ACCOUNT_NUMBER
+  final String? accountNumberMask;
 
   LinkEventMetadata({
     required this.viewName,
@@ -256,6 +263,10 @@ class LinkEventMetadata {
     required this.errorType,
     required this.errorCode,
     required this.errorMesssage,
+    required this.selection,
+    required this.routingNumber,
+    required this.matchReason,
+    required this.accountNumberMask,
   });
 
   factory LinkEventMetadata.fromJson(dynamic json) {
@@ -272,10 +283,14 @@ class LinkEventMetadata {
       errorType: json["errorType"],
       errorCode: json["errorCode"],
       errorMesssage: json["errorMessage"],
+      selection: json["selection"],
+      routingNumber: json["routingNumber"],
+      matchReason: json["matchReason"],
+      accountNumberMask: json["accountNumberMask"],
     );
   }
 
   String description() {
-    return "viewName: $viewName, exitStatus: $exitStatus, mfaType: $mfaType, requestId: $requestId, timestamp: $timestamp, linkSessionId: $linkSessionId, institutionId: $institutionId, institutionName: $institutionName, institutionSearchQuery: $institutionSearchQuery, errorType: $errorType, errorCode: $errorCode, errorMesssage: $errorMesssage";
+    return "viewName: $viewName, exitStatus: $exitStatus, mfaType: $mfaType, requestId: $requestId, timestamp: $timestamp, linkSessionId: $linkSessionId, institutionId: $institutionId, institutionName: $institutionName, institutionSearchQuery: $institutionSearchQuery, errorType: $errorType, errorCode: $errorCode, errorMesssage: $errorMesssage, selection: $selection, routingNumber: $routingNumber, matchReason: $matchReason, accountNumberMask: $accountNumberMask";
   }
 }
