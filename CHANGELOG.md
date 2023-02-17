@@ -1,3 +1,8 @@
+## 3.1.0
+
+* Fixed optional parameters on events metadata
+* Updated iOS SDK to 4.1.0  
+
 ## 3.0.1
 
 * Changed LinkAccount parameters 'mask' and 'verificationStatus' to optional
