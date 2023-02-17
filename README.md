@@ -49,6 +49,9 @@ Add `plaid_flutter` as a [dependency in your pubspec.yaml file](https://flutter.
 
 - iOS version >= 11.0
 - Xcode 14 or greater
+### (Identity Verification only) - Enable camera support 
+
+When using the Identity Verification product, the Link SDK may use the camera if a user needs to take a picture of identity documentation. To support this workflow, add a NSCameraUsageDescription entry to your application's plist with an informative string. 
 
 ### (Optional) - Register your redirect URI
 
@@ -67,7 +70,7 @@ Registering a redirect URI is required when working with OAuth, which is used fo
 
 Go to the project level `android/app/build.gradle` and make sure you are using a minSdk >= 21
 
-### Enable camera support (Identity Verification only)
+### (Identity Verification only) - Enable camera support
 
 If your app uses Identity Verification, a user may need to take a picture of identity documentation or a selfie during the Link flow. To support this workflow, the CAMERA , WRITE_EXTERNAL_STORAGE, RECORD_AUDIO, and MODIFY_AUDIO_SETTINGS permissions need to be added to your application's AndroidManifest.xml.
 
