@@ -138,8 +138,12 @@ class LinkSuccessMetadata {
   factory LinkSuccessMetadata.fromJson(dynamic json) {
     return LinkSuccessMetadata(
       linkSessionId: json["linkSessionId"],
-      institution: json["institution"] != null ? LinkInstitution.fromJson(json["institution"]) : null,
-      accounts: (json["accounts"] as List).map((info) => LinkAccount.fromJson(info)).toList(),
+      institution: json["institution"] != null
+          ? LinkInstitution.fromJson(json["institution"])
+          : null,
+      accounts: (json["accounts"] as List)
+          .map((info) => LinkAccount.fromJson(info))
+          .toList(),
     );
   }
 
@@ -191,7 +195,9 @@ class LinkExitMetadata {
       status: json["status"],
       requestId: json["requestId"],
       linkSessionId: json["linkSessionId"],
-      institution: json["institution"] != null ? LinkInstitution.fromJson(json["institution"]) : null,
+      institution: json["institution"] != null
+          ? LinkInstitution.fromJson(json["institution"])
+          : null,
     );
   }
 

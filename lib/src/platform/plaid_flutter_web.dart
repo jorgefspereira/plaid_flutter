@@ -99,7 +99,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
   /// Closes Plaid Link View
   Future<void> close() async {
-      _plaid.destroy();
+    _plaid.destroy();
   }
 
   /// Dispose objects
