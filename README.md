@@ -49,17 +49,23 @@ Add `plaid_flutter` as a [dependency in your pubspec.yaml file](https://flutter.
 
 - iOS version >= 11.0
 - Xcode 14 or greater
+
 ### (Identity Verification only) - Enable camera support 
 
-When using the Identity Verification product, the Link SDK may use the camera if a user needs to take a picture of identity documentation. To support this workflow, add a NSCameraUsageDescription entry to your application's plist with an informative string. 
+When using the Identity Verification product, the Link SDK may use the camera if a user needs to take a picture of identity documentation. To support this workflow, add a `NSCameraUsageDescription` entry to your `ios/Runner/Info.plist` with an informative string. 
 
-### (Optional) - Register your redirect URI
+### OAuth configuration
 
-Registering a redirect URI is required when working with OAuth, which is used for European integrations as well as integrations with some US financial institutions. To register your redirect app URI:
-- Log into your Plaid Dashboard at the API page
-- Next to Allowed redirect URIs click Configure then Add New URI
-- Enter your redirect URI, for example www.plaid.com/redirect
-- Click Save Changes. You may be prompted to re-enter your password.
+If your integration uses only Identity Verification or Monitor, this steps can be skipped; they are mandatory otherwise.
+
+Registering your redirect URI:
+
+- Sign in to the Plaid Dashboard and go to the Team Settings -> API page.
+- Next to Allowed redirect URIs click Configure then Add New URI.
+- Enter your redirect URI, which you must also set up as a Universal Link for your application, for example: https://app.example.com/plaid/.
+- Click Save Changes
+
+These redirect URIs must be set up as [Universal Links](https://developer.apple.com/ios/universal-links/) in your application.
 
 *More info at [https://plaid.com/docs/link/ios](https://plaid.com/docs/link/ios).*
 
@@ -72,17 +78,16 @@ Go to the project level `android/app/build.gradle` and make sure you are using a
 
 ### (Identity Verification only) - Enable camera support
 
-If your app uses Identity Verification, a user may need to take a picture of identity documentation or a selfie during the Link flow. To support this workflow, the CAMERA , WRITE_EXTERNAL_STORAGE, RECORD_AUDIO, and MODIFY_AUDIO_SETTINGS permissions need to be added to your application's AndroidManifest.xml.
+If your app uses Identity Verification, a user may need to take a picture of identity documentation or a selfie during the Link flow. To support this workflow, the CAMERA, WRITE_EXTERNAL_STORAGE, RECORD_AUDIO, and MODIFY_AUDIO_SETTINGS permissions need to be added to your application's `AndroidManifest.xml`.
 
 #### Register your App ID
 
-- Log into your Plaid Dashboard at the API page
-- Next to Allowed Android Package Names click Configure then Add New Android Package Name
-- Enter your package name, for example com.plaid.example
-- Click Save Changes, you may be prompted to re-enter your password
+- Sign in to the Plaid Dashboard and go to the Team Settings -> API page.
+- Next to Allowed Android Package Names click Configure then Add New Android Package Name.
+- Enter your package name, for example com.plaid.example.
+- Click Save Changes.
 
 ![](https://raw.githubusercontent.com/jorgefspereira/plaid_flutter/master/doc/images/register-app-id.png)
-
 
 *More info at [https://plaid.com/docs/link/android](https://plaid.com/docs/link/android).*
 
