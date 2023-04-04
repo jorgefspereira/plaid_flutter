@@ -1,3 +1,9 @@
+## 3.1.1
+
+* Fixed typo on LinkEventMetadata
+* Updated Android SDK to 3.11.0
+* Updated iOS SDK to 4.2.0  
+
 ## 3.1.0
 
 * Fixed optional parameters on events metadata

@@ -1,11 +1,11 @@
 name: plaid_flutter
 description: Plaid Link for Flutter. Integrates the native iOS, Android and Web SDKs.
-version: 3.1.0
+version: 3.1.1
 homepage: https://github.com/jorgefspereira/plaid_flutter
 repository: https://github.com/jorgefspereira/plaid_flutter
 issue_tracker: https://github.com/jorgefspereira/plaid_flutter/issues
 screenshots:
-  - description: The persona logo.
+  - description: The plaid logo.
     path: doc/screenshots/logo.jpg
 
 environment:
