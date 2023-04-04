@@ -212,7 +212,7 @@ class LinkEventMetadata {
   final String? errorCode;
 
   /// The error message that the user encountered. Emitted by: ERROR, EXIT.
-  final String? errorMesssage;
+  final String? errorMessage;
 
   /// The error type that the user encountered. Emitted by: ERROR, EXIT.
   final String? errorType;
@@ -268,7 +268,7 @@ class LinkEventMetadata {
     required this.institutionSearchQuery,
     required this.errorType,
     required this.errorCode,
-    required this.errorMesssage,
+    required this.errorMessage,
     required this.selection,
     required this.routingNumber,
     required this.matchReason,
@@ -288,7 +288,7 @@ class LinkEventMetadata {
       institutionSearchQuery: json["institutionSearchQuery"],
       errorType: json["errorType"],
       errorCode: json["errorCode"],
-      errorMesssage: json["errorMessage"],
+      errorMessage: json["errorMessage"],
       selection: json["selection"],
       routingNumber: json["routingNumber"],
       matchReason: json["matchReason"],
@@ -297,6 +297,6 @@ class LinkEventMetadata {
   }
 
   String description() {
-    return "viewName: $viewName, exitStatus: $exitStatus, mfaType: $mfaType, requestId: $requestId, timestamp: $timestamp, linkSessionId: $linkSessionId, institutionId: $institutionId, institutionName: $institutionName, institutionSearchQuery: $institutionSearchQuery, errorType: $errorType, errorCode: $errorCode, errorMesssage: $errorMesssage, selection: $selection, routingNumber: $routingNumber, matchReason: $matchReason, accountNumberMask: $accountNumberMask";
+    return "viewName: $viewName, exitStatus: $exitStatus, mfaType: $mfaType, requestId: $requestId, timestamp: $timestamp, linkSessionId: $linkSessionId, institutionId: $institutionId, institutionName: $institutionName, institutionSearchQuery: $institutionSearchQuery, errorType: $errorType, errorCode: $errorCode, errorMessage: $errorMessage,  selection: $selection, routingNumber: $routingNumber, matchReason: $matchReason, accountNumberMask: $accountNumberMask";
   }
 }
