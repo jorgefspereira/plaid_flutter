@@ -789,7 +789,7 @@ static NSString* const kTypeKey = @"type";
         case PLKViewNameValueRiskCheck:
             return @"RISK_CHECK";
         case PLKViewNameValueScreening:
-            return @"VALUE_SCREENING";
+            return @"SCREENING";
         case PLKViewNameValueSelectAccount:
             return @"SELECT_ACCOUNT";
         case PLKViewNameValueSelectInstitution:
