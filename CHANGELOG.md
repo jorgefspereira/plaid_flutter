@@ -1,3 +1,12 @@
+## 3.1.2
+
+* Flutter 3.10 support
+* Dart 3 support
+* Fixed jsToMap to handle null on web. Thank you @rs-follow
+* Fixed Screening View Name
+* Updated iOS SDK to 4.4.0
+* Updated Android SDK to 3.13.2
+
 ## 3.1.1
 
 * Fixed typo on LinkEventMetadata
