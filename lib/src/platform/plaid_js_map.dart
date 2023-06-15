@@ -43,9 +43,9 @@ class WebConfiguration {
 /// A workaround to converting an object from JS to a Dart Map.
 Map jsToMap(jsObject) {
   if (jsObject == null) {
-    return Map(); 
+    return Map();
   }
-  
+
   return new Map.fromIterable(
     _getKeysOfObject(jsObject),
     value: (key) => getProperty(jsObject, key),
