@@ -25,6 +25,7 @@ class LinkSuccess extends LinkObject {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'publicToken': publicToken,
@@ -53,6 +54,7 @@ class LinkExit extends LinkObject {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'error': error,
@@ -110,6 +112,8 @@ class LinkEvent extends LinkObject {
       metadata: LinkEventMetadata.fromJson(json["metadata"]),
     );
   }
+
+  @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'name': name,

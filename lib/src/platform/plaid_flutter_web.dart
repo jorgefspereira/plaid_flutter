@@ -31,6 +31,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
   }
 
   /// Initializes the Plaid Link flow on the device.
+  @override
   Future<void> open({required LinkConfiguration configuration}) async {
     WebConfiguration options = WebConfiguration();
 
@@ -98,6 +99,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
   }
 
   /// Closes Plaid Link View
+  @override
   Future<void> close() async {
     _plaid.destroy();
   }

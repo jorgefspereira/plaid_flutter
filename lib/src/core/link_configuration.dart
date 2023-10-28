@@ -26,6 +26,7 @@ class LinkTokenConfiguration implements LinkConfiguration {
   });
 
   /// Returns a representation of this object as a JSON object.
+  @override
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'token': token,
@@ -107,6 +108,7 @@ class LegacyLinkConfiguration implements LinkConfiguration {
   final LinkOAuthConfiguration? oauthConfiguration;
 
   /// Returns a representation of this object as a JSON object.
+  @override
   Map<String, dynamic> toJson() {
     List<String> productsArray =
         products?.map((p) => p.toString().split('.').last).toList() ?? [];

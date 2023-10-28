@@ -88,158 +88,157 @@ class LinkAccountSubtype {
 /// Credit subtypes
 class LinkAccountSubtypeCredit {
   static const LinkAccountSubtype all =
-      const LinkAccountSubtype(type: "credit", subtype: "all");
+      LinkAccountSubtype(type: "credit", subtype: "all");
   static const LinkAccountSubtype creditCard =
-      const LinkAccountSubtype(type: "credit", subtype: "credit card");
+      LinkAccountSubtype(type: "credit", subtype: "credit card");
   static const LinkAccountSubtype paypal =
-      const LinkAccountSubtype(type: "credit", subtype: "paypal");
+      LinkAccountSubtype(type: "credit", subtype: "paypal");
 }
 
 /// Depository subtypes
 class LinkAccountSubtypeDepository {
   static const LinkAccountSubtype all =
-      const LinkAccountSubtype(type: "depository", subtype: "all");
+      LinkAccountSubtype(type: "depository", subtype: "all");
   static const LinkAccountSubtype cashManagement =
-      const LinkAccountSubtype(type: "depository", subtype: "cash management");
+      LinkAccountSubtype(type: "depository", subtype: "cash management");
   static const LinkAccountSubtype cd =
-      const LinkAccountSubtype(type: "depository", subtype: "cd");
+      LinkAccountSubtype(type: "depository", subtype: "cd");
   static const LinkAccountSubtype checking =
-      const LinkAccountSubtype(type: "depository", subtype: "checking");
+      LinkAccountSubtype(type: "depository", subtype: "checking");
   static const LinkAccountSubtype ebt =
-      const LinkAccountSubtype(type: "depository", subtype: "ebt");
+      LinkAccountSubtype(type: "depository", subtype: "ebt");
   static const LinkAccountSubtype hsa =
-      const LinkAccountSubtype(type: "depository", subtype: "hsa");
+      LinkAccountSubtype(type: "depository", subtype: "hsa");
   static const LinkAccountSubtype moneyMarket =
-      const LinkAccountSubtype(type: "depository", subtype: "money market");
+      LinkAccountSubtype(type: "depository", subtype: "money market");
   static const LinkAccountSubtype paypal =
-      const LinkAccountSubtype(type: "depository", subtype: "paypal");
+      LinkAccountSubtype(type: "depository", subtype: "paypal");
   static const LinkAccountSubtype prepaid =
-      const LinkAccountSubtype(type: "depository", subtype: "prepaid");
+      LinkAccountSubtype(type: "depository", subtype: "prepaid");
   static const LinkAccountSubtype savings =
-      const LinkAccountSubtype(type: "depository", subtype: "savings");
+      LinkAccountSubtype(type: "depository", subtype: "savings");
 }
 
 /// Investment subtypes
 class LinkAccountSubtypeInvestment {
   static const LinkAccountSubtype all =
-      const LinkAccountSubtype(type: "investment", subtype: "all");
+      LinkAccountSubtype(type: "investment", subtype: "all");
   static const LinkAccountSubtype brokerage =
-      const LinkAccountSubtype(type: "investment", subtype: "brokerage");
+      LinkAccountSubtype(type: "investment", subtype: "brokerage");
   static const LinkAccountSubtype cashIsa =
-      const LinkAccountSubtype(type: "investment", subtype: "cash isa");
-  static const LinkAccountSubtype educationSavingsAccount =
-      const LinkAccountSubtype(
-          type: "investment", subtype: "education savings account");
+      LinkAccountSubtype(type: "investment", subtype: "cash isa");
+  static const LinkAccountSubtype educationSavingsAccount = LinkAccountSubtype(
+      type: "investment", subtype: "education savings account");
   static const LinkAccountSubtype fixedAnnunity =
-      const LinkAccountSubtype(type: "investment", subtype: "fixed annuity");
+      LinkAccountSubtype(type: "investment", subtype: "fixed annuity");
   static const LinkAccountSubtype gic =
-      const LinkAccountSubtype(type: "investment", subtype: "gic");
+      LinkAccountSubtype(type: "investment", subtype: "gic");
   static const LinkAccountSubtype healthReimbursementArrangement =
-      const LinkAccountSubtype(
+      LinkAccountSubtype(
           type: "investment", subtype: "health reimbursement arrangement");
   static const LinkAccountSubtype hsa =
-      const LinkAccountSubtype(type: "investment", subtype: "hsa");
+      LinkAccountSubtype(type: "investment", subtype: "hsa");
   static const LinkAccountSubtype i401a =
-      const LinkAccountSubtype(type: "investment", subtype: "401a");
+      LinkAccountSubtype(type: "investment", subtype: "401a");
   static const LinkAccountSubtype i401k =
-      const LinkAccountSubtype(type: "investment", subtype: "401k");
+      LinkAccountSubtype(type: "investment", subtype: "401k");
   static const LinkAccountSubtype i403b =
-      const LinkAccountSubtype(type: "investment", subtype: "403B");
+      LinkAccountSubtype(type: "investment", subtype: "403B");
   static const LinkAccountSubtype i457b =
-      const LinkAccountSubtype(type: "investment", subtype: "457b");
+      LinkAccountSubtype(type: "investment", subtype: "457b");
   static const LinkAccountSubtype i529 =
-      const LinkAccountSubtype(type: "investment", subtype: "529");
+      LinkAccountSubtype(type: "investment", subtype: "529");
   static const LinkAccountSubtype ira =
-      const LinkAccountSubtype(type: "investment", subtype: "ira");
+      LinkAccountSubtype(type: "investment", subtype: "ira");
   static const LinkAccountSubtype isa =
-      const LinkAccountSubtype(type: "investment", subtype: "isa");
+      LinkAccountSubtype(type: "investment", subtype: "isa");
   static const LinkAccountSubtype keogh =
-      const LinkAccountSubtype(type: "investment", subtype: "keogh");
+      LinkAccountSubtype(type: "investment", subtype: "keogh");
   static const LinkAccountSubtype lif =
-      const LinkAccountSubtype(type: "investment", subtype: "lif");
+      LinkAccountSubtype(type: "investment", subtype: "lif");
   static const LinkAccountSubtype lira =
-      const LinkAccountSubtype(type: "investment", subtype: "lira");
+      LinkAccountSubtype(type: "investment", subtype: "lira");
   static const LinkAccountSubtype lrif =
-      const LinkAccountSubtype(type: "investment", subtype: "lrif");
+      LinkAccountSubtype(type: "investment", subtype: "lrif");
   static const LinkAccountSubtype lrsp =
-      const LinkAccountSubtype(type: "investment", subtype: "lrsp");
+      LinkAccountSubtype(type: "investment", subtype: "lrsp");
   static const LinkAccountSubtype mutualFund =
-      const LinkAccountSubtype(type: "investment", subtype: "mutual fund");
+      LinkAccountSubtype(type: "investment", subtype: "mutual fund");
   static const LinkAccountSubtype nonTaxableBrokerageAccount =
-      const LinkAccountSubtype(
+      LinkAccountSubtype(
           type: "investment", subtype: "non-taxable brokerage account");
   static const LinkAccountSubtype pension =
-      const LinkAccountSubtype(type: "investment", subtype: "pension");
+      LinkAccountSubtype(type: "investment", subtype: "pension");
   static const LinkAccountSubtype plan =
-      const LinkAccountSubtype(type: "investment", subtype: "plan");
+      LinkAccountSubtype(type: "investment", subtype: "plan");
   static const LinkAccountSubtype prif =
-      const LinkAccountSubtype(type: "investment", subtype: "prif");
-  static const LinkAccountSubtype profitSharingPlan = const LinkAccountSubtype(
-      type: "investment", subtype: "profit sharing plan");
+      LinkAccountSubtype(type: "investment", subtype: "prif");
+  static const LinkAccountSubtype profitSharingPlan =
+      LinkAccountSubtype(type: "investment", subtype: "profit sharing plan");
   static const LinkAccountSubtype rdsp =
-      const LinkAccountSubtype(type: "investment", subtype: "rdsp");
+      LinkAccountSubtype(type: "investment", subtype: "rdsp");
   static const LinkAccountSubtype resp =
-      const LinkAccountSubtype(type: "investment", subtype: "resp");
+      LinkAccountSubtype(type: "investment", subtype: "resp");
   static const LinkAccountSubtype retirement =
-      const LinkAccountSubtype(type: "investment", subtype: "retirement");
+      LinkAccountSubtype(type: "investment", subtype: "retirement");
   static const LinkAccountSubtype rlif =
-      const LinkAccountSubtype(type: "investment", subtype: "rlif");
+      LinkAccountSubtype(type: "investment", subtype: "rlif");
   static const LinkAccountSubtype roth =
-      const LinkAccountSubtype(type: "investment", subtype: "roth");
+      LinkAccountSubtype(type: "investment", subtype: "roth");
   static const LinkAccountSubtype roth401k =
-      const LinkAccountSubtype(type: "investment", subtype: "roth 401k");
+      LinkAccountSubtype(type: "investment", subtype: "roth 401k");
   static const LinkAccountSubtype rrif =
-      const LinkAccountSubtype(type: "investment", subtype: "rrif");
+      LinkAccountSubtype(type: "investment", subtype: "rrif");
   static const LinkAccountSubtype rrsp =
-      const LinkAccountSubtype(type: "investment", subtype: "rrsp");
+      LinkAccountSubtype(type: "investment", subtype: "rrsp");
   static const LinkAccountSubtype sarsep =
-      const LinkAccountSubtype(type: "investment", subtype: "sarsep");
+      LinkAccountSubtype(type: "investment", subtype: "sarsep");
   static const LinkAccountSubtype sepIra =
-      const LinkAccountSubtype(type: "investment", subtype: "sep ira");
+      LinkAccountSubtype(type: "investment", subtype: "sep ira");
   static const LinkAccountSubtype simpleIra =
-      const LinkAccountSubtype(type: "investment", subtype: "simple ira");
+      LinkAccountSubtype(type: "investment", subtype: "simple ira");
   static const LinkAccountSubtype sipp =
-      const LinkAccountSubtype(type: "investment", subtype: "sipp");
+      LinkAccountSubtype(type: "investment", subtype: "sipp");
   static const LinkAccountSubtype stockPlan =
-      const LinkAccountSubtype(type: "investment", subtype: "stock plan");
+      LinkAccountSubtype(type: "investment", subtype: "stock plan");
   static const LinkAccountSubtype tfsa =
-      const LinkAccountSubtype(type: "investment", subtype: "tfsa");
-  static const LinkAccountSubtype thriftSavingsPlan = const LinkAccountSubtype(
-      type: "investment", subtype: "thrift savings plan");
+      LinkAccountSubtype(type: "investment", subtype: "tfsa");
+  static const LinkAccountSubtype thriftSavingsPlan =
+      LinkAccountSubtype(type: "investment", subtype: "thrift savings plan");
   static const LinkAccountSubtype trust =
-      const LinkAccountSubtype(type: "investment", subtype: "trust");
+      LinkAccountSubtype(type: "investment", subtype: "trust");
   static const LinkAccountSubtype ugma =
-      const LinkAccountSubtype(type: "investment", subtype: "ugma");
+      LinkAccountSubtype(type: "investment", subtype: "ugma");
   static const LinkAccountSubtype utma =
-      const LinkAccountSubtype(type: "investment", subtype: "utma");
+      LinkAccountSubtype(type: "investment", subtype: "utma");
   static const LinkAccountSubtype variableAnnuity =
-      const LinkAccountSubtype(type: "investment", subtype: "variable annuity");
+      LinkAccountSubtype(type: "investment", subtype: "variable annuity");
 }
 
 /// Loan subtypes
 class LinkAccountSubtypeLoan {
   static const LinkAccountSubtype all =
-      const LinkAccountSubtype(type: "loan", subtype: "all");
+      LinkAccountSubtype(type: "loan", subtype: "all");
   static const LinkAccountSubtype auto =
-      const LinkAccountSubtype(type: "loan", subtype: "auto");
+      LinkAccountSubtype(type: "loan", subtype: "auto");
   static const LinkAccountSubtype business =
-      const LinkAccountSubtype(type: "loan", subtype: "business");
+      LinkAccountSubtype(type: "loan", subtype: "business");
   static const LinkAccountSubtype commercial =
-      const LinkAccountSubtype(type: "loan", subtype: "commercial");
+      LinkAccountSubtype(type: "loan", subtype: "commercial");
   static const LinkAccountSubtype construction =
-      const LinkAccountSubtype(type: "loan", subtype: "construction");
+      LinkAccountSubtype(type: "loan", subtype: "construction");
   static const LinkAccountSubtype consumer =
-      const LinkAccountSubtype(type: "loan", subtype: "consumer");
+      LinkAccountSubtype(type: "loan", subtype: "consumer");
   static const LinkAccountSubtype homeEquity =
-      const LinkAccountSubtype(type: "loan", subtype: "home equity");
+      LinkAccountSubtype(type: "loan", subtype: "home equity");
   static const LinkAccountSubtype lineOfCredit =
-      const LinkAccountSubtype(type: "loan", subtype: "line of credit");
+      LinkAccountSubtype(type: "loan", subtype: "line of credit");
   static const LinkAccountSubtype loan =
-      const LinkAccountSubtype(type: "loan", subtype: "loan");
+      LinkAccountSubtype(type: "loan", subtype: "loan");
   static const LinkAccountSubtype mortgage =
-      const LinkAccountSubtype(type: "loan", subtype: "mortgage");
+      LinkAccountSubtype(type: "loan", subtype: "mortgage");
   static const LinkAccountSubtype overdraft =
-      const LinkAccountSubtype(type: "loan", subtype: "overdraft");
+      LinkAccountSubtype(type: "loan", subtype: "overdraft");
   static const LinkAccountSubtype student =
-      const LinkAccountSubtype(type: "loan", subtype: "student");
+      LinkAccountSubtype(type: "loan", subtype: "student");
 }
