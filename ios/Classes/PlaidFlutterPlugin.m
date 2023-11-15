@@ -691,6 +691,34 @@ static NSString* const kTypeKey = @"type";
             return @"SELECT_DEGRADED_INSTITUTION";
         case PLKEventNameValueSelectDownInstitution:
             return @"SELECT_DOWN_INSTITUTION";
+        case PLKEventNameValueIdentityVerificationPendingReviewSession:
+            return @"IDENTITY_VERIFICATION_PENDING_REVIEW_SESSION";
+        case PLKEventNameValueSelectFilteredInstitution:
+            return @"SELECT_FILTERED_INSTITUTION";
+        case PLKEventNameValueSelectBrand:
+            return @"SELECT_BRAND";
+        case PLKEventNameValueSelectAuthType:
+            return @"SELECT_AUTH_TYPE";
+        case PLKEventNameValueSubmitAccountNumber:
+            return @"SUBMIT_ACCOUNT_NUMBER";
+        case PLKEventNameValueSubmitDocuments:
+            return @"SUBMIT_DOCUMENTS";
+        case PLKEventNameValueSubmitDocumentsSuccess:
+            return @"SUBMIT_DOCUMENTS_SUCCESS";
+        case PLKEventNameValueSubmitDocumentsError:
+            return @"SUBMIT_DOCUMENTS_ERROR";
+        case PLKEventNameValueSubmitRoutingNumber:
+            return @"SUBMIT_ROUTING_NUMBER";
+        case PLKEventNameValueViewDataTypes:
+            return @"VIEW_DATA_TYPES";
+        case PLKEventNameValueSubmitPhone:
+            return @"SUBMIT_PHONE";
+        case PLKEventNameValueSkipSubmitPhone:
+            return @"SKIP_SUBMIT_PHONE";
+        case PLKEventNameValueVerifyPhone:
+            return @"VERIFY_PHONE";
+        case PLKEventNameValueConnectNewInstitution:
+            return @"CONNECT_NEW_INSTITUTION";
     }
      return @"unknown";
 }
@@ -738,6 +766,8 @@ static NSString* const kTypeKey = @"type";
             return @"institution_not_found";
         case PLKExitStatusValueRequiresAccountSelection:
             return @"requires_account_selection";
+        case PLKExitStatusValueContinueToThridParty:
+            return @"continue_to_thrid_party";
     }
     return @"unknown";
 }
@@ -806,6 +836,24 @@ static NSString* const kTypeKey = @"type";
             return @"UPLOAD_DOCUMENTS";
         case PLKViewNameValueVerifySMS:
             return @"VERIFY_SMS";
+        case PLKViewNameValueDataTransparency:
+            return @"DATA_TRANSPARENCY";
+        case PLKViewNameValueDataTransparencyConsent:
+            return @"DATA_TRANSPARENCY_CONSENT";
+        case PLKViewNameValueSelectAuthType:
+            return @"SELECT_AUTH_TYPE";
+        case PLKViewNameValueSelectBrand:
+            return @"SELECT_BRAND";
+        case PLKViewNameValueNumbersSelectInstitution:
+            return @"NUMBERS_SELECT_INSTITUTION";
+        case PLKViewNameValueSubmitPhone:
+            return @"SUBMIT_PHONE";
+        case PLKViewNameValueVerifyPhone:
+            return @"VERIFY_PHONE";
+        case PLKViewNameValueSelectSavedInstitution:
+            return @"SELECT_SAVED_INSTITUTION";
+        case PLKViewNameValueSelectSavedAccount:
+            return @"SELECT_SAVED_ACCOUNT";
     }
 
     return @"unknown";
