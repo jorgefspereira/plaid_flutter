@@ -1,3 +1,9 @@
+## 3.1.3
+
+* Updated Android SDK to 3.14.1
+* Updated iOS SDK to 4.7.0
+* Added missing exit status, event names and view names.
+
 ## 3.1.2
 
 * Flutter 3.10 support
