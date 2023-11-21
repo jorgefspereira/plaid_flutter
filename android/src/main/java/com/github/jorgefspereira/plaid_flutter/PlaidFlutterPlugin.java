@@ -3,7 +3,6 @@ package com.github.jorgefspereira.plaid_flutter;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -135,10 +134,10 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
   @Override
   public void onMethodCall(MethodCall call, @NonNull Result result) {
     if(call.method.equals("open")) {
-      this.open(call.arguments());
+      this.open(call.arguments(), result);
     }
     else if(call.method.equals("close")) {
-      this.close();
+      this.close(result);
     }
     else {
       result.notImplemented();
@@ -196,10 +195,10 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
 
   /// Exposed methods
 
-  private void open(Map<String, Object> arguments) {
+  private void open(Map<String, Object> arguments, Result reply) {
     if (binding == null) {
-      Log.w("PlaidFlutterPlugin", "Activity not attached");
-      throw new IllegalStateException("Activity not attached");
+      reply.error("PlaidFlutter", "Activity not attached", null);
+      return;
     }
 
     Plaid.setLinkEventListener(linkEvent -> {
@@ -216,19 +215,18 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
     String token = (String) arguments.get(TOKEN);
 
     if (publicKey == null && token == null) {
-      Log.w("PlaidFlutterPlugin", "Token must be part of configuration.");
-      throw new IllegalArgumentException("Token must be part of configuration.");
+      reply.error("PlaidFlutter", "Token must be part of configuration.", null);
+      return;
     }
 
     if(publicKey != null) {
-      Log.d("PlaidFlutterPlugin", "OPEN");
       try {
         LinkPublicKeyConfiguration config = getLegacyLinkConfiguration(arguments);
         Plaid.create((Application)context.getApplicationContext(), config).open(binding.getActivity());
         return;
       } catch (Exception e) {
-        Log.w("PlaidFlutterPlugin", e.getMessage());
-        throw e;
+        reply.error("PlaidFlutter", e.getMessage(), null);
+        return;
       }
     }
 
@@ -237,14 +235,18 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
     if(config != null) {
       Plaid.create((Application)context.getApplicationContext(),config).open(binding.getActivity());
     }
+
+    reply.success(null);
   }
 
-  private void close() {
+  private void close(Result reply) {
     if (binding != null) {
       Intent intent = new Intent(context.getApplicationContext(), binding.getActivity().getClass());
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
       binding.getActivity().startActivity(intent);
     }
+
+    reply.success(null);
   }
 
   /// Configuration Parsing

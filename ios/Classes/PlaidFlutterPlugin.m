@@ -65,11 +65,11 @@ static NSString* const kTypeKey = @"type";
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"open" isEqualToString:call.method])
-        [self openWithArguments: call.arguments];
+        [self openWithArguments: call.arguments withResult:result];
     else if ([@"close" isEqualToString:call.method])
-        [self close];
+        [self closeWithResult:result];
     else if([@"continueFromRedirectUri" isEqualToString:call.method])
-        [self continueFromRedirectUriString:call.arguments];
+        [self continueFromRedirectUriString:call.arguments withResult:result];
     else
         result(FlutterMethodNotImplemented);
     
@@ -97,7 +97,7 @@ static NSString* const kTypeKey = @"type";
 
 #pragma mark Exposed methods
 
-- (void) openWithArguments: (id _Nullable)arguments  {
+- (void) openWithArguments: (id _Nullable)arguments withResult:(FlutterResult)result {
     
     NSString* institution = arguments[kInstitutionKey];
     NSString* token = arguments[kTokenKey];
@@ -171,14 +171,15 @@ static NSString* const kTypeKey = @"type";
         };
 
         [_linkHandler openWithPresentationHandler:presentationHandler dismissalHandler:dismissalHandler options:options];
+        
+        result(nil);
 
     } else if(creationError) {
-        NSLog(@"Unable to create PLKHandler due to: %@", [creationError localizedDescription]);
-        [self sendEventWithArguments: [FlutterError errorWithCode: [NSString stringWithFormat:@"%lld", (long long)creationError.code] ?: @""
-                                                          message: [creationError localizedDescription] ?: @""
-                                                          details: @"Unable to create PLKHandler"]];
+        result([FlutterError errorWithCode: [NSString stringWithFormat:@"%lld", (long long)creationError.code] ?: @""
+                                   message: [creationError localizedDescription] ?: @""
+                                   details: @"Unable to create PLKHandler"]);
     } else {
-        NSLog(@"Unexpected Creation Error");
+        result([FlutterError errorWithCode:@"UNKNOWN_ERROR" message:@"Unexpected Creation Error" details:nil]);
     }
 }
 
@@ -188,13 +189,20 @@ static NSString* const kTypeKey = @"type";
     _linkHandler = nil;
 }
 
-- (void) continueFromRedirectUriString: (id _Nullable)arguments {
+- (void) closeWithResult:(FlutterResult)result {
+    [self close];
+    result(nil);
+}
+
+- (void) continueFromRedirectUriString: (id _Nullable)arguments  withResult:(FlutterResult)result{
     NSString* redirectUriString = arguments[kContinueRedirectUriKey];
     NSURL *redirectUriURL = (id)redirectUriString == [NSNull null] ? nil : [NSURL URLWithString:redirectUriString];
 
     if (redirectUriURL && _linkHandler) {
        [_linkHandler continueWithRedirectUri:redirectUriURL];
     }
+    
+    result(nil);
 }
 
 #pragma mark PLKConfiguration
