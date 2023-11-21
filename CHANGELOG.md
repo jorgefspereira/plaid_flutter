@@ -1,3 +1,8 @@
+## 3.1.4
+
+* Fix compatible with Gradle 8
+* Fixed Plaid.open() never returning
+
 ## 3.1.3
 
 * Updated Android SDK to 3.14.1
