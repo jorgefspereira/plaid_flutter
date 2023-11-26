@@ -1,4 +1,4 @@
-## 4.0.0
+## 4.0.0-rc.1
 
 * Updated Android SDK to 4.0.0
 * Updated iOS SDK to 5.0.0
