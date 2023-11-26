@@ -1,31 +1,9 @@
 #import "PlaidFlutterPlugin.h"
 #import <LinkKit/LinkKit.h>
 
-static NSString* const kPublicKeyKey = @"publicKey";
 static NSString* const kTokenKey = @"token";
-static NSString* const kClientNameKey = @"clientName";
-static NSString* const kEnvironmentKey = @"environment";
-static NSString* const kProductsKey = @"products";
-static NSString* const kWebhookKey = @"webhook";
-static NSString* const kInstitutionKey = @"institution";
-static NSString* const kLinkCustomizationName = @"linkCustomizationName";
-static NSString* const kAccountSubtypes = @"accountSubtypes";
-static NSString* const kCountryCodesKey = @"countryCodes";
-static NSString* const kLanguageKey = @"language";
-static NSString* const kUserLegalNameKey = @"userLegalName";
-static NSString* const kUserEmailAddressKey = @"userEmailAddress";
-static NSString* const kUserPhoneNumberKey = @"userPhoneNumber";
-static NSString* const kNoLoadingStateKey = @"noLoadingState";
-static NSString* const kOAuthRedirectUriKey = @"oauthRedirectUri";
-static NSString* const kOAuthNonceKey = @"oauthNonce";
 static NSString* const kContinueRedirectUriKey = @"redirectUri";
-
-static NSString* const kLinkTokenPrefix = @"link-";
-static NSString* const kItemAddTokenPrefix = @"item-add-";
-static NSString* const kPaymentTokenPrefix = @"payment";
-static NSString* const kDepositSwitchTokenPrefix = @"deposit-switch-";
-static NSString* const kPublicTokenPrefix = @"public-";
-
+static NSString* const kNoLoadingStateKey = @"noLoadingState";
 static NSString* const kOnSuccessType = @"success";
 static NSString* const kOnExitType = @"exit";
 static NSString* const kOnEventType = @"event";
@@ -34,10 +12,6 @@ static NSString* const kMetadataKey = @"metadata";
 static NSString* const kPublicTokenKey = @"publicToken";
 static NSString* const kNameKey = @"name";
 static NSString* const kTypeKey = @"type";
-
-//static NSString* const kSelectAccountKey = @"selectAccount";
-//static NSString* const kLongtailAuthKey = @"longtailAuth";
-//static NSString* const kOAuthStateIdKey = @"oauthStateId";
 
 @interface PlaidFlutterPlugin () <FlutterStreamHandler>
 @end
@@ -68,8 +42,8 @@ static NSString* const kTypeKey = @"type";
         [self openWithArguments: call.arguments withResult:result];
     else if ([@"close" isEqualToString:call.method])
         [self closeWithResult:result];
-    else if([@"continueFromRedirectUri" isEqualToString:call.method])
-        [self continueFromRedirectUriString:call.arguments withResult:result];
+    else if([@"resumeAfterTermination" isEqualToString:call.method])
+        [self resumeAfterTermination:call.arguments withResult:result];
     else
         result(FlutterMethodNotImplemented);
     
@@ -98,8 +72,6 @@ static NSString* const kTypeKey = @"type";
 #pragma mark Exposed methods
 
 - (void) openWithArguments: (id _Nullable)arguments withResult:(FlutterResult)result {
-    
-    NSString* institution = arguments[kInstitutionKey];
     NSString* token = arguments[kTokenKey];
     BOOL noLoadingState = arguments[kNoLoadingStateKey];
     
@@ -135,28 +107,18 @@ static NSString* const kTypeKey = @"type";
                                              kMetadataKey: [PlaidFlutterPlugin dictionaryFromEventMetadata: event.eventMetadata]}];
     };
     
-    BOOL usingLinkToken = [token isKindOfClass:[NSString class]] && [token hasPrefix:kLinkTokenPrefix];
-    NSError *creationError = nil;
+    PLKLinkTokenConfiguration *config = [self getLinkTokenConfigurationWithToken:token onSuccessHandler:successHandler];
+    config.onEvent = eventHandler;
+    config.onExit = exitHandler;
+    config.noLoadingState = noLoadingState;
     
-    if (usingLinkToken) {
-        PLKLinkTokenConfiguration *config = [self getLinkTokenConfigurationWithToken:token onSuccessHandler:successHandler];
-        config.onEvent = eventHandler;
-        config.onExit = exitHandler;
-        config.noLoadingState = noLoadingState;
-
-        _linkHandler = [PLKPlaid createWithLinkTokenConfiguration:config error:&creationError];
-    } else {
-        PLKLinkPublicKeyConfiguration *config = [self getLegacyLinkConfigurationWithArguments:arguments onSuccessHandler:successHandler];
-        config.onEvent = eventHandler;
-        config.onExit = exitHandler;
-        
-        _linkHandler = [PLKPlaid createWithLinkPublicKeyConfiguration:config error:&creationError];
-    }
-
+    NSError *creationError = nil;
+    _linkHandler = [PLKPlaid createWithLinkTokenConfiguration:config error:&creationError];
+    
     if (_linkHandler) {
-        NSDictionary *options = [institution isKindOfClass:[NSString class]] ? @{@"institution_id": institution} : @{};
         __block bool didPresent = NO;
         
+        ///
         void(^presentationHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
             UIViewController* rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
             [rootViewController presentViewController:linkViewController animated:YES completion:nil];
@@ -169,17 +131,40 @@ static NSString* const kTypeKey = @"type";
                 didPresent = NO;
             }
         };
-
-        [_linkHandler openWithPresentationHandler:presentationHandler dismissalHandler:dismissalHandler options:options];
         
+        
+        [_linkHandler openWithPresentationHandler:presentationHandler dismissalHandler:dismissalHandler];
         result(nil);
-
-    } else if(creationError) {
-        result([FlutterError errorWithCode: [NSString stringWithFormat:@"%lld", (long long)creationError.code] ?: @""
-                                   message: [creationError localizedDescription] ?: @""
-                                   details: @"Unable to create PLKHandler"]);
+        
     } else {
-        result([FlutterError errorWithCode:@"UNKNOWN_ERROR" message:@"Unexpected Creation Error" details:nil]);
+        
+        NSString *errorMessage = creationError ? creationError.userInfo[@"message"] : @"Create was not called.";
+        NSString *errorCode = creationError ? [@(creationError.code) stringValue] : @"-1";
+        NSString *errorDetails = @"Unable to create PLKHandler";
+        NSString *errorType = @"Creation error";
+        
+        NSDictionary *exitEvent = @{
+            kTypeKey: kOnExitType,
+            kErrorKey : @{
+                @"errorDisplayMessage": errorMessage,
+                @"errorCode": errorCode,
+                @"errorType": errorType,
+                @"errorMessage": errorMessage,
+            },
+            kMetadataKey: @{
+                @"status": @"",
+                @"institution": @{
+                    @"name": @"",
+                    @"id": @"",
+                },
+                @"requestId": @"",
+                @"linkSessionId": @"",
+                @"metadataJson": @"",
+            },
+        };
+        
+        [self sendEventWithArguments: exitEvent];
+        result([FlutterError errorWithCode: errorCode message: errorMessage details: errorDetails]);
     }
 }
 
@@ -194,12 +179,12 @@ static NSString* const kTypeKey = @"type";
     result(nil);
 }
 
-- (void) continueFromRedirectUriString: (id _Nullable)arguments  withResult:(FlutterResult)result{
+- (void) resumeAfterTermination: (id _Nullable)arguments  withResult:(FlutterResult)result{
     NSString* redirectUriString = arguments[kContinueRedirectUriKey];
     NSURL *redirectUriURL = (id)redirectUriString == [NSNull null] ? nil : [NSURL URLWithString:redirectUriString];
 
     if (redirectUriURL && _linkHandler) {
-       [_linkHandler continueWithRedirectUri:redirectUriURL];
+        [_linkHandler resumeAfterTermination:redirectUriURL];
     }
     
     result(nil);
@@ -209,83 +194,6 @@ static NSString* const kTypeKey = @"type";
 
 - (PLKLinkTokenConfiguration*)getLinkTokenConfigurationWithToken: (NSString *)token onSuccessHandler:(PLKOnSuccessHandler)successHandler{
     return [PLKLinkTokenConfiguration createWithToken:token onSuccess:successHandler];
-}
-
-- (PLKLinkPublicKeyConfiguration*)getLegacyLinkConfigurationWithArguments:(id _Nullable)arguments onSuccessHandler:(PLKOnSuccessHandler)successHandler{
-    NSString* token = arguments[kTokenKey];
-    NSString* environment = arguments[kEnvironmentKey];
-    NSString* publicKey = arguments[kPublicKeyKey];
-    NSArray<NSString*>* products = arguments[kProductsKey];
-    NSString* clientName = arguments[kClientNameKey];
-    NSString* webhook = arguments[kWebhookKey];
-    NSString* language = arguments[kLanguageKey];
-    NSString* userLegalName = arguments[kUserLegalNameKey];
-    NSString* userEmailAddress = arguments[kUserEmailAddressKey];
-    NSString* userPhoneNumber = arguments[kUserPhoneNumberKey];
-    NSString* linkCustomizationName = arguments[kLinkCustomizationName];
-    NSArray<NSString*>* countryCodes = arguments[kCountryCodesKey];
-    NSArray<NSDictionary<NSString*,NSString*>*>* accountSubtypes = arguments[kAccountSubtypes];
-    NSString* oauthRedirectUri = arguments[kOAuthRedirectUriKey];
-    NSString* oauthNonce = arguments[kOAuthNonceKey];
-    
-    PLKLinkPublicKeyConfigurationToken *configurationToken;
-    BOOL isPaymentToken = [token isKindOfClass:[NSString class]] && [token hasPrefix:kPaymentTokenPrefix];
-    BOOL isItemAddToken = [token isKindOfClass:[NSString class]] && [token hasPrefix:kItemAddTokenPrefix];
-    BOOL isDepositSwitchToken = [token isKindOfClass:[NSString class]] && [token hasPrefix:kDepositSwitchTokenPrefix];
-    BOOL isPublicToken = [token isKindOfClass:[NSString class]] && [token hasPrefix:kPublicTokenPrefix];
-    
-    if (isPaymentToken) {
-        configurationToken = [PLKLinkPublicKeyConfigurationToken createWithPaymentToken:token publicKey:publicKey];
-    } else if (isItemAddToken) {
-        configurationToken = [PLKLinkPublicKeyConfigurationToken createWithPublicToken:token publicKey:publicKey];
-    } else if (isDepositSwitchToken) {
-        configurationToken = [PLKLinkPublicKeyConfigurationToken createWithDepositSwitchToken:token publicKey:publicKey];
-    } else if (isPublicToken) {
-        configurationToken = [PLKLinkPublicKeyConfigurationToken createWithPublicToken:token publicKey:publicKey];
-    } else {
-        configurationToken = [PLKLinkPublicKeyConfigurationToken createWithPublicKey:publicKey];
-    }
-        
-    PLKEnvironment env = [PlaidFlutterPlugin environmentFromString:environment];
-    NSArray<NSNumber *> *productsIds = [PlaidFlutterPlugin productsArrayFromProductsStringArray:products];
-    
-    PLKLinkPublicKeyConfiguration *linkConfiguration = [[PLKLinkPublicKeyConfiguration alloc] initWithClientName:clientName
-                                                                                                     environment:env
-                                                                                                        products:productsIds
-                                                                                                        language:language
-                                                                                                           token:configurationToken
-                                                                                                    countryCodes:countryCodes
-                                                                                                       onSuccess:successHandler];
-
-    if([linkCustomizationName isKindOfClass:[NSString class]]) {
-        linkConfiguration.linkCustomizationName = linkCustomizationName;
-    }
-    
-    if([webhook isKindOfClass:[NSString class]]) {
-        linkConfiguration.webhook = [NSURL URLWithString:webhook];
-    }
-    
-    if([userLegalName isKindOfClass:[NSString class]]) {
-        linkConfiguration.userLegalName = userLegalName;
-    }
-    
-    if([userEmailAddress isKindOfClass:[NSString class]]) {
-        linkConfiguration.userEmailAddress = userEmailAddress;
-    }
-    
-    if ([userPhoneNumber isKindOfClass:[NSString class]]) {
-        linkConfiguration.userPhoneNumber = userPhoneNumber;
-    }
-    
-    if ([oauthRedirectUri isKindOfClass:[NSString class]] && [oauthNonce isKindOfClass:[NSString class]]) {
-        linkConfiguration.oauthConfiguration = [PLKOAuthNonceConfiguration createWithNonce:oauthNonce redirectUri:[NSURL URLWithString:oauthRedirectUri]];
-    }
-    
-    if([accountSubtypes isKindOfClass:[NSDictionary class]]) {
-        linkConfiguration.accountSubtypes = [PlaidFlutterPlugin accountSubtypesArrayFromAccountSubtypeDictionaries:accountSubtypes];
-    }
-
-    return linkConfiguration;
 }
 
 #pragma mark PLKConfiguration Parsing
@@ -526,36 +434,44 @@ static NSString* const kTypeKey = @"type";
 #pragma mark Metadata Parsing
 
 + (NSDictionary *)dictionaryFromSuccessMetadata:(PLKSuccessMetadata *)metadata {
-    return @{@"linkSessionId": metadata.linkSessionID ?: @"",
-             @"institution": [PlaidFlutterPlugin dictionaryFromInstitution:metadata.institution] ?: @"",
-             @"accounts": [PlaidFlutterPlugin accountsDictionariesFromAccounts:metadata.accounts] ?: @[],
-             @"metadataJson": metadata.metadataJSON ?: @"",
+    return @{
+        @"linkSessionId": metadata.linkSessionID ?: @"",
+        @"institution": [PlaidFlutterPlugin dictionaryFromInstitution:metadata.institution] ?: @"",
+        @"accounts": [PlaidFlutterPlugin accountsDictionariesFromAccounts:metadata.accounts] ?: @[],
+        @"metadataJson": metadata.metadataJSON ?: @"",
     };
 }
 
 + (NSDictionary *)dictionaryFromEventMetadata:(PLKEventMetadata *)metadata {
-    return @{@"errorType": [PlaidFlutterPlugin errorTypeStringFromError:metadata.error] ?: @"",
-             @"errorCode": [PlaidFlutterPlugin errorCodeStringFromError:metadata.error] ?: @"",
-             @"errorMessage": [PlaidFlutterPlugin errorMessageFromError:metadata.error] ?: @"",
-             @"exitStatus": [PlaidFlutterPlugin stringForExitStatus:metadata.exitStatus] ?: @"",
-             @"institutionId": metadata.institutionID ?: @"",
-             @"institutionName": metadata.institutionName ?: @"",
-             @"institutionSearchQuery": metadata.institutionSearchQuery ?: @"",
-             @"linkSessionId": metadata.linkSessionID ?: @"",
-             @"mfaType": [PlaidFlutterPlugin stringForMfaType:metadata.mfaType] ?: @"",
-             @"requestId": metadata.requestID ?: @"",
-             @"timestamp": [PlaidFlutterPlugin iso8601StringFromDate:metadata.timestamp] ?: @"",
-             @"viewName": [PlaidFlutterPlugin stringForViewName:metadata.viewName] ?: @"",
-             @"metadataJson": metadata.metadataJSON ?: @"",
+    return @{
+        @"errorType": [PlaidFlutterPlugin errorTypeStringFromError:metadata.error] ?: @"",
+        @"errorCode": [PlaidFlutterPlugin errorCodeStringFromError:metadata.error] ?: @"",
+        @"errorMessage": [PlaidFlutterPlugin errorMessageFromError:metadata.error] ?: @"",
+        @"exitStatus": [PlaidFlutterPlugin stringForExitStatus:metadata.exitStatus] ?: @"",
+        @"institutionId": metadata.institutionID ?: @"",
+        @"institutionName": metadata.institutionName ?: @"",
+        @"institutionSearchQuery": metadata.institutionSearchQuery ?: @"",
+        @"linkSessionId": metadata.linkSessionID ?: @"",
+        @"mfaType": [PlaidFlutterPlugin stringForMfaType:metadata.mfaType] ?: @"",
+        @"requestId": metadata.requestID ?: @"",
+        @"timestamp": [PlaidFlutterPlugin iso8601StringFromDate:metadata.timestamp] ?: @"",
+        @"viewName": [PlaidFlutterPlugin stringForViewName:metadata.viewName] ?: @"",
+        @"metadataJson": metadata.metadataJSON ?: @"",
+        @"accountNumberMask": metadata.accountNumberMask ?: @"",
+        @"isUpdateMode": metadata.isUpdateMode ?: @"",
+        @"matchReason": metadata.matchReason ?: @"",
+        @"routingNumber": metadata.routingNumber ?: @"",
+        @"selection": metadata.selection ?: @"",
     };
 }
 
 + (NSDictionary *)dictionaryFromExitMetadata:(PLKExitMetadata *)metadata {
-    return @{@"status": [PlaidFlutterPlugin stringForExitStatus:metadata.status] ?: @"",
-             @"institution": [PlaidFlutterPlugin dictionaryFromInstitution:metadata.institution],
-             @"requestId": metadata.requestID ?: @"",
-             @"linkSessionId": metadata.linkSessionID ?: @"",
-             @"metadataJson": metadata.metadataJSON ?: @"",
+    return @{
+        @"status": [PlaidFlutterPlugin stringForExitStatus:metadata.status] ?: @"",
+        @"institution": [PlaidFlutterPlugin dictionaryFromInstitution:metadata.institution],
+        @"requestId": metadata.requestID ?: @"",
+        @"linkSessionId": metadata.linkSessionID ?: @"",
+        @"metadataJson": metadata.metadataJSON ?: @"",
     };
 }
 
@@ -576,22 +492,14 @@ static NSString* const kTypeKey = @"type";
 }
 
 + (NSDictionary *)dictionaryFromAccount:(PLKAccount *)account {
-    NSMutableDictionary* result = [[NSMutableDictionary alloc] init];
-    
-    [result setObject:account.ID ?: @"" forKey:@"id"];
-    [result setObject:account.name ?: @"" forKey:@"name"];
-    [result setObject:[PlaidFlutterPlugin subtypeNameForAccountSubtype:account.subtype] ?: @"" forKey:@"subtype"];
-    [result setObject:[PlaidFlutterPlugin typeNameForAccountSubtype:account.subtype] ?: @"" forKey:@"type"];
-   
-    if(account.mask) {
-        [result setObject:account.mask forKey:@"mask"];
-    }
-    
-    if (account.verificationStatus) {
-        [result setObject:[PlaidFlutterPlugin stringForVerificationStatus:account.verificationStatus] ?: @"" forKey:@"verificationStatus"];
-    }
-    
-    return [result copy];
+    return @{
+        @"id": account.ID ?: @"",
+        @"name": account.name ?: @"",
+        @"mask": account.mask ?: @"",
+        @"subtype": [PlaidFlutterPlugin subtypeNameForAccountSubtype:account.subtype] ?: @"",
+        @"type": [PlaidFlutterPlugin typeNameForAccountSubtype:account.subtype] ?: @"",
+        @"verificationStatus": [PlaidFlutterPlugin stringForVerificationStatus:account.verificationStatus] ?: @"",
+    };
 }
 
 + (NSArray<NSDictionary *> *)accountsDictionariesFromAccounts:(NSArray<PLKAccount *> *)accounts {
@@ -937,4 +845,3 @@ static NSString* const kTypeKey = @"type";
 }
 
 @end
-

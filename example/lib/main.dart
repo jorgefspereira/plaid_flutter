@@ -11,7 +11,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  LinkConfiguration? _configuration;
+  LinkTokenConfiguration? _configuration;
   StreamSubscription<LinkEvent>? _streamEvent;
   StreamSubscription<LinkExit>? _streamExit;
   StreamSubscription<LinkSuccess>? _streamSuccess;
@@ -32,24 +32,6 @@ class _MyAppState extends State<MyApp> {
     _streamExit?.cancel();
     _streamSuccess?.cancel();
     super.dispose();
-  }
-
-  void _createLegacyTokenConfiguration() {
-    setState(() {
-      _configuration = LegacyLinkConfiguration(
-        clientName: "CLIENT_NAME",
-        publicKey: "PUBLIC_KEY",
-        environment: LinkEnvironment.sandbox,
-        products: <LinkProduct>[
-          LinkProduct.auth,
-        ],
-        language: "en",
-        countryCodes: ['US'],
-        userLegalName: "John Appleseed",
-        userEmailAddress: "jappleseed@youapp.com",
-        userPhoneNumber: "+1 (512) 555-1234",
-      );
-    });
   }
 
   void _createLinkTokenConfiguration() {
@@ -97,11 +79,6 @@ class _MyAppState extends State<MyApp> {
                   ),
                 ),
               ),
-              ElevatedButton(
-                onPressed: _createLegacyTokenConfiguration,
-                child: Text("Create Legacy Token Configuration"),
-              ),
-              SizedBox(height: 15),
               ElevatedButton(
                 onPressed: _createLinkTokenConfiguration,
                 child: Text("Create Link Token Configuration"),

@@ -32,7 +32,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
   /// Initializes the Plaid Link flow on the device.
   @override
-  Future<void> open({required LinkConfiguration configuration}) async {
+  Future<void> open({required LinkTokenConfiguration configuration}) async {
     WebConfiguration options = WebConfiguration();
 
     /// onSuccess handler
@@ -71,28 +71,8 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
     /// onLoad handler
     options.onLoad = allowInterop(() {});
-
-    if (configuration is LinkTokenConfiguration) {
-      options.token = configuration.token;
-      options.receivedRedirectUri = configuration.receivedRedirectUri;
-    } else if (configuration is LegacyLinkConfiguration) {
-      options.token = configuration.token;
-      options.key = configuration.publicKey;
-      options.clientName = configuration.clientName;
-      options.env = configuration.environment?.toString().split('.').last;
-      options.linkCustomizationName = configuration.linkCustomizationName;
-      options.language = configuration.language;
-      options.webhook = configuration.webhook;
-      options.userEmailAddress = configuration.userEmailAddress;
-      options.userPhoneNumber = configuration.userPhoneNumber;
-      options.oauthNonce = configuration.oauthConfiguration?.nonce;
-      options.oauthRedirectUri = configuration.oauthConfiguration?.redirectUri;
-      options.countryCodes = configuration.countryCodes ?? [''];
-      options.product = configuration.products
-              ?.map((p) => p.toString().split('.').last)
-              .toList() ??
-          [''];
-    }
+    options.token = configuration.token;
+    options.receivedRedirectUri = configuration.receivedRedirectUri;
 
     _plaid = Plaid.create(options);
     _plaid.open();
@@ -203,6 +183,11 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
     result['viewName'] = data['view_name'] ?? "";
     result['requestId'] = data['request_id'] ?? "";
     result['timestamp'] = data['timestamp'] ?? "";
+    result['accountNumberMask'] = data['account_number_mask'] ?? "";
+    result['isUpdateMode'] = data['is_update_mode'] ?? "";
+    result['matchReason'] = data['match_reason'] ?? "";
+    result['routingNumber'] = data['routing_number'] ?? "";
+    result['selection'] = data['selection'] ?? "";
 
     return result;
   }
