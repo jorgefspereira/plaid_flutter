@@ -6,7 +6,7 @@ import 'package:js/js_util.dart';
 
 @JS()
 class Plaid {
-  external static Plaid create(WebConfiguration options);
+  external static Future<Plaid> create(WebConfiguration options);
 
   external void open();
   external void exit();

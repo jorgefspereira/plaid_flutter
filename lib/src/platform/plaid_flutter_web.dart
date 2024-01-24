@@ -7,6 +7,7 @@ import 'dart:js';
 // ignore: avoid_web_libraries_in_flutter
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+// import 'package:js/js_util.dart';
 
 import '../core/events.dart';
 import '../core/link_configuration.dart';
@@ -22,7 +23,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
   late Stream<LinkObject> _onObjects;
 
   /// Plaid JS object
-  late Plaid? _plaid;
+  Plaid? _plaid;
 
   /// Factory method that initializes the Plaid plugin platform with an instance
   /// of the plugin for the web.
@@ -74,8 +75,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
     options.token = configuration.token;
     options.receivedRedirectUri = configuration.receivedRedirectUri;
 
-    _plaid = Plaid.create(options);
-    _plaid.open();
+    _plaid = await Plaid.create(options);
     _plaid?.open();
   }
 
