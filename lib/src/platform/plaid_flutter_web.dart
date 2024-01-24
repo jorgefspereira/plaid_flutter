@@ -22,7 +22,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
   late Stream<LinkObject> _onObjects;
 
   /// Plaid JS object
-  late Plaid _plaid;
+  late Plaid? _plaid;
 
   /// Factory method that initializes the Plaid plugin platform with an instance
   /// of the plugin for the web.
@@ -76,12 +76,13 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
     _plaid = Plaid.create(options);
     _plaid.open();
+    _plaid?.open();
   }
 
   /// Closes Plaid Link View
   @override
   Future<void> close() async {
-    _plaid.destroy();
+    _plaid?.destroy();
   }
 
   /// Dispose objects
