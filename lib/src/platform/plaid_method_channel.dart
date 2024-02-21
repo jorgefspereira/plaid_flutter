@@ -34,7 +34,7 @@ class PlaidMethodChannel extends PlaidPlatformInterface {
 
   /// Initializes the Plaid Link flow on the device.
   @override
-  Future<void> open({required LinkTokenConfiguration configuration}) async {
+  Future<void> open({required LinkConfiguration configuration}) async {
     await _channel.invokeMethod('open', configuration.toJson());
   }
 
@@ -46,9 +46,9 @@ class PlaidMethodChannel extends PlaidPlatformInterface {
 
   /// Continue with redirect uri
   @override
-  Future<void> resumeAfterTermination(String redirectUri) async {
+  Future<void> continueWithRedirectUri(String redirectUri) async {
     await _channel.invokeMethod(
-      'resumeAfterTermination',
+      'continueFromRedirectUri',
       {"redirectUri": redirectUri},
     );
   }

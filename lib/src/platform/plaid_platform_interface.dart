@@ -27,7 +27,7 @@ abstract class PlaidPlatformInterface extends PlatformInterface {
   }
 
   /// Initializes the Plaid Link flow on the device.
-  Future<void> open({required LinkTokenConfiguration configuration}) async {
+  Future<void> open({required LinkConfiguration configuration}) async {
     throw UnimplementedError('open() has not been implemented.');
   }
 
@@ -36,9 +36,9 @@ abstract class PlaidPlatformInterface extends PlatformInterface {
     throw UnimplementedError('close() has not been implemented.');
   }
 
-  /// Resume after termination
-  Future<void> resumeAfterTermination(String redirectUri) async {
+  /// Continue with redirect uri
+  Future<void> continueWithRedirectUri(String redirectUri) async {
     throw UnimplementedError(
-        'resumeAfterTermination() has not been implemented.');
+        'continueWithRedirectUri() has not been implemented.');
   }
 }

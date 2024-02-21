@@ -25,9 +25,13 @@ import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
 import kotlin.Unit;
 
 import com.plaid.link.Plaid;
+import com.plaid.link.configuration.LinkPublicKeyConfiguration;
 import com.plaid.link.configuration.LinkTokenConfiguration;
+import com.plaid.link.configuration.PlaidEnvironment;
+import com.plaid.link.configuration.PlaidProduct;
 import com.plaid.link.event.LinkEventMetadata;
 import com.plaid.link.result.LinkAccount;
+import com.plaid.link.result.LinkAccountSubtype;
 import com.plaid.link.result.LinkError;
 import com.plaid.link.result.LinkExitMetadata;
 import com.plaid.link.result.LinkSuccessMetadata;
@@ -39,8 +43,22 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
   private static final String METHOD_CHANNEL_NAME = "plugins.flutter.io/plaid_flutter";
   private static final String EVENT_CHANNEL_NAME = "plugins.flutter.io/plaid_flutter/events";
 
-  /// LinkTokenConfiguration
+  /// LinkConfiguration
+  private static final String PUBLIC_KEY = "publicKey";
   private static final String TOKEN = "token";
+  private static final String CLIENT_NAME = "clientName";
+  private static final String PRODUCTS = "products";
+  private static final String ENVIRONMENT = "environment";
+  private static final String ACCOUNT_SUBTYPES = "accountSubtypes";
+  private static final String WEBHOOK = "webhook";
+  private static final String LINK_CUSTOMIZATION_NAME = "linkCustomizationName";
+  private static final String LANGUAGE = "language";
+  private static final String COUNTRY_CODES = "countryCodes";
+  private static final String USER_EMAIL_ADDRESS = "userEmailAddress";
+  private static final String USER_LEGAL_NAME = "userLegalName";
+  private static final String USER_PHONE_NUMBER = "userPhoneNumber";
+  private static final String TYPE = "type";
+  private static final String SUBTYPE = "subtype";
   private static final String NO_LOADING_STATE = "noLoadingState";
 
   /// LinkResultHandler
@@ -52,6 +70,9 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
   private static final String KEY_PUBLIC_TOKEN = "publicToken";
   private static final String KEY_NAME = "name";
   private static final String KEY_TYPE = "type";
+
+  // Prefix
+  private static final String LINK_TOKEN_PREFIX = "link-";
 
   private ActivityPluginBinding binding;
   private Context context;
@@ -190,14 +211,32 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
       return Unit.INSTANCE;
     });
 
+    String publicKey = (String) arguments.get(PUBLIC_KEY);
+    String token = (String) arguments.get(TOKEN);
+
+    if (publicKey == null && token == null) {
+      reply.error("PlaidFlutter", "Token must be part of configuration.", null);
+      return;
+    }
+
+    if(publicKey != null) {
+      try {
+        LinkPublicKeyConfiguration config = getLegacyLinkConfiguration(arguments);
+        Plaid.create((Application)context.getApplicationContext(), config).open(binding.getActivity());
+        return;
+      } catch (Exception e) {
+        reply.error("PlaidFlutter", e.getMessage(), null);
+        return;
+      }
+    }
+
     LinkTokenConfiguration config = getLinkTokenConfiguration(arguments);
 
     if(config != null) {
       Plaid.create((Application)context.getApplicationContext(),config).open(binding.getActivity());
-      reply.success(null);
-    } else {
-      reply.error("-1", "Create was not called.", "Unable to create LinkTokenConfiguration");
     }
+
+    reply.success(null);
   }
 
   private void close(Result reply) {
@@ -219,6 +258,10 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
       return null;
     }
 
+    if (!token.startsWith(LINK_TOKEN_PREFIX)) {
+      return null;
+    }
+
     LinkTokenConfiguration.Builder configuration = new LinkTokenConfiguration.Builder();
 
     configuration.token(token);
@@ -227,6 +270,93 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
     if (arguments.containsKey(NO_LOADING_STATE)) {
       boolean state = (boolean) Objects.requireNonNull(arguments.get(NO_LOADING_STATE));
       configuration.noLoadingState(state);
+    }
+
+    return configuration.build();
+  }
+
+  private LinkPublicKeyConfiguration getLegacyLinkConfiguration(Map<String, Object> arguments) {
+    // required arguments for configuration
+    String clientName = (String) arguments.get(CLIENT_NAME);
+    String publicKey = (String) arguments.get(PUBLIC_KEY);
+
+    LinkPublicKeyConfiguration.Builder configuration = new LinkPublicKeyConfiguration.Builder()
+            .publicKey(publicKey)
+            .clientName(clientName);
+
+    // optional arguments for configuration
+    String language = (String) arguments.get(LANGUAGE);
+    String linkCustomizationName = (String) arguments.get(LINK_CUSTOMIZATION_NAME);
+    String webhook = (String) arguments.get(WEBHOOK);
+    String userLegalName = (String) arguments.get(USER_LEGAL_NAME);
+    String userEmailAddress = (String) arguments.get(USER_EMAIL_ADDRESS);
+    String userPhoneNumber = (String) arguments.get(USER_PHONE_NUMBER);
+    String token = (String) arguments.get(TOKEN);
+    String environment = (String) arguments.get(ENVIRONMENT);
+    ArrayList<String> countryCodes = (ArrayList<String>) arguments.get(COUNTRY_CODES);
+    ArrayList<Map<String, String>> accountSubtypes = (ArrayList<Map<String, String>>) arguments.get(ACCOUNT_SUBTYPES);
+    ArrayList<String> products = (ArrayList<String>)arguments.get(PRODUCTS);
+
+    if (products != null) {
+      ArrayList<PlaidProduct> listProducts = new ArrayList<>();
+
+      for (String item : products) {
+        PlaidProduct p = PlaidProduct.valueOf(item.toUpperCase());
+        listProducts.add(p);
+      }
+
+      configuration.products(listProducts);
+    }
+
+    if(accountSubtypes != null) {
+      ArrayList<LinkAccountSubtype> listSubtypes = new ArrayList<>();
+
+      for (Map<String, String> item: accountSubtypes) {
+        String type = item.get(TYPE);
+        String subtype = item.get(SUBTYPE);
+        listSubtypes.add(LinkAccountSubtype.Companion.convert(type, subtype));
+      }
+
+      if(!listSubtypes.isEmpty()) {
+        configuration.accountSubtypes(listSubtypes);
+      }
+    }
+
+    if(environment != null) {
+      PlaidEnvironment env = PlaidEnvironment.valueOf(environment.toUpperCase());
+      configuration.environment(env);
+    }
+
+    if(countryCodes != null) {
+      configuration.countryCodes(countryCodes);
+    }
+
+    if(token != null) {
+      configuration.token(token);
+    }
+
+    if(linkCustomizationName != null) {
+      configuration.linkCustomizationName(linkCustomizationName);
+    }
+
+    if(language != null) {
+      configuration.language(language);
+    }
+
+    if(webhook != null) {
+      configuration.webhook(webhook);
+    }
+
+    if(userLegalName != null) {
+      configuration.userLegalName(userLegalName);
+    }
+
+    if(userEmailAddress != null) {
+      configuration.userEmailAddress(userEmailAddress);
+    }
+
+    if(userPhoneNumber != null) {
+      configuration.userPhoneNumber(userPhoneNumber);
     }
 
     return configuration.build();
@@ -261,11 +391,6 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
     result.put("timestamp", data.getTimestamp());
     result.put("viewName", data.getViewName() == null ? "" : data.getViewName().getJsonValue());
     result.put("metadataJson", data.getMetadataJson());
-    result.put("accountNumberMask", data.getAccountNumberMask());
-    result.put("isUpdateMode", data.isUpdateMode());
-    result.put("matchReason", data.getMatchReason());
-    result.put("routingNumber", data.getRoutingNumber());
-    result.put("selection", data.getSelection());
 
     return result;
   }

@@ -256,9 +256,6 @@ class LinkEventMetadata {
   /// The account number mask extracted from the user-provided account number. If the user-inputted account number is four digits long, account_number_mask is empty. Emitted by SUBMIT_ACCOUNT_NUMBER
   final String? accountNumberMask;
 
-  /// Indicates if the current Link session is an update mode session. Emitted by: OPEN.
-  final String? isUpdateMode;
-
   LinkEventMetadata({
     required this.viewName,
     required this.exitStatus,
@@ -276,7 +273,6 @@ class LinkEventMetadata {
     required this.routingNumber,
     required this.matchReason,
     required this.accountNumberMask,
-    required this.isUpdateMode,
   });
 
   factory LinkEventMetadata.fromJson(dynamic json) {
@@ -297,7 +293,6 @@ class LinkEventMetadata {
       routingNumber: json["routingNumber"],
       matchReason: json["matchReason"],
       accountNumberMask: json["accountNumberMask"],
-      isUpdateMode: json["isUpdateMode"],
     );
   }
 

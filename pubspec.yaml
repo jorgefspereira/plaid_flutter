@@ -1,6 +1,6 @@
 name: plaid_flutter
 description: Plaid Link for Flutter. Integrates the native iOS, Android and Web SDKs.
-version: 4.0.0-rc.1
+version: 3.1.4
 homepage: https://github.com/jorgefspereira/plaid_flutter
 repository: https://github.com/jorgefspereira/plaid_flutter
 issue_tracker: https://github.com/jorgefspereira/plaid_flutter/issues
@@ -9,9 +9,9 @@ screenshots:
     path: doc/screenshots/logo.jpg
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.10.0"
-  
+  sdk: ">=2.18.0 <4.0.0"
+  flutter: ">=1.20.0"
+
 dependencies:
   flutter:
     sdk: flutter
@@ -36,7 +36,3 @@ flutter:
       web:
         pluginClass: PlaidFlutterPlugin
         fileName: src/platform/plaid_flutter_web.dart
-
-topics:
-  - plaid
-  - plaid-link

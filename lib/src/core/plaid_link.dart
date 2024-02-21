@@ -32,8 +32,7 @@ class PlaidLink {
       _platform.onObject.where((event) => event is LinkExit).cast();
 
   /// Initializes the Plaid Link flow on the device.
-  static Future<void> open(
-      {required LinkTokenConfiguration configuration}) async {
+  static Future<void> open({required LinkConfiguration configuration}) async {
     await _platform.open(configuration: configuration);
   }
 
@@ -43,7 +42,7 @@ class PlaidLink {
   }
 
   /// Continue with redirect uri
-  static Future<void> resumeAfterTermination(String redirectUri) async {
-    await _platform.resumeAfterTermination(redirectUri);
+  static Future<void> continueWithRedirectUri(String redirectUri) async {
+    await _platform.continueWithRedirectUri(redirectUri);
   }
 }
