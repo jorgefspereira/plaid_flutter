@@ -1,4 +1,4 @@
-## 3.1.4
+## 3.1.5
 
 * Fix compatible with Gradle 8
 * Fixed Plaid.open() never returning
