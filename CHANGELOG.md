@@ -1,3 +1,7 @@
+## 4.0.2-rc
+
+* Updated README iOS requirments
+
 ## 4.0.1-rc.1
 
 * Updated Android SDK to 4.1.1
