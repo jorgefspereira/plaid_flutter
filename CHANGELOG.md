@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-## 4.0.0-rc.1
-
-* Updated Android SDK to 4.0.0
-* Updated iOS SDK to 5.0.0
-* Added support for selection, routingNumber, matchReason, accountNumberMask, isUpdateMode to LinkEventMetadata
-* BREAKING CHANGE: Removed LegacyLinkConfiguration
-
-
-=======
->>>>>>> parent of 23daa78 (version 4.0.0-rc.1)
 ## 3.1.4
 
 * Fix compatible with Gradle 8
