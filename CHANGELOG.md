@@ -1,3 +1,10 @@
+## 4.0.1-rc.1
+
+* Updated Android SDK to 4.1.1
+* Updated iOS SDK to 5.2.0
+* Added export for PlaidPlatformInterface
+* BREAKING CHANGE: iOS deployment target 14.0
+
 ## 4.0.0-rc.1
 
 * Updated Android SDK to 4.0.0
