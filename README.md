@@ -47,7 +47,7 @@ Add `plaid_flutter` as a [dependency in your pubspec.yaml file](https://flutter.
 
 ### Requirements
 
-- iOS version >= 11.0
+- iOS version >= 14.0
 - Xcode 14 or greater
 
 ### (Identity Verification only) - Enable camera support 
