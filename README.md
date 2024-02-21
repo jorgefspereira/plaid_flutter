@@ -16,8 +16,6 @@ This plugin integrates the native SDKs:
 
 Feel free to leave any feedback [here](https://github.com/jorgefspereira/plaid_flutter/issues).
 
-:warning: All integrations must migrate to version 3.1.0 or later (requires version 4.1.0 or later of the iOS LinkKit SDK) by June 30, 2023, to maintain support for Chase OAuth on iOS
-
 ## Requirements
 
 In order to initialize Plaid Link, you will need to create a link_token at [/link/token/create](https://plaid.com/docs/#create-link-token). After generating a link_token, you'll need to pass it into your app and use it to launch Link:
