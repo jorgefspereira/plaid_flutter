@@ -74,6 +74,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
     options.onLoad = allowInterop(() {});
     options.token = configuration.token;
     options.receivedRedirectUri = configuration.receivedRedirectUri;
+    options.env = configuration.token.split('-')[1];
 
     _plaid = await Plaid.create(options);
     _plaid?.open();
