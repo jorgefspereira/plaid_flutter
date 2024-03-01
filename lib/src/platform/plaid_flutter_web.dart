@@ -76,6 +76,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
     if (configuration is LinkTokenConfiguration) {
       options.token = configuration.token;
       options.receivedRedirectUri = configuration.receivedRedirectUri;
+      options.env = configuration.token.split('-')[1];
     } else if (configuration is LegacyLinkConfiguration) {
       options.token = configuration.token;
       options.key = configuration.publicKey;
