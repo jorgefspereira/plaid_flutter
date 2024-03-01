@@ -1,3 +1,7 @@
+## 3.1.6
+
+* Fixing issue with env on plaid js. Thank you @almovsesanso
+
 ## 3.1.5
 
 * Fix compatible with Gradle 8
