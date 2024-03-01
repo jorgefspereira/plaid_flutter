@@ -1,3 +1,7 @@
+## 4.0.3-rc
+
+* Fixing issue with env on plaid js. Thank you @almovsesanso 
+
 ## 4.0.2-rc
 
 * Updated README iOS requirments
