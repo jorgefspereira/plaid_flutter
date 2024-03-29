@@ -100,7 +100,7 @@ main() {
       test('calls platform.open', () async {
         const token = 'token';
 
-        final linkTokenConfiguration = LinkTokenConfiguration(token: token);
+        const linkTokenConfiguration = LinkTokenConfiguration(token: token);
 
         when(
           () => plaidPlatformInterface.open(
