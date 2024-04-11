@@ -10,9 +10,9 @@ class LinkTokenConfiguration {
   final bool noLoadingState;
 
   /// WEB ONLY: A receivedRedirectUri is required to support OAuth authentication flows when re-launching Link on a mobile device.
-  String? receivedRedirectUri;
+  final String? receivedRedirectUri;
 
-  LinkTokenConfiguration({
+  const LinkTokenConfiguration({
     required this.token,
     this.noLoadingState = false,
     this.receivedRedirectUri,
@@ -29,8 +29,12 @@ class LinkTokenConfiguration {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is LinkTokenConfiguration && runtimeType == other.runtimeType && hashCode == other.hashCode;
+      identical(this, other) ||
+      other is LinkTokenConfiguration &&
+          runtimeType == other.runtimeType &&
+          hashCode == other.hashCode;
 
   @override
-  int get hashCode => Object.hash(token.hashCode, noLoadingState.hashCode, receivedRedirectUri.hashCode);
+  int get hashCode => Object.hash(
+      token.hashCode, noLoadingState.hashCode, receivedRedirectUri.hashCode);
 }
