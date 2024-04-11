@@ -1,3 +1,8 @@
+## 3.1.7
+
+* Updated Android SDK to 3.14.3
+* Updated iOS SDK to 4.7.5
+
 ## 3.1.6
 
 * Fixing issue with env on plaid js. Thank you @almovsesanso
