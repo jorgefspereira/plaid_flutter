@@ -1,8 +1,9 @@
-## 4.1.0-rc
+## 4.0.4-rc
 
 * Added mocktail testing. Thank you @MauriMiguez
 * Updated Android SDK to 4.2.1
 * Updated iOS SDK to 5.3.3
+* Added equality operator to LinkTokenConfiguration
 
 ## 4.0.3-rc
 
