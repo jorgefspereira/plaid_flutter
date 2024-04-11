@@ -32,9 +32,9 @@ main() {
 
       setUp(() {
         linkEvent = _MockLinkEvent();
-        when(
-          () => plaidPlatformInterface.onObject,
-        ).thenAnswer((_) => Stream.fromIterable([linkEvent]));
+        when(() => plaidPlatformInterface.onObject).thenAnswer(
+          (_) => Stream.fromIterable([linkEvent]),
+        );
       });
 
       test('emits a LinkEvent', () async {
@@ -43,10 +43,7 @@ main() {
 
       test('calls platform.onObject', () {
         PlaidLink.onEvent;
-
-        verify(
-          () => plaidPlatformInterface.onObject,
-        ).called(1);
+        verify(() => plaidPlatformInterface.onObject).called(1);
       });
     });
 
@@ -55,9 +52,9 @@ main() {
 
       setUp(() {
         linkExitEvent = _MockLinkExit();
-        when(
-          () => plaidPlatformInterface.onObject,
-        ).thenAnswer((_) => Stream.fromIterable([linkExitEvent]));
+        when(() => plaidPlatformInterface.onObject).thenAnswer(
+          (_) => Stream.fromIterable([linkExitEvent]),
+        );
       });
 
       test('emits a LinkExit', () async {
@@ -67,9 +64,7 @@ main() {
       test('calls platform.onObject', () {
         PlaidLink.onExit;
 
-        verify(
-          () => plaidPlatformInterface.onObject,
-        ).called(1);
+        verify(() => plaidPlatformInterface.onObject).called(1);
       });
     });
 
@@ -78,9 +73,9 @@ main() {
 
       setUp(() {
         linkSuccess = _MockLinkSuccess();
-        when(
-          () => plaidPlatformInterface.onObject,
-        ).thenAnswer((_) => Stream.fromIterable([linkSuccess]));
+        when(() => plaidPlatformInterface.onObject).thenAnswer(
+          (_) => Stream.fromIterable([linkSuccess]),
+        );
       });
 
       test('emits a LinkSuccess', () async {
@@ -90,28 +85,27 @@ main() {
       test('calls platform.onObject', () {
         PlaidLink.onSuccess;
 
-        verify(
-          () => plaidPlatformInterface.onObject,
-        ).called(1);
+        verify(() => plaidPlatformInterface.onObject).called(1);
       });
     });
 
     group('open', () {
       test('calls platform.open', () async {
         const token = 'token';
-
-        const linkTokenConfiguration = LinkTokenConfiguration(token: token);
+        final linkTokenConfiguration = LinkTokenConfiguration(token: token);
 
         when(
           () => plaidPlatformInterface.open(
-              configuration: linkTokenConfiguration),
+            configuration: linkTokenConfiguration,
+          ),
         ).thenAnswer(Future.value);
 
         await PlaidLink.open(configuration: linkTokenConfiguration);
 
         verify(
           () => plaidPlatformInterface.open(
-              configuration: linkTokenConfiguration),
+            configuration: linkTokenConfiguration,
+          ),
         ).called(1);
       });
     });
