@@ -26,4 +26,11 @@ class LinkTokenConfiguration {
       'receivedRedirectUri': receivedRedirectUri,
     };
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is LinkTokenConfiguration && runtimeType == other.runtimeType && hashCode == other.hashCode;
+
+  @override
+  int get hashCode => Object.hash(token.hashCode, noLoadingState.hashCode, receivedRedirectUri.hashCode);
 }
