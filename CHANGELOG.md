@@ -1,3 +1,9 @@
+## 4.1.0-rc
+
+* Added mocktail testing. Thank you @MauriMiguez
+* Updated Android SDK to 4.2.1
+* Updated iOS SDK to 5.3.3
+
 ## 4.0.3-rc
 
 * Fixing issue with env on plaid js. Thank you @almovsesanso 
