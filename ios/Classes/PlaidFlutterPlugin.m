@@ -24,10 +24,10 @@ static NSString* const kTypeKey = @"type";
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel *methodChannel = [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/plaid_flutter"
                                                                 binaryMessenger:[registrar messenger]];
-    
+
     FlutterEventChannel *eventChannel = [FlutterEventChannel eventChannelWithName:@"plugins.flutter.io/plaid_flutter/events"
                                                                   binaryMessenger:[registrar messenger]];
-    
+
     PlaidFlutterPlugin *instance = [[PlaidFlutterPlugin alloc] init];
     [registrar addMethodCallDelegate:instance channel:methodChannel];
     [eventChannel setStreamHandler:instance];
@@ -46,7 +46,7 @@ static NSString* const kTypeKey = @"type";
         [self resumeAfterTermination:call.arguments withResult:result];
     else
         result(FlutterMethodNotImplemented);
-    
+
 }
 
 #pragma mark FlutterStreamHandler implementation
@@ -54,7 +54,7 @@ static NSString* const kTypeKey = @"type";
 - (void) sendEventWithArguments:(id _Nullable)arguments {
     if (!_eventSink)
         return;
-    
+
     _eventSink(arguments);
 }
 
@@ -74,9 +74,9 @@ static NSString* const kTypeKey = @"type";
 - (void) openWithArguments: (id _Nullable)arguments withResult:(FlutterResult)result {
     NSString* token = arguments[kTokenKey];
     BOOL noLoadingState = arguments[kNoLoadingStateKey];
-    
+
     __weak typeof(self) weakSelf = self;
-    
+
     PLKOnSuccessHandler successHandler = ^(PLKLinkSuccess *success) {
         __strong typeof(self) strongSelf = weakSelf;
         [strongSelf close];
@@ -84,65 +84,72 @@ static NSString* const kTypeKey = @"type";
                                               kPublicTokenKey: success.publicToken ?: @"",
                                               kMetadataKey : [PlaidFlutterPlugin dictionaryFromSuccessMetadata:success.metadata]}];
     };
-    
+
     PLKOnExitHandler exitHandler = ^(PLKLinkExit *exit) {
         __strong typeof(self) strongSelf = weakSelf;
         [strongSelf close];
-        
+        // No HANDOFF event for exit so we can deallocate this right away.
+        _linkHandler = nil;
+
         NSMutableDictionary* arguments = [[NSMutableDictionary alloc] init];
         [arguments setObject:kOnExitType forKey:kTypeKey];
         [arguments setObject:[PlaidFlutterPlugin dictionaryFromExitMetadata: exit.metadata] forKey:kMetadataKey];
-        
+
         if(exit.error) {
             [arguments setObject:[PlaidFlutterPlugin dictionaryFromError:exit.error] ?: @{} forKey:kErrorKey];
         }
-        
+
         [strongSelf sendEventWithArguments: arguments];
     };
-    
+
     PLKOnEventHandler eventHandler = ^(PLKLinkEvent *event) {
         __strong typeof(self) strongSelf = weakSelf;
         [strongSelf sendEventWithArguments:@{kTypeKey: kOnEventType,
                                              kNameKey: [PlaidFlutterPlugin stringForEventName: event.eventName] ?: @"",
                                              kMetadataKey: [PlaidFlutterPlugin dictionaryFromEventMetadata: event.eventMetadata]}];
+
+        if ([eventName isEqualToString:@"HANDOFF"]) {
+            // This event is only received after onSuccess. So it's safe to deallocate the handler now.
+            _linkHandler = nil;
+        }
     };
-    
+
     PLKLinkTokenConfiguration *config = [self getLinkTokenConfigurationWithToken:token onSuccessHandler:successHandler];
     config.onEvent = eventHandler;
     config.onExit = exitHandler;
     config.noLoadingState = noLoadingState;
-    
+
     NSError *creationError = nil;
     _linkHandler = [PLKPlaid createWithLinkTokenConfiguration:config error:&creationError];
-    
+
     if (_linkHandler) {
         __block bool didPresent = NO;
-        
+
         ///
         void(^presentationHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
             UIViewController* rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
             [rootViewController presentViewController:linkViewController animated:YES completion:nil];
             didPresent = YES;
         };
-        
+
         void(^dismissalHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
             if (didPresent) {
                 [weakSelf close];
                 didPresent = NO;
             }
         };
-        
-        
+
+
         [_linkHandler openWithPresentationHandler:presentationHandler dismissalHandler:dismissalHandler];
         result(nil);
-        
+
     } else {
-        
+
         NSString *errorMessage = creationError ? creationError.userInfo[@"message"] : @"Create was not called.";
         NSString *errorCode = creationError ? [@(creationError.code) stringValue] : @"-1";
         NSString *errorDetails = @"Unable to create PLKHandler";
         NSString *errorType = @"Creation error";
-        
+
         NSDictionary *exitEvent = @{
             kTypeKey: kOnExitType,
             kErrorKey : @{
@@ -162,7 +169,7 @@ static NSString* const kTypeKey = @"type";
                 @"metadataJson": @"",
             },
         };
-        
+
         [self sendEventWithArguments: exitEvent];
         result([FlutterError errorWithCode: errorCode message: errorMessage details: errorDetails]);
     }
@@ -171,7 +178,6 @@ static NSString* const kTypeKey = @"type";
 - (void) close {
     UIViewController* rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
     [rootViewController dismissViewControllerAnimated:YES completion:nil];
-    _linkHandler = nil;
 }
 
 - (void) closeWithResult:(FlutterResult)result {
@@ -186,7 +192,7 @@ static NSString* const kTypeKey = @"type";
     if (redirectUriURL && _linkHandler) {
         [_linkHandler resumeAfterTermination:redirectUriURL];
     }
-    
+
     result(nil);
 }
 
@@ -244,7 +250,7 @@ static NSString* const kTypeKey = @"type";
 
 + (NSArray<id<PLKAccountSubtype>> *)accountSubtypesArrayFromAccountSubtypeDictionaries:(NSArray<NSDictionary<NSString *, NSString *> *> *)accountSubtypeDictionaries {
     __block NSMutableArray<id<PLKAccountSubtype>> *results = [NSMutableArray array];
-    
+
     for (NSDictionary *accountSubtypeDictionary in accountSubtypeDictionaries) {
         NSString *type = accountSubtypeDictionary[@"type"];
         NSString *subtype = accountSubtypeDictionary[@"subtype"];
@@ -253,7 +259,7 @@ static NSString* const kTypeKey = @"type";
             [results addObject:result];
         }
     }
-    
+
     return [results copy];
 }
 
@@ -504,12 +510,12 @@ static NSString* const kTypeKey = @"type";
 
 + (NSArray<NSDictionary *> *)accountsDictionariesFromAccounts:(NSArray<PLKAccount *> *)accounts {
     NSMutableArray<NSDictionary *> *results = [NSMutableArray arrayWithCapacity:accounts.count];
-    
+
     for (PLKAccount *account in accounts) {
         NSDictionary *accountDictionary = [PlaidFlutterPlugin dictionaryFromAccount:account];
         [results addObject:accountDictionary];
     }
-    
+
     return [results copy];
 }
 
@@ -541,7 +547,7 @@ static NSString* const kTypeKey = @"type";
     if (!eventName) {
         return @"";
     }
-    
+
     if (eventName.unknownStringValue) {
         return eventName.unknownStringValue;
     }
@@ -807,9 +813,9 @@ static NSString* const kTypeKey = @"type";
     if (!error || !errorDomain) {
         return @"";
     }
-    
+
     NSString *normalizedErrorDomain = errorDomain;
-    
+
     return @{
         kPLKExitErrorInvalidRequestDomain: @"INVALID_REQUEST",
         kPLKExitErrorInvalidInputDomain: @"INVALID_INPUT",
