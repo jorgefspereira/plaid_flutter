@@ -107,7 +107,6 @@ static NSString* const kTypeKey = @"type";
         [strongSelf sendEventWithArguments:@{kTypeKey: kOnEventType,
                                              kNameKey: [PlaidFlutterPlugin stringForEventName: event.eventName] ?: @"",
                                              kMetadataKey: [PlaidFlutterPlugin dictionaryFromEventMetadata: event.eventMetadata]}];
-
         if ([eventName isEqualToString:@"HANDOFF"]) {
             // This event is only received after onSuccess. So it's safe to deallocate the handler now.
             _linkHandler = nil;
