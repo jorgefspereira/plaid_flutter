@@ -89,7 +89,7 @@ static NSString* const kTypeKey = @"type";
         __strong typeof(self) strongSelf = weakSelf;
         [strongSelf close];
         // No HANDOFF event for exit so we can deallocate this right away.
-        _linkHandler = nil;
+        strongSelf->_linkHandler = nil;
 
         NSMutableDictionary* arguments = [[NSMutableDictionary alloc] init];
         [arguments setObject:kOnExitType forKey:kTypeKey];
@@ -107,9 +107,9 @@ static NSString* const kTypeKey = @"type";
         [strongSelf sendEventWithArguments:@{kTypeKey: kOnEventType,
                                              kNameKey: [PlaidFlutterPlugin stringForEventName: event.eventName] ?: @"",
                                              kMetadataKey: [PlaidFlutterPlugin dictionaryFromEventMetadata: event.eventMetadata]}];
-        if ([eventName isEqualToString:@"HANDOFF"]) {
+        if (event.eventName.value == PLKEventNameValueHandoff) {
             // This event is only received after onSuccess. So it's safe to deallocate the handler now.
-            _linkHandler = nil;
+            strongSelf->_linkHandler = nil;
         }
     };
 
