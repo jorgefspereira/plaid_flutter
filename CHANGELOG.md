@@ -1,3 +1,10 @@
+## 4.0.5-rc
+
+* Fixing issue with handoff event not triggering
+* Updated Android SDK to 4.3.1
+* Updated iOS SDK to 5.4.2
+* Added PROFILE_ELIGIBILITY_CHECK_READY, PROFILE_ELIGIBILITY_CHECK_ERROR and SUBMIT_OTP events.
+  
 ## 4.0.4-rc
 
 * Added mocktail testing. Thank you @MauriMiguez

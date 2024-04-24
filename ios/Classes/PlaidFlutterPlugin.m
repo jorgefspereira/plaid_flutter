@@ -104,6 +104,7 @@ static NSString* const kTypeKey = @"type";
 
     PLKOnEventHandler eventHandler = ^(PLKLinkEvent *event) {
         __strong typeof(self) strongSelf = weakSelf;
+        
         [strongSelf sendEventWithArguments:@{kTypeKey: kOnEventType,
                                              kNameKey: [PlaidFlutterPlugin stringForEventName: event.eventName] ?: @"",
                                              kMetadataKey: [PlaidFlutterPlugin dictionaryFromEventMetadata: event.eventMetadata]}];
