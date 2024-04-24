@@ -640,6 +640,12 @@ static NSString* const kTypeKey = @"type";
             return @"VERIFY_PHONE";
         case PLKEventNameValueConnectNewInstitution:
             return @"CONNECT_NEW_INSTITUTION";
+        case PLKEventNameValueProfileEligibilityCheckReady:
+            return @"PROFILE_ELIGIBILITY_CHECK_READY";
+        case PLKEventNameValueProfileEligibilityCheckError:
+            return @"PROFILE_ELIGIBILITY_CHECK_ERROR";
+        case PLKEventNameValueSubmitOTP:
+            return @"SUBMIT_OTP";
     }
      return @"unknown";
 }
