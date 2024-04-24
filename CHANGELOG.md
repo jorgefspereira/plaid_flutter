@@ -1,3 +1,8 @@
+## 3.1.8
+
+* Updated iOS SDK to 4.7.6
+* Fixed issue with handoff event.
+
 ## 3.1.7
 
 * Updated Android SDK to 3.14.3
