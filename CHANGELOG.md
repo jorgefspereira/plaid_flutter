@@ -1,3 +1,9 @@
+## 4.0.6-rc
+
+* Updated Android SDK to 4.5.1
+* Updated iOS SDK to 5.6.0
+* Removed imperative apply of Flutter's Gradle plugins
+
 ## 4.0.5-rc
 
 * Fixing issue with handoff event not triggering
