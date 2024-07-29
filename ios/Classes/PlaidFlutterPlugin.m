@@ -647,6 +647,10 @@ static NSString* const kTypeKey = @"type";
             return @"PROFILE_ELIGIBILITY_CHECK_ERROR";
         case PLKEventNameValueSubmitOTP:
             return @"SUBMIT_OTP";
+        case PLKEventNameValueLayerReady:
+            return @"LAYER_READY";
+        case PLKEventNameValueLayerNotAvailable:
+            return @"LAYER_NOT_AVAILABLE";
     }
      return @"unknown";
 }
@@ -782,6 +786,8 @@ static NSString* const kTypeKey = @"type";
             return @"SELECT_SAVED_INSTITUTION";
         case PLKViewNameValueSelectSavedAccount:
             return @"SELECT_SAVED_ACCOUNT";
+        case PLKViewNameValueProfileDataReview:
+            return @"PROFILE_DATA_REVIEW";
     }
 
     return @"unknown";
