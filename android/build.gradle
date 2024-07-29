@@ -8,11 +8,11 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath 'com.android.tools.build:gradle:7.4.2'
     }
 }
 
-rootProject.allprojects {
+allprojects {
     repositories {
         google()
         mavenCentral()
@@ -24,25 +24,25 @@ apply plugin: 'com.android.library'
 android {
     // conditional for compatibility with older gradle versions
     if (project.android.hasProperty('namespace')) {
-        namespace "com.github.jorgefspereira.plaid_flutter"
+        namespace = "com.github.jorgefspereira.plaid_flutter"
     }
 
-    compileSdkVersion 31
+    compileSdk = 34
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
 
     defaultConfig {
-        minSdkVersion 21
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        minSdk = 21
     }
+
     lintOptions {
         disable 'InvalidPackage'
     }
 
     dependencies {
-        implementation 'com.plaid.link:sdk-core:4.3.1'
-    }
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        implementation 'com.plaid.link:sdk-core:4.5.1'
     }
 }
