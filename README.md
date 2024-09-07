@@ -18,20 +18,26 @@ Feel free to leave any feedback [here](https://github.com/jorgefspereira/plaid_f
 
 ## Requirements
 
-In order to initialize Plaid Link, you will need to create a link_token at [/link/token/create](https://plaid.com/docs/#create-link-token). After generating a link_token, you'll need to pass it into your app and use it to launch Link:
+In order to initialize Plaid Link, you will need to create a link_token at [/link/token/create](https://plaid.com/docs/#create-link-token). After generating a link_token, you'll need to pass it into your app and use it to open Link:
 
 ``` dart
 ...
 
-LinkConfiguration configuration = LinkTokenConfiguration(
+LinkTokenConfiguration configuration = LinkTokenConfiguration(
     token: "<GENERATED_LINK_TOKEN>",
 );
 
-PlaidLink.open(configuration: configuration)
+/// Creates a internal handler for Plaid Link. A one-time use object used to open a Link session. Should always be called before open.
+PlaidLink.create(configuration: _configuration);
+
+/// Open Plaid Link by calling open on the handler.
+PlaidLink.open();
 
 ...
 
 ```
+
+Note that each time you open Link, you will need to get a new link_token from your server and create a new LinkTokenConfiguration with it.
 
 A link_token can be configured for different Link flows depending on the fields provided during token creation. It is the preferred way of initializing Link going forward. You will need to pass in most of your Link configurations server-side in the [/link/token/create](https://plaid.com/docs/#create-link-token) endpoint rather than client-side where they previously existed.
 

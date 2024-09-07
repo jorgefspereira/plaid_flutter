@@ -1,3 +1,9 @@
+## 4.1.0-rc
+
+* Added submit for the new layer product.
+* Adding new two-step loading paradigm where Link is first created and then opened. Should improve loading times.
+* Updated Android SDK to 4.6.0
+
 ## 4.0.7-rc
 
 * Downgraded dart sdk version
