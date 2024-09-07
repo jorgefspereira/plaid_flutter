@@ -31,9 +31,9 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
     PlaidPlatformInterface.instance = PlaidFlutterPlugin();
   }
 
-  /// Initializes the Plaid Link flow on the device.
+  /// Creates a handler for Plaid Link. A one-time use object used to open a Link session.
   @override
-  Future<void> open({required LinkTokenConfiguration configuration}) async {
+  Future<void> create({required LinkTokenConfiguration configuration}) async {
     WebConfiguration options = WebConfiguration();
 
     /// onSuccess handler
@@ -77,6 +77,11 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
     options.env = configuration.token.split('-')[1];
 
     _plaid = await Plaid.create(options);
+  }
+
+  /// Open Plaid Link by calling open on the Handler object.
+  @override
+  Future<void> open() async {
     _plaid?.open();
   }
 

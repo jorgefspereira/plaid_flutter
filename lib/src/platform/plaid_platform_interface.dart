@@ -1,6 +1,7 @@
-import 'package:plaid_flutter/plaid_flutter.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import '../core/events.dart';
+import '../core/link_configuration.dart';
 import 'plaid_method_channel.dart';
 
 abstract class PlaidPlatformInterface extends PlatformInterface {
@@ -26,8 +27,13 @@ abstract class PlaidPlatformInterface extends PlatformInterface {
     throw UnimplementedError('onObject has not been implemented.');
   }
 
-  /// Initializes the Plaid Link flow on the device.
-  Future<void> open({required LinkTokenConfiguration configuration}) async {
+  /// Creates a handler for Plaid Link. A one-time use object used to open a Link session.
+  Future<void> create({required LinkTokenConfiguration configuration}) async {
+    throw UnimplementedError('create() has not been implemented.');
+  }
+
+  /// Open Plaid Link by calling open on the Handler object.
+  Future<void> open() async {
     throw UnimplementedError('open() has not been implemented.');
   }
 
@@ -40,5 +46,10 @@ abstract class PlaidPlatformInterface extends PlatformInterface {
   Future<void> resumeAfterTermination(String redirectUri) async {
     throw UnimplementedError(
         'resumeAfterTermination() has not been implemented.');
+  }
+
+  /// It allows the client application to submit additional user-collected data to the Link flow (e.g. a user phone number) for the Layer product.
+  Future<void> submit(SubmissionData data) async {
+    throw UnimplementedError('submit() has not been implemented.');
   }
 }

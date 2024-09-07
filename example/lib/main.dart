@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:plaid_flutter/plaid_flutter.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
@@ -36,8 +38,8 @@ class _MyAppState extends State<MyApp> {
 
   void _createLinkTokenConfiguration() {
     setState(() {
-      _configuration = LinkTokenConfiguration(
-        token: "GENERATED_LINK_TOKEN",
+      _configuration = const LinkTokenConfiguration(
+        token: "link-sandbox-74cf082e-870b-461f-a37a-038cace0afee",
       );
     });
   }
@@ -81,14 +83,29 @@ class _MyAppState extends State<MyApp> {
               ),
               ElevatedButton(
                 onPressed: _createLinkTokenConfiguration,
-                child: Text("Create Link Token Configuration"),
+                child: const Text("Create Link Token Configuration"),
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               ElevatedButton(
                 onPressed: _configuration != null
-                    ? () => PlaidLink.open(configuration: _configuration!)
+                    ? () {
+                        PlaidLink.create(configuration: _configuration!);
+                        PlaidLink.open();
+                      }
                     : null,
-                child: Text("Open"),
+                child: const Text("Open"),
+              ),
+              ElevatedButton(
+                onPressed: _configuration != null
+                    ? () {
+                        PlaidLink.submit(
+                          SubmissionData(
+                            phoneNumber: "14155550015",
+                          ),
+                        );
+                      }
+                    : null,
+                child: const Text("Submit Phone Number"),
               ),
               Expanded(
                 child: Center(

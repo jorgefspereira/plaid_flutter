@@ -25,6 +25,8 @@ import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
 import kotlin.Unit;
 
 import com.plaid.link.Plaid;
+import com.plaid.link.PlaidHandler;
+import com.plaid.link.SubmissionData;
 import com.plaid.link.configuration.LinkTokenConfiguration;
 import com.plaid.link.event.LinkEventMetadata;
 import com.plaid.link.result.LinkAccount;
@@ -43,6 +45,9 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
   private static final String TOKEN = "token";
   private static final String NO_LOADING_STATE = "noLoadingState";
 
+  /// SubmissionData
+  private static final String PHONE_NUMBER = "phoneNumber";
+
   /// LinkResultHandler
   private static final String EVENT_ON_SUCCESS = "success";
   private static final String EVENT_ON_EXIT = "exit";
@@ -58,6 +63,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
   private MethodChannel methodChannel;
   private EventChannel eventChannel;
   private EventSink eventSink;
+  private PlaidHandler plaidHandler;
 
   /// Result handler
   private final LinkResultHandler resultHandler = new LinkResultHandler(
@@ -112,15 +118,23 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
 
   @Override
   public void onMethodCall(MethodCall call, @NonNull Result result) {
-    if(call.method.equals("open")) {
-      this.open(call.arguments(), result);
-    }
-    else if(call.method.equals("close")) {
-      this.close(result);
-    }
-    else {
-      result.notImplemented();
-    }
+      switch (call.method) {
+          case "create":
+              this.create(call.arguments(), result);
+              break;
+          case "open":
+              this.open(result);
+              break;
+          case "close":
+              this.close(result);
+              break;
+          case "submit":
+              this.submit(call.arguments(), result);
+              break;
+          default:
+              result.notImplemented();
+              break;
+      }
   }
 
   /// ActivityAware
@@ -174,7 +188,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
 
   /// Exposed methods
 
-  private void open(Map<String, Object> arguments, Result reply) {
+  private void create(Map<String, Object> arguments, Result reply) {
     if (binding == null) {
       reply.error("PlaidFlutter", "Activity not attached", null);
       return;
@@ -193,11 +207,18 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
     LinkTokenConfiguration config = getLinkTokenConfiguration(arguments);
 
     if(config != null) {
-      Plaid.create((Application)context.getApplicationContext(),config).open(binding.getActivity());
-      reply.success(null);
-    } else {
-      reply.error("-1", "Create was not called.", "Unable to create LinkTokenConfiguration");
+      plaidHandler = Plaid.create((Application)context.getApplicationContext(),config);
     }
+
+    reply.success(null);
+  }
+
+  private void open(Result reply) {
+    if (plaidHandler != null) {
+      plaidHandler.open(binding.getActivity());
+    }
+
+    reply.success(null);
   }
 
   private void close(Result reply) {
@@ -205,6 +226,22 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
       Intent intent = new Intent(context.getApplicationContext(), binding.getActivity().getClass());
       intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
       binding.getActivity().startActivity(intent);
+    }
+
+    reply.success(null);
+  }
+
+  private void submit(Map<String, Object> arguments, Result reply) {
+    if (arguments == null) {
+      reply.success(null);
+      return;
+    }
+
+    String phoneNumber = (String) arguments.get(PHONE_NUMBER);
+
+    if (plaidHandler != null && phoneNumber != null) {
+      SubmissionData submissionData = new SubmissionData(phoneNumber);
+      plaidHandler.submit(submissionData);
     }
 
     reply.success(null);

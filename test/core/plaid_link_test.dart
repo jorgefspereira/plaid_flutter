@@ -95,15 +95,15 @@ main() {
         const linkTokenConfiguration = LinkTokenConfiguration(token: token);
 
         when(
-          () => plaidPlatformInterface.open(
+          () => plaidPlatformInterface.create(
             configuration: linkTokenConfiguration,
           ),
         ).thenAnswer(Future.value);
 
-        await PlaidLink.open(configuration: linkTokenConfiguration);
+        await PlaidLink.open();
 
         verify(
-          () => plaidPlatformInterface.open(
+          () => plaidPlatformInterface.create(
             configuration: linkTokenConfiguration,
           ),
         ).called(1);

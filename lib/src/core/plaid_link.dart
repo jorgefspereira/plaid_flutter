@@ -31,10 +31,15 @@ class PlaidLink {
   static Stream<LinkExit> get onExit =>
       _platform.onObject.where((event) => event is LinkExit).cast();
 
-  /// Initializes the Plaid Link flow on the device.
-  static Future<void> open(
+  /// Creates a handler for Plaid Link. A one-time use object used to open a Link session.
+  static Future<void> create(
       {required LinkTokenConfiguration configuration}) async {
-    await _platform.open(configuration: configuration);
+    await _platform.create(configuration: configuration);
+  }
+
+  /// Open Plaid Link by calling open on the Handler object.
+  static Future<void> open() async {
+    await _platform.open();
   }
 
   /// Closes Plaid Link View
@@ -45,5 +50,10 @@ class PlaidLink {
   /// Continue with redirect uri
   static Future<void> resumeAfterTermination(String redirectUri) async {
     await _platform.resumeAfterTermination(redirectUri);
+  }
+
+  /// It allows the client application to submit additional user-collected data to the Link flow (e.g. a user phone number) for the Layer product.
+  static Future<void> submit(SubmissionData data) async {
+    await _platform.submit(data);
   }
 }

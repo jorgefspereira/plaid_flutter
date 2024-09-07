@@ -2,6 +2,7 @@
 #import <LinkKit/LinkKit.h>
 
 static NSString* const kTokenKey = @"token";
+static NSString* const kPhoneNumberKey = @"phoneNumber";
 static NSString* const kContinueRedirectUriKey = @"redirectUri";
 static NSString* const kNoLoadingStateKey = @"noLoadingState";
 static NSString* const kOnSuccessType = @"success";
@@ -19,6 +20,7 @@ static NSString* const kTypeKey = @"type";
 @implementation PlaidFlutterPlugin {
     FlutterEventSink _eventSink;
     id<PLKHandler> _linkHandler;
+    NSError *creationError;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -38,12 +40,16 @@ static NSString* const kTypeKey = @"type";
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-    if ([@"open" isEqualToString:call.method])
-        [self openWithArguments: call.arguments withResult:result];
+    if ([@"create" isEqualToString:call.method])
+        [self createWithArguments: call.arguments withResult:result];
+    else if ([@"open" isEqualToString:call.method])
+        [self openWithResult:result];
     else if ([@"close" isEqualToString:call.method])
         [self closeWithResult:result];
     else if([@"resumeAfterTermination" isEqualToString:call.method])
         [self resumeAfterTermination:call.arguments withResult:result];
+    else if([@"submit" isEqualToString:call.method])
+        [self submit:call.arguments withResult:result];
     else
         result(FlutterMethodNotImplemented);
 
@@ -71,7 +77,7 @@ static NSString* const kTypeKey = @"type";
 
 #pragma mark Exposed methods
 
-- (void) openWithArguments: (id _Nullable)arguments withResult:(FlutterResult)result {
+- (void) createWithArguments: (id _Nullable)arguments withResult:(FlutterResult)result {
     NSString* token = arguments[kTokenKey];
     BOOL noLoadingState = arguments[kNoLoadingStateKey];
 
@@ -119,12 +125,17 @@ static NSString* const kTypeKey = @"type";
     config.onExit = exitHandler;
     config.noLoadingState = noLoadingState;
 
-    NSError *creationError = nil;
-    _linkHandler = [PLKPlaid createWithLinkTokenConfiguration:config error:&creationError];
+    NSError *error = nil;
+    _linkHandler = [PLKPlaid createWithLinkTokenConfiguration:config error:&error];
+    creationError = error;
+    
+    result(nil);
+}
 
+- (void) openWithResult:(FlutterResult)result {
     if (_linkHandler) {
         __block bool didPresent = NO;
-
+        __weak typeof(self) weakSelf = self;
         ///
         void(^presentationHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
             UIViewController* rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
@@ -139,12 +150,11 @@ static NSString* const kTypeKey = @"type";
             }
         };
 
-
         [_linkHandler openWithPresentationHandler:presentationHandler dismissalHandler:dismissalHandler];
         result(nil);
 
     } else {
-
+        
         NSString *errorMessage = creationError ? creationError.userInfo[@"message"] : @"Create was not called.";
         NSString *errorCode = creationError ? [@(creationError.code) stringValue] : @"-1";
         NSString *errorDetails = @"Unable to create PLKHandler";
@@ -185,7 +195,7 @@ static NSString* const kTypeKey = @"type";
     result(nil);
 }
 
-- (void) resumeAfterTermination: (id _Nullable)arguments  withResult:(FlutterResult)result{
+- (void) resumeAfterTermination: (id _Nullable)arguments withResult:(FlutterResult)result{
     NSString* redirectUriString = arguments[kContinueRedirectUriKey];
     NSURL *redirectUriURL = (id)redirectUriString == [NSNull null] ? nil : [NSURL URLWithString:redirectUriString];
 
@@ -193,6 +203,18 @@ static NSString* const kTypeKey = @"type";
         [_linkHandler resumeAfterTermination:redirectUriURL];
     }
 
+    result(nil);
+}
+
+- (void) submit: (id _Nullable)arguments withResult:(FlutterResult)result{
+    NSString* phoneNumber = arguments[kPhoneNumberKey];
+    
+    if (_linkHandler && phoneNumber) {
+        PLKSubmissionData *data = [[PLKSubmissionData alloc] init];
+        data.phoneNumber = phoneNumber;
+        [_linkHandler submit: data];
+    }
+    
     result(nil);
 }
 
