@@ -22,6 +22,7 @@ static NSString* const kTypeKey = @"type";
     FlutterEventSink _eventSink;
     id<PLKHandler> _linkHandler;
     NSError *creationError;
+    UIViewController *_presentedViewController;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -141,6 +142,7 @@ static NSString* const kTypeKey = @"type";
         void(^presentationHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
             UIViewController *topViewController = [[UIApplication sharedApplication] topViewController];
             [topViewController presentViewController:linkViewController animated:YES completion:nil];
+            weakSelf->_presentedViewController = linkViewController;
             didPresent = YES;
         };
 
@@ -187,8 +189,10 @@ static NSString* const kTypeKey = @"type";
 }
 
 - (void) close {
-    UIViewController* rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
-    [rootViewController dismissViewControllerAnimated:YES completion:nil];
+    if (_presentedViewController) {
+        [_presentedViewController dismissViewControllerAnimated:YES completion:nil];
+        _presentedViewController = nil; // Reset after dismissal
+    }
 }
 
 - (void) closeWithResult:(FlutterResult)result {
