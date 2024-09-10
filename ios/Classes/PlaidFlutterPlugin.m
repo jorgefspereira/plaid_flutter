@@ -1,3 +1,4 @@
+#import "TopViewControllerHelper.h"
 #import "PlaidFlutterPlugin.h"
 #import <LinkKit/LinkKit.h>
 
@@ -138,8 +139,8 @@ static NSString* const kTypeKey = @"type";
         __weak typeof(self) weakSelf = self;
         ///
         void(^presentationHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
-            UIViewController* rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
-            [rootViewController presentViewController:linkViewController animated:YES completion:nil];
+            UIViewController *topViewController = [[UIApplication sharedApplication] topViewController];
+            [topViewController presentViewController:linkViewController animated:YES completion:nil];
             didPresent = YES;
         };
 
