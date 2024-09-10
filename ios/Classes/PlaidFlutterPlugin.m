@@ -140,14 +140,18 @@ static NSString* const kTypeKey = @"type";
         __weak typeof(self) weakSelf = self;
         ///
         void(^presentationHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
-            UIViewController *topViewController = [[UIApplication sharedApplication] topViewController];
-            [topViewController presentViewController:linkViewController animated:YES completion:nil];
-            weakSelf->_presentedViewController = linkViewController;
-            didPresent = YES;
+            __strong typeof(self) strongSelf = weakSelf;
+            if (strongSelf) {
+                UIViewController *topViewController = [[UIApplication sharedApplication] topViewController];
+                [topViewController presentViewController:linkViewController animated:YES completion:nil];
+                strongSelf->_presentedViewController = linkViewController;
+                didPresent = YES;
+            }
         };
 
         void(^dismissalHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
-            if (didPresent) {
+            __strong typeof(self) strongSelf = weakSelf;
+            if (strongSelf && didPresent) {
                 [weakSelf close];
                 didPresent = NO;
             }
