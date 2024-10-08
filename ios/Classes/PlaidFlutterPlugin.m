@@ -1,3 +1,4 @@
+#import "TopViewControllerHelper.h"
 #import "PlaidFlutterPlugin.h"
 #import <LinkKit/LinkKit.h>
 
@@ -21,6 +22,7 @@ static NSString* const kTypeKey = @"type";
     FlutterEventSink _eventSink;
     id<PLKHandler> _linkHandler;
     NSError *creationError;
+    UIViewController *_presentedViewController;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -138,13 +140,18 @@ static NSString* const kTypeKey = @"type";
         __weak typeof(self) weakSelf = self;
         ///
         void(^presentationHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
-            UIViewController* rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
-            [rootViewController presentViewController:linkViewController animated:YES completion:nil];
-            didPresent = YES;
+            __strong typeof(self) strongSelf = weakSelf;
+            if (strongSelf) {
+                UIViewController *topViewController = [[UIApplication sharedApplication] topViewController];
+                [topViewController presentViewController:linkViewController animated:YES completion:nil];
+                strongSelf->_presentedViewController = linkViewController;
+                didPresent = YES;
+            }
         };
 
         void(^dismissalHandler)(UIViewController *) = ^(UIViewController *linkViewController) {
-            if (didPresent) {
+            __strong typeof(self) strongSelf = weakSelf;
+            if (strongSelf && didPresent) {
                 [weakSelf close];
                 didPresent = NO;
             }
@@ -186,8 +193,10 @@ static NSString* const kTypeKey = @"type";
 }
 
 - (void) close {
-    UIViewController* rootViewController = [UIApplication sharedApplication].delegate.window.rootViewController;
-    [rootViewController dismissViewControllerAnimated:YES completion:nil];
+    if (_presentedViewController) {
+        [_presentedViewController dismissViewControllerAnimated:YES completion:nil];
+        _presentedViewController = nil; // Reset after dismissal
+    }
 }
 
 - (void) closeWithResult:(FlutterResult)result {
