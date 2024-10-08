@@ -58,9 +58,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
     /// onExit handler
     options.onExit = allowInterop((error, metadata) {
-      Map<String, dynamic> data = {
-        'metadata': mapFromExitMetadata(jsToMap(metadata))
-      };
+      Map<String, dynamic> data = {'metadata': mapFromExitMetadata(jsToMap(metadata))};
 
       if (error != null) {
         data["error"] = mapFromError(jsToMap(error));
@@ -74,7 +72,6 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
     options.onLoad = allowInterop(() {});
     options.token = configuration.token;
     options.receivedRedirectUri = configuration.receivedRedirectUri;
-    options.env = configuration.token.split('-')[1];
 
     _plaid = await Plaid.create(options);
   }
@@ -89,6 +86,14 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
   @override
   Future<void> close() async {
     _plaid?.destroy();
+  }
+
+  /// It allows the client application to submit additional user-collected data to the Link flow (e.g. a user phone number) for the Layer product.
+  @override
+  Future<void> submit(SubmissionData data) async {
+    SubmitConfiguration options = SubmitConfiguration();
+    options.phone_number = data.phoneNumber;
+    _plaid?.submit(options);
   }
 
   /// Dispose objects
@@ -129,10 +134,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
     Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
 
-    result["institution"] = {
-      "id": institutionMap["institution_id"] ?? "",
-      "name": institutionMap["name"] ?? ""
-    };
+    result["institution"] = {"id": institutionMap["institution_id"] ?? "", "name": institutionMap["name"] ?? ""};
     result["linkSessionId"] = data["link_session_id"] ?? "";
 
     List<dynamic> accountsList = [];
@@ -166,10 +168,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
     if (data["institution"] != null) {
       Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
-      result["institution"] = {
-        "id": institutionMap["institution_id"] ?? "",
-        "name": institutionMap["name"] ?? ""
-      };
+      result["institution"] = {"id": institutionMap["institution_id"] ?? "", "name": institutionMap["name"] ?? ""};
     }
 
     return result;

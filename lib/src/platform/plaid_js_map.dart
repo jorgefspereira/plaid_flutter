@@ -11,33 +11,26 @@ class Plaid {
   external void open();
   external void exit();
   external void destroy();
+  external void submit(SubmitConfiguration options);
 }
 
 @JS()
 @anonymous
 class WebConfiguration {
-  external String? clientName;
-  external String? env;
-  external String? key;
-  external List<dynamic>? product;
-  external List<dynamic>? countryCodes;
-  external String? webhook;
-  external String? linkCustomizationName;
-  external String? language;
-  external String? oauthNonce;
-  external String? oauthRedirectUri;
-  external String? oauthStateId;
   external String? token;
-  external String? paymentToken;
-  external String? userLegalName;
-  external String? userEmailAddress;
-  external String? userPhoneNumber;
   external String? receivedRedirectUri;
+  external String? key;
 
   external void Function(String publicToken, dynamic metadata) onSuccess;
   external void Function() onLoad;
   external void Function(dynamic error, dynamic metadata) onExit;
   external void Function(String eventName, dynamic metadata) onEvent;
+}
+
+@JS()
+@anonymous
+class SubmitConfiguration {
+  external String? phone_number;
 }
 
 /// A workaround to converting an object from JS to a Dart Map.
