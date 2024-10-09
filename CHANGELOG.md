@@ -1,3 +1,9 @@
+## 4.1.1
+
+* Fixed issue with Plaid not opening in an add-to-app hybrid model 
+* Updated iOS SDK to 5.6.1
+* Updated Android SDK to 4.6.1
+
 ## 4.1.0-rc
 
 * Added submit for the new layer product.
