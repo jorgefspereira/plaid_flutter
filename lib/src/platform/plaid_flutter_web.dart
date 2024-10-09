@@ -58,7 +58,9 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
     /// onExit handler
     options.onExit = allowInterop((error, metadata) {
-      Map<String, dynamic> data = {'metadata': mapFromExitMetadata(jsToMap(metadata))};
+      Map<String, dynamic> data = {
+        'metadata': mapFromExitMetadata(jsToMap(metadata))
+      };
 
       if (error != null) {
         data["error"] = mapFromError(jsToMap(error));
@@ -134,7 +136,10 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
     Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
 
-    result["institution"] = {"id": institutionMap["institution_id"] ?? "", "name": institutionMap["name"] ?? ""};
+    result["institution"] = {
+      "id": institutionMap["institution_id"] ?? "",
+      "name": institutionMap["name"] ?? ""
+    };
     result["linkSessionId"] = data["link_session_id"] ?? "";
 
     List<dynamic> accountsList = [];
@@ -168,7 +173,10 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
 
     if (data["institution"] != null) {
       Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
-      result["institution"] = {"id": institutionMap["institution_id"] ?? "", "name": institutionMap["name"] ?? ""};
+      result["institution"] = {
+        "id": institutionMap["institution_id"] ?? "",
+        "name": institutionMap["name"] ?? ""
+      };
     }
 
     return result;
