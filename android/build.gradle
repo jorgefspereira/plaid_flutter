@@ -43,6 +43,6 @@ android {
     }
 
     dependencies {
-        implementation 'com.plaid.link:sdk-core:4.6.0'
+        implementation 'com.plaid.link:sdk-core:4.6.1'
     }
 }

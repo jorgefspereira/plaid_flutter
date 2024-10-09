@@ -41,6 +41,8 @@ class _MyAppState extends State<MyApp> {
       _configuration = const LinkTokenConfiguration(
         token: "link-sandbox-74cf082e-870b-461f-a37a-038cace0afee",
       );
+
+      PlaidLink.create(configuration: _configuration!);
     });
   }
 
@@ -87,14 +89,10 @@ class _MyAppState extends State<MyApp> {
               ),
               const SizedBox(height: 15),
               ElevatedButton(
-                onPressed: _configuration != null
-                    ? () {
-                        PlaidLink.create(configuration: _configuration!);
-                        PlaidLink.open();
-                      }
-                    : null,
+                onPressed: _configuration != null ? () => PlaidLink.open() : null,
                 child: const Text("Open"),
               ),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: _configuration != null
                     ? () {
