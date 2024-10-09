@@ -10,7 +10,7 @@ A Flutter plugin for [Plaid Link](https://plaid.com/docs/link).
 
 This plugin integrates the native SDKs:
 
-- [Plaid Link iOS SDK 5.X.X](https://plaid.com/docs/link/ios)
+- [Plaid Link iOS SDK 5.x.x](https://plaid.com/docs/link/ios)
 - [Plaid Link Android SDK 4.x.x](https://plaid.com/docs/link/android)
 - [Plaid Link JavaScript SDK](https://plaid.com/docs/link/web)
 
