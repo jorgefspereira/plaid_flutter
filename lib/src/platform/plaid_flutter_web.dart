@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:js';
+import 'dart:js_interop';
 
 // In order to *not* need this ignore, consider extracting the "web" version
 // of your plugin as a separate package, instead of inlining it in the same
@@ -7,7 +7,6 @@ import 'dart:js';
 // ignore: avoid_web_libraries_in_flutter
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-// import 'package:js/js_util.dart';
 
 import '../core/events.dart';
 import '../core/link_configuration.dart';
@@ -34,48 +33,40 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
   /// Creates a handler for Plaid Link. A one-time use object used to open a Link session.
   @override
   Future<void> create({required LinkTokenConfiguration configuration}) async {
-    WebConfiguration options = WebConfiguration();
+    final webConfiguration = WebConfiguration(
+      token: configuration.token,
+      receivedRedirectUri: configuration.receivedRedirectUri,
+      onSuccess: ((JSAny publicToken, JSAny metadata) {
+        Map<String, dynamic> data = {
+          'publicToken': publicToken,
+          'metadata': mapFromSuccessMetadata(jsToMap(metadata)),
+        };
 
-    /// onSuccess handler
-    options.onSuccess = allowInterop((publicToken, metadata) {
-      Map<String, dynamic> data = {
-        'publicToken': publicToken,
-        'metadata': mapFromSuccessMetadata(jsToMap(metadata)),
-      };
+        _sendEvent(LinkSuccess.fromJson(data));
+      }).toJS,
+      onEvent: ((JSString event, JSAny metadata) {
+        Map<String, dynamic> data = {
+          'name': event,
+          'metadata': mapFromEventMetadata(jsToMap(metadata)),
+        };
 
-      _sendEvent(LinkSuccess.fromJson(data));
-    });
+        _sendEvent(LinkEvent.fromJson(data));
+      }).toJS,
+      onExit: ((JSAny? error, JSAny metadata) {
+        Map<String, dynamic> data = {
+          'metadata': mapFromExitMetadata(jsToMap(metadata))
+        };
 
-    /// onEvent handler
-    options.onEvent = allowInterop((event, metadata) {
-      Map<String, dynamic> data = {
-        'name': event,
-        'metadata': mapFromEventMetadata(jsToMap(metadata)),
-      };
+        if (error != null) {
+          data["error"] = mapFromError(jsToMap(error));
+        }
 
-      _sendEvent(LinkEvent.fromJson(data));
-    });
-
-    /// onExit handler
-    options.onExit = allowInterop((error, metadata) {
-      Map<String, dynamic> data = {
-        'metadata': mapFromExitMetadata(jsToMap(metadata))
-      };
-
-      if (error != null) {
-        data["error"] = mapFromError(jsToMap(error));
-      }
-
-      _sendEvent(LinkExit.fromJson(data));
-      _dispose();
-    });
-
-    /// onLoad handler
-    options.onLoad = allowInterop(() {});
-    options.token = configuration.token;
-    options.receivedRedirectUri = configuration.receivedRedirectUri;
-
-    _plaid = await Plaid.create(options);
+        _sendEvent(LinkExit.fromJson(data));
+        _dispose();
+      }).toJS,
+      onLoad: () {}.toJS,
+    );
+    _plaid = Plaid.create(webConfiguration);
   }
 
   /// Open Plaid Link by calling open on the Handler object.
@@ -93,8 +84,9 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
   /// It allows the client application to submit additional user-collected data to the Link flow (e.g. a user phone number) for the Layer product.
   @override
   Future<void> submit(SubmissionData data) async {
-    SubmitConfiguration options = SubmitConfiguration();
-    options.phone_number = data.phoneNumber;
+    SubmitConfiguration options = SubmitConfiguration(
+      phoneNumber: data.phoneNumber,
+    );
     _plaid?.submit(options);
   }
 
