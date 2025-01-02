@@ -1,3 +1,8 @@
+## 4.2.0
+
+* Migrate to js interop (@AlexVegner)
+* Fix: Prevent handler deallocation on multi-item Link handoff (@dtroupe-plaid)
+
 ## 4.1.1
 
 * Fixed issue with Plaid not opening in an add-to-app hybrid model 
