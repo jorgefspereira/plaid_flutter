@@ -2,6 +2,7 @@
 
 * Migrate to js interop (@AlexVegner)
 * Fix: Prevent handler deallocation on multi-item Link handoff (@dtroupe-plaid)
+* Added missing events and view names
 
 ## 4.1.1
 
