@@ -1,13 +1,11 @@
 @JS()
 library plaid.js;
 
-import 'package:js/js.dart';
-import 'package:js/js_util.dart';
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 
-@JS()
-class Plaid {
-  external static Future<Plaid> create(WebConfiguration options);
-
+extension type Plaid._(JSObject _) implements JSObject {
+  external static Plaid create(WebConfiguration options);
   external void open();
   external void exit();
   external void destroy();
@@ -16,37 +14,42 @@ class Plaid {
 
 @JS()
 @anonymous
+@staticInterop
 class WebConfiguration {
-  external String? token;
-  external String? receivedRedirectUri;
-  external String? key;
-
-  external void Function(String publicToken, dynamic metadata) onSuccess;
-  external void Function() onLoad;
-  external void Function(dynamic error, dynamic metadata) onExit;
-  external void Function(String eventName, dynamic metadata) onEvent;
+  external factory WebConfiguration({
+    String? token,
+    String? receivedRedirectUri,
+    String? key,
+    required JSFunction onSuccess,
+    required JSFunction onLoad,
+    required JSFunction onExit,
+    required JSFunction onEvent,
+  });
 }
 
 @JS()
 @anonymous
+@staticInterop
 class SubmitConfiguration {
-  external String? phone_number;
+  external factory SubmitConfiguration({
+    @JS('phone_number') String? phoneNumber,
+  });
 }
 
 /// A workaround to converting an object from JS to a Dart Map.
-Map jsToMap(jsObject) {
-  if (jsObject == null) {
+Map jsToMap(JSAny? jsObject) {
+  if (jsObject == null || !jsObject.isA<JSObject>()) {
     return {};
   }
+  final o = jsObject as JSObject;
 
-  return Map.fromIterable(
-    _getKeysOfObject(jsObject),
-    value: (key) => getProperty(jsObject, key),
-  );
+  return Map.fromIterable(_getKeysOfObject(jsObject).toDart,
+      value: (key) => o[key] // js. getProperty(jsObject, key),
+      );
 }
 
 // Both of these interfaces exist to call `Object.keys` from Dart.
 //
 // But you don't use them directly. Just see `jsToMap`.
 @JS('Object.keys')
-external List<String> _getKeysOfObject(jsObject);
+external JSArray<JSString> _getKeysOfObject(JSAny jsObject);
