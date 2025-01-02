@@ -116,9 +116,13 @@ static NSString* const kTypeKey = @"type";
         [strongSelf sendEventWithArguments:@{kTypeKey: kOnEventType,
                                              kNameKey: [PlaidFlutterPlugin stringForEventName: event.eventName] ?: @"",
                                              kMetadataKey: [PlaidFlutterPlugin dictionaryFromEventMetadata: event.eventMetadata]}];
+
+        // If the HANDOFF event is received.                                             
         if (event.eventName.value == PLKEventNameValueHandoff) {
-            // This event is only received after onSuccess. So it's safe to deallocate the handler now.
-            strongSelf->_linkHandler = nil;
+            // Only deallocate the handler if the view controller is no longer presented.
+            if (strongSelf->_presentedViewController == nil) {
+                strongSelf->_linkHandler = nil;
+            }
         }
     };
 
