@@ -1,68 +1,68 @@
-## Usage Example
+import 'dart:async';
 
-``` dart
+import 'package:flutter/material.dart';
 import 'package:plaid_flutter/plaid_flutter.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  PlaidLink _plaidPublicKey, _plaidLinkToken;
+  LinkTokenConfiguration? _configuration;
+  StreamSubscription<LinkEvent>? _streamEvent;
+  StreamSubscription<LinkExit>? _streamExit;
+  StreamSubscription<LinkSuccess>? _streamSuccess;
+  LinkObject? _successObject;
 
   @override
   void initState() {
     super.initState();
 
-    LinkConfiguration publicKeyConfiguration = LinkConfiguration(
-      clientName: "CLIENT_NAME",
-      publicKey: "YOUR_PUBLIC_KEY",
-      env: LinkEnv.sandbox,
-      products: <LinkProduct>[
-        LinkProduct.auth,
-      ],
-      accountSubtypes: {
-        "depository": ["checking", "savings"],
-      },
-      language: "en",
-      countryCodes: ['US'],
-      userLegalName: "John Appleseed",
-      userEmailAddress: "jappleseed@youapp.com",
-      userPhoneNumber: "+1 (512) 555-1234",
-    );
-
-    LinkConfiguration linkTokenConfiguration = LinkConfiguration(
-      linkToken: "GENERATED_LINK_TOKEN",
-    );
-
-    _plaidPublicKey = PlaidLink(
-      configuration: publicKeyConfiguration,
-      onSuccess: _onSuccessCallback,
-      onEvent: _onEventCallback,
-      onExit: _onExitCallback,
-    );
-
-    _plaidLinkToken = PlaidLink(
-      configuration: linkTokenConfiguration,
-      onSuccess: _onSuccessCallback,
-      onEvent: _onEventCallback,
-      onExit: _onExitCallback,
-    );
+    _streamEvent = PlaidLink.onEvent.listen(_onEvent);
+    _streamExit = PlaidLink.onExit.listen(_onExit);
+    _streamSuccess = PlaidLink.onSuccess.listen(_onSuccess);
   }
 
-  void _onSuccessCallback(publicToken, metadata) {
-    print("onSuccess: $publicToken, metadata: ${metadata.description()}");
+  @override
+  void dispose() {
+    _streamEvent?.cancel();
+    _streamExit?.cancel();
+    _streamSuccess?.cancel();
+    super.dispose();
   }
 
-  void _onEventCallback(event, metadata) {
-    print("onEvent: $event, metadata: ${metadata.description()}");
+  void _createLinkTokenConfiguration() async {
+    LinkTokenConfiguration configuration = const LinkTokenConfiguration(
+      token: "GENERATED_LINK_TOKEN",
+    );
+
+    await PlaidLink.create(configuration: configuration);
+
+    setState(() => _configuration = configuration);
   }
 
-  void _onExitCallback(error, metadata) {
-    print("onExit: $error, metadata: ${metadata.description()}");
+  void _onEvent(LinkEvent event) {
+    final name = event.name;
+    final metadata = event.metadata.description();
+    print("onEvent: $name, metadata: $metadata");
+  }
+
+  void _onSuccess(LinkSuccess event) {
+    final token = event.publicToken;
+    final metadata = event.metadata.description();
+    print("onSuccess: $token, metadata: $metadata");
+    setState(() => _successObject = event);
+  }
+
+  void _onExit(LinkExit event) {
+    final metadata = event.metadata.description();
+    final error = event.error?.description();
+    print("onExit metadata: $metadata, error: $error");
   }
 
   @override
@@ -71,17 +71,47 @@ class _MyAppState extends State<MyApp> {
       home: Scaffold(
         body: Container(
           width: double.infinity,
-          color: Colors.lightBlue,
+          color: Colors.grey[200],
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              RaisedButton(
-                onPressed: () => _plaidPublicKey.open(),
-                child: Text("Open Plaid Link (Public Key)"),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    _configuration?.toJson().toString() ?? "",
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
-              RaisedButton(
-                onPressed: () => _plaidLinkToken.open(),
-                child: Text("Open Plaid Link (Link Token)"),
+              ElevatedButton(
+                onPressed: _createLinkTokenConfiguration,
+                child: const Text("Create Link Token Configuration"),
+              ),
+              const SizedBox(height: 15),
+              ElevatedButton(
+                onPressed: _configuration != null ? () => PlaidLink.open() : null,
+                child: const Text("Open"),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: _configuration != null
+                    ? () {
+                        PlaidLink.submit(
+                          SubmissionData(
+                            phoneNumber: "14155550015",
+                          ),
+                        );
+                      }
+                    : null,
+                child: const Text("Submit Phone Number"),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    _successObject?.toJson().toString() ?? "",
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               ),
             ],
           ),
@@ -90,4 +120,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-```

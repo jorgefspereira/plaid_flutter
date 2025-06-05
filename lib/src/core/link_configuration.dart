@@ -8,6 +8,9 @@ class LinkTokenConfiguration {
   /// WEB ONLY: A receivedRedirectUri is required to support OAuth authentication flows when re-launching Link on a mobile device.
   final String? receivedRedirectUri;
 
+  /// A Boolean value that determines whether Link displays a transparent gradient background.
+  final bool showGradientBackground;
+
   /// The LinkTokenConfiguration only needs a token which is created by your app's
   /// server and passed to your app's client to initialize Link. The Link configuration parameters that were
   /// previously set within Link itself are now set via parameters passed to /link/token/create and conveyed
@@ -18,6 +21,7 @@ class LinkTokenConfiguration {
   const LinkTokenConfiguration({
     required this.token,
     this.noLoadingState = false,
+    this.showGradientBackground = false,
     this.receivedRedirectUri,
   });
 
@@ -27,19 +31,17 @@ class LinkTokenConfiguration {
       'token': token,
       'noLoadingState': noLoadingState,
       'receivedRedirectUri': receivedRedirectUri,
+      'showGradientBackground': showGradientBackground,
     };
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is LinkTokenConfiguration &&
-          runtimeType == other.runtimeType &&
-          hashCode == other.hashCode;
+      identical(this, other) || other is LinkTokenConfiguration && runtimeType == other.runtimeType && hashCode == other.hashCode;
 
   @override
-  int get hashCode => Object.hash(
-      token.hashCode, noLoadingState.hashCode, receivedRedirectUri.hashCode);
+  int get hashCode =>
+      Object.hash(token.hashCode, noLoadingState.hashCode, receivedRedirectUri.hashCode, showGradientBackground.hashCode);
 }
 
 /// Data to submit during a Link session.

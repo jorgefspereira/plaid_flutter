@@ -1,3 +1,11 @@
+## 5.0.0
+
+* Updated iOS SDK to 6.1.0
+* Updated Android SDK to 5.0.0
+* Added support for FinanceKit (iOS Only)
+* Implemented the new onLoad callback so that the created method only returns when it is actually ready. (iOS)
+* Added showGradientBackground to LinkTokenConfiguration for customizing background appearance (iOS)
+
 ## 4.2.0
 
 * Migrate to js interop (@AlexVegner)

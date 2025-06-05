@@ -18,6 +18,7 @@ class _MyAppState extends State<MyApp> {
   StreamSubscription<LinkExit>? _streamExit;
   StreamSubscription<LinkSuccess>? _streamSuccess;
   LinkObject? _successObject;
+  bool _isLoadingConfiguration = false;
 
   @override
   void initState() {
@@ -36,13 +37,31 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  void _createLinkTokenConfiguration() {
-    setState(() {
-      _configuration = const LinkTokenConfiguration(
-        token: "link-sandbox-74cf082e-870b-461f-a37a-038cace0afee",
-      );
+  void _openLink() async {
+    if (_configuration == null) {
+      print("Configuration is null, please create it first.");
+      return;
+    }
 
-      PlaidLink.create(configuration: _configuration!);
+    try {
+      setState(() => _configuration = null);
+      await PlaidLink.open();
+    } catch (e) {
+      print("Error opening Link: $e");
+    }
+  }
+
+  void _createLinkTokenConfiguration() async {
+    LinkTokenConfiguration configuration = const LinkTokenConfiguration(
+      token: "GENERATED_LINK_TOKEN", // Replace with your actual link token
+    );
+    setState(() => _isLoadingConfiguration = true);
+
+    await PlaidLink.create(configuration: configuration);
+
+    setState(() {
+      _isLoadingConfiguration = false;
+      _configuration = configuration;
     });
   }
 
@@ -72,8 +91,10 @@ class _MyAppState extends State<MyApp> {
         body: Container(
           width: double.infinity,
           color: Colors.grey[200],
+          padding: const EdgeInsets.all(40),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Expanded(
                 child: Center(
@@ -85,12 +106,13 @@ class _MyAppState extends State<MyApp> {
               ),
               ElevatedButton(
                 onPressed: _createLinkTokenConfiguration,
-                child: const Text("Create Link Token Configuration"),
+                child: _isLoadingConfiguration
+                    ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator())
+                    : const Text("Create Link Token Configuration"),
               ),
               const SizedBox(height: 15),
               ElevatedButton(
-                onPressed:
-                    _configuration != null ? () => PlaidLink.open() : null,
+                onPressed: _openLink,
                 child: const Text("Open"),
               ),
               const SizedBox(height: 10),

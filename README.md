@@ -10,8 +10,8 @@ A Flutter plugin for [Plaid Link](https://plaid.com/docs/link).
 
 This plugin integrates the native SDKs:
 
-- [Plaid Link iOS SDK 5.x.x](https://plaid.com/docs/link/ios)
-- [Plaid Link Android SDK 4.x.x](https://plaid.com/docs/link/android)
+- [Plaid Link iOS SDK 6.x.x](https://plaid.com/docs/link/ios)
+- [Plaid Link Android SDK 5.x.x](https://plaid.com/docs/link/android)
 - [Plaid Link JavaScript SDK](https://plaid.com/docs/link/web)
 
 Feel free to leave any feedback [here](https://github.com/jorgefspereira/plaid_flutter/issues).
@@ -27,8 +27,11 @@ LinkTokenConfiguration _configuration = LinkTokenConfiguration(
     token: "<GENERATED_LINK_TOKEN>",
 );
 
-/// Creates a internal handler for Plaid Link. A one-time use object used to open a Link session. Should always be called before open.
-PlaidLink.create(configuration: _configuration);
+// Create the internal handler for Plaid Link.
+// This is a one-time use object that opens a Link session.
+// Must be called before `open()`.
+// Completes when Plaid is ready to open, or throws an error if setup fails.
+await PlaidLink.create(configuration: _configuration);
 
 /// Open Plaid Link by calling open on the handler.
 PlaidLink.open();
@@ -51,8 +54,10 @@ Add `plaid_flutter` as a [dependency in your pubspec.yaml file](https://flutter.
 
 ### Requirements
 
-- iOS version >= 14.0
-- Xcode 14 or greater
+| Name | Version |
+|------|---------|
+| Xcode | >= 16.1.0 |
+| iOS | >= 14.0 |
 
 ### (Identity Verification only) - Enable camera support 
 

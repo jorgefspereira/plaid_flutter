@@ -44,12 +44,16 @@ abstract class PlaidPlatformInterface extends PlatformInterface {
 
   /// Resume after termination
   Future<void> resumeAfterTermination(String redirectUri) async {
-    throw UnimplementedError(
-        'resumeAfterTermination() has not been implemented.');
+    throw UnimplementedError('resumeAfterTermination() has not been implemented.');
   }
 
   /// It allows the client application to submit additional user-collected data to the Link flow (e.g. a user phone number) for the Layer product.
   Future<void> submit(SubmissionData data) async {
     throw UnimplementedError('submit() has not been implemented.');
+  }
+
+  /// Sync the user's transactions from their Apple card.
+  Future<void> syncFinanceKit(String token, bool requestAuthorizationIfNeeded) async {
+    throw UnimplementedError('syncFinanceKit() has not been implemented.');
   }
 }

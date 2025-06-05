@@ -14,6 +14,8 @@ static NSString* const kMetadataKey = @"metadata";
 static NSString* const kPublicTokenKey = @"publicToken";
 static NSString* const kNameKey = @"name";
 static NSString* const kTypeKey = @"type";
+static NSString* const kRequestAuthorizationIfNeeded = @"requestAuthorizationIfNeeded";
+static NSString* const kShowGradientBackground = @"showGradientBackground";
 
 @interface PlaidFlutterPlugin () <FlutterStreamHandler>
 @end
@@ -21,7 +23,7 @@ static NSString* const kTypeKey = @"type";
 @implementation PlaidFlutterPlugin {
     FlutterEventSink _eventSink;
     id<PLKHandler> _linkHandler;
-    NSError *creationError;
+    NSError *_creationError;
     UIViewController *_presentedViewController;
 }
 
@@ -52,6 +54,8 @@ static NSString* const kTypeKey = @"type";
         [self resumeAfterTermination:call.arguments withResult:result];
     else if([@"submit" isEqualToString:call.method])
         [self submit:call.arguments withResult:result];
+    else if([@"syncFinanceKit" isEqualToString:call.method])
+        [self syncFinanceKit:call.arguments withResult:result];
     else
         result(FlutterMethodNotImplemented);
 
@@ -82,7 +86,8 @@ static NSString* const kTypeKey = @"type";
 - (void) createWithArguments: (id _Nullable)arguments withResult:(FlutterResult)result {
     NSString* token = arguments[kTokenKey];
     BOOL noLoadingState = arguments[kNoLoadingStateKey];
-
+    BOOL showGradientBackground = arguments[kShowGradientBackground];
+    
     __weak typeof(self) weakSelf = self;
 
     PLKOnSuccessHandler successHandler = ^(PLKLinkSuccess *success) {
@@ -130,12 +135,20 @@ static NSString* const kTypeKey = @"type";
     config.onEvent = eventHandler;
     config.onExit = exitHandler;
     config.noLoadingState = noLoadingState;
+    config.showGradientBackground = showGradientBackground;
 
     NSError *error = nil;
-    _linkHandler = [PLKPlaid createWithLinkTokenConfiguration:config error:&error];
-    creationError = error;
+    _linkHandler = [PLKPlaid createWithLinkTokenConfiguration:config
+                                                       onLoad:^{
+                                                            result(nil);
+                                                        }
+                                                        error:&error];
+    _creationError = error;
     
-    result(nil);
+    if (error) {
+        result([FlutterError errorWithCode:[@(error.code) stringValue]
+                                   message:error.localizedDescription details: nil]);
+    }
 }
 
 - (void) openWithResult:(FlutterResult)result {
@@ -166,8 +179,8 @@ static NSString* const kTypeKey = @"type";
 
     } else {
         
-        NSString *errorMessage = creationError ? creationError.userInfo[@"message"] : @"Create was not called.";
-        NSString *errorCode = creationError ? [@(creationError.code) stringValue] : @"-1";
+        NSString *errorMessage = _creationError ? _creationError.userInfo[@"message"] : @"Create was not called.";
+        NSString *errorCode = _creationError ? [@(_creationError.code) stringValue] : @"-1";
         NSString *errorDetails = @"Unable to create PLKHandler";
         NSString *errorType = @"Creation error";
 
@@ -231,6 +244,22 @@ static NSString* const kTypeKey = @"type";
     result(nil);
 }
 
+-(void) syncFinanceKit: (id _Nullable)arguments withResult: (FlutterResult)result {
+    NSString* token = arguments[kTokenKey];
+    BOOL requestAuthorizationIfNeeded = arguments[kRequestAuthorizationIfNeeded];
+    
+    if (@available(iOS 17.4, *)) {
+        [PLKPlaid syncFinanceKitWithToken:token requestAuthorizationIfNeeded:requestAuthorizationIfNeeded onSuccess:^{
+            result(nil);
+        } onError:^(NSError *error) {
+            result([FlutterError errorWithCode:[@(error.code) stringValue]
+                                       message:error.localizedDescription details: nil]);
+        }];
+    } else {
+        result([FlutterError errorWithCode:@"1001" message: @"FinanceKit Requires iOS >= 17.4" details: nil]);
+    }
+}
+
 #pragma mark PLKConfiguration
 
 - (PLKLinkTokenConfiguration*)getLinkTokenConfigurationWithToken: (NSString *)token onSuccessHandler:(PLKOnSuccessHandler)successHandler{
@@ -238,22 +267,6 @@ static NSString* const kTypeKey = @"type";
 }
 
 #pragma mark PLKConfiguration Parsing
-
-+ (PLKEnvironment)environmentFromString:(NSString *)string {
-    if ([string isEqualToString:@"production"]) {
-        return PLKEnvironmentProduction;
-    }
-
-    if ([string isEqualToString:@"sandbox"]) {
-        return PLKEnvironmentSandbox;
-    }
-
-    if ([string isEqualToString:@"development"]) {
-        return PLKEnvironmentDevelopment;
-    }
-
-    return PLKEnvironmentDevelopment;
-}
 
 + (NSArray<NSNumber *> *)productsArrayFromProductsStringArray:(NSArray<NSString *> *)productsStringArray {
     NSMutableArray<NSNumber *> *results = [NSMutableArray arrayWithCapacity:productsStringArray.count];
