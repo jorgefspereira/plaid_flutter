@@ -107,7 +107,10 @@ class _MyAppState extends State<MyApp> {
               ElevatedButton(
                 onPressed: _createLinkTokenConfiguration,
                 child: _isLoadingConfiguration
-                    ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator())
+                    ? const SizedBox(
+                        height: 15,
+                        width: 15,
+                        child: CircularProgressIndicator())
                     : const Text("Create Link Token Configuration"),
               ),
               const SizedBox(height: 15),
