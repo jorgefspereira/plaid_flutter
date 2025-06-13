@@ -27,6 +27,10 @@ static NSString* const kShowGradientBackground = @"showGradientBackground";
     UIViewController *_presentedViewController;
 }
 
++ (NSString *)sdkVersion {
+  return @"5.0.1"; // Update this version with every SDK release.
+}
+
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
     FlutterMethodChannel *methodChannel = [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/plaid_flutter"
                                                                 binaryMessenger:[registrar messenger]];
