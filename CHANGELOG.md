@@ -1,3 +1,7 @@
+## 5.0.1
+
+* Add Version Tracking
+
 ## 5.0.0
 
 * Updated iOS SDK to 6.1.0
