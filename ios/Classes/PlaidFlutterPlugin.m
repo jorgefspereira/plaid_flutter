@@ -1,6 +1,7 @@
 #import "TopViewControllerHelper.h"
 #import "PlaidFlutterPlugin.h"
-#import <LinkKit/LinkKit.h>
+#import "PLKEmbeddedView.h"
+#import "PLKEventEmitterProtocol.h"
 
 static NSString* const kTokenKey = @"token";
 static NSString* const kPhoneNumberKey = @"phoneNumber";
@@ -17,7 +18,7 @@ static NSString* const kTypeKey = @"type";
 static NSString* const kRequestAuthorizationIfNeeded = @"requestAuthorizationIfNeeded";
 static NSString* const kShowGradientBackground = @"showGradientBackground";
 
-@interface PlaidFlutterPlugin () <FlutterStreamHandler>
+@interface PlaidFlutterPlugin () <FlutterStreamHandler, PLKEventEmitter>
 @end
 
 @implementation PlaidFlutterPlugin {
@@ -28,10 +29,11 @@ static NSString* const kShowGradientBackground = @"showGradientBackground";
 }
 
 + (NSString *)sdkVersion {
-  return @"5.0.1"; // Update this version with every SDK release.
+  return @"5.1.0-dev.1"; // Update this version with every SDK release.
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+    
     FlutterMethodChannel *methodChannel = [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/plaid_flutter"
                                                                 binaryMessenger:[registrar messenger]];
 
@@ -41,6 +43,9 @@ static NSString* const kShowGradientBackground = @"showGradientBackground";
     PlaidFlutterPlugin *instance = [[PlaidFlutterPlugin alloc] init];
     [registrar addMethodCallDelegate:instance channel:methodChannel];
     [eventChannel setStreamHandler:instance];
+    
+    PLKEmbeddedViewFactory* factory = [[PLKEmbeddedViewFactory alloc] initWithMessenger:registrar.messenger emitter:instance];
+    [registrar registerViewFactory:factory withId:@"plaid/embedded-view"];
 }
 
 - (void)dealloc {
@@ -67,13 +72,6 @@ static NSString* const kShowGradientBackground = @"showGradientBackground";
 
 #pragma mark FlutterStreamHandler implementation
 
-- (void) sendEventWithArguments:(id _Nullable)arguments {
-    if (!_eventSink)
-        return;
-
-    _eventSink(arguments);
-}
-
 - (FlutterError *)onListenWithArguments:(id)arguments
                               eventSink:(FlutterEventSink)eventSink {
     _eventSink = eventSink;
@@ -86,6 +84,13 @@ static NSString* const kShowGradientBackground = @"showGradientBackground";
 }
 
 #pragma mark Exposed methods
+
+- (void) sendEventWithArguments:(id _Nullable)arguments {
+    if (!_eventSink)
+        return;
+    
+    _eventSink(arguments);
+}
 
 - (void) createWithArguments: (id _Nullable)arguments withResult:(FlutterResult)result {
     NSString* token = arguments[kTokenKey];

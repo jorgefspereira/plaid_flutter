@@ -1,3 +1,6 @@
+## 5.1.0-dev.1
+* Added Plaid Embedded View support for iOS
+
 ## 5.0.1
 
 * Add Version Tracking
