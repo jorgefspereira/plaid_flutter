@@ -14,7 +14,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int currentPageIndex = 0;
-  final String linkToken = 'link-sandbox-9af0f80f-22c7-4050-9158-c87d4e4f34f4'; // Replace with your actual link token
+  final String linkToken =
+      'link-sandbox-9af0f80f-22c7-4050-9158-c87d4e4f34f4'; // Replace with your actual link token
 
   @override
   Widget build(BuildContext context) {

@@ -50,7 +50,8 @@ class _ExampleLinkTokenState extends State<ExampleLinkToken> {
   }
 
   void _createLinkTokenConfiguration() async {
-    LinkTokenConfiguration configuration = LinkTokenConfiguration(token: widget.linkToken);
+    LinkTokenConfiguration configuration =
+        LinkTokenConfiguration(token: widget.linkToken);
     setState(() => _isLoadingConfiguration = true);
 
     await PlaidLink.create(configuration: configuration);
@@ -100,7 +101,8 @@ class _ExampleLinkTokenState extends State<ExampleLinkToken> {
           ElevatedButton(
             onPressed: _createLinkTokenConfiguration,
             child: _isLoadingConfiguration
-                ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator())
+                ? const SizedBox(
+                    height: 15, width: 15, child: CircularProgressIndicator())
                 : const Text("Create Link Token Configuration"),
           ),
           const SizedBox(height: 15),
