@@ -29,7 +29,7 @@ static NSString* const kShowGradientBackground = @"showGradientBackground";
 }
 
 + (NSString *)sdkVersion {
-  return @"5.1.0-dev.1"; // Update this version with every SDK release.
+  return @"5.0.2"; // Update this version with every SDK release.
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
