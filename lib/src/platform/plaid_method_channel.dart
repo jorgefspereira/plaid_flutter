@@ -69,14 +69,15 @@ class PlaidMethodChannel extends PlaidPlatformInterface {
 
   /// It allows the client application to submit additional user-collected data to the Link flow (e.g. a user phone number) for the Layer product.
   @override
-  Future<void> syncFinanceKit(
-      String token, bool requestAuthorizationIfNeeded) async {
+  Future<void> syncFinanceKit(String token, bool requestAuthorizationIfNeeded,
+      bool simulatedBehavior) async {
     if (Platform.isIOS) {
       await _channel.invokeMethod(
         'syncFinanceKit',
         {
           "token": token,
           "requestAuthorizationIfNeeded": requestAuthorizationIfNeeded,
+          "simulatedBehavior": simulatedBehavior,
         },
       );
     } else {

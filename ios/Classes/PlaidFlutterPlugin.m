@@ -16,6 +16,7 @@ static NSString* const kNameKey = @"name";
 static NSString* const kTypeKey = @"type";
 static NSString* const kRequestAuthorizationIfNeeded = @"requestAuthorizationIfNeeded";
 static NSString* const kShowGradientBackground = @"showGradientBackground";
+static NSString* const kSimulatedBehavior = @"simulatedBehavior";
 
 @interface PlaidFlutterPlugin () <FlutterStreamHandler>
 @end
@@ -28,7 +29,7 @@ static NSString* const kShowGradientBackground = @"showGradientBackground";
 }
 
 + (NSString *)sdkVersion {
-  return @"5.0.2"; // Update this version with every SDK release.
+  return @"5.0.3"; // Update this version with every SDK release.
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -251,9 +252,11 @@ static NSString* const kShowGradientBackground = @"showGradientBackground";
 -(void) syncFinanceKit: (id _Nullable)arguments withResult: (FlutterResult)result {
     NSString* token = arguments[kTokenKey];
     BOOL requestAuthorizationIfNeeded = arguments[kRequestAuthorizationIfNeeded];
+    BOOL simulatedBehavior = arguments[kSimulatedBehavior];
     
     if (@available(iOS 17.4, *)) {
-        [PLKPlaid syncFinanceKitWithToken:token requestAuthorizationIfNeeded:requestAuthorizationIfNeeded onSuccess:^{
+        
+        [PLKPlaid syncFinanceKitWithToken:token requestAuthorizationIfNeeded:requestAuthorizationIfNeeded simulatedBehavior:simulatedBehavior onSuccess:^{
             result(nil);
         } onError:^(NSError *error) {
             result([FlutterError errorWithCode:[@(error.code) stringValue]
@@ -721,6 +724,19 @@ static NSString* const kShowGradientBackground = @"showGradientBackground";
             return @"AUTO_SELECT_SAVED_INSTITUTION";
         case PLKEventNameValuePlaidCheckPane:
             return @"PLAID_CHECK_PANE";
+        case PLKEventNameValueAutoSubmitPhone:
+            return @"AUTO_SUBMIT_PHONE";
+        case PLKEventNameValueIdentityMatchPassed:
+            return @"IDENTITY_MATCH_PASSED";
+        case PLKEventNameValueIdentityMatchFailed:
+            return @"IDENTITY_MATCH_FAILED";
+        case PLKEventNameValueIssueFollowed:
+            return @"ISSUE_FOLLOWED";
+        case PLKEventNameValueSelectAccount:
+            return @"SELECT_ACCOUNT";
+        case PLKEventNameValueLayerAutoFillNotAvailable:
+            return @"LAYER_AUTO_FILL_NOT_AVAILABLE";
+
     }
      return @"unknown";
 }

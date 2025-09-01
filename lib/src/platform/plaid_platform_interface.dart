@@ -54,8 +54,8 @@ abstract class PlaidPlatformInterface extends PlatformInterface {
   }
 
   /// Sync the user's transactions from their Apple card.
-  Future<void> syncFinanceKit(
-      String token, bool requestAuthorizationIfNeeded) async {
+  Future<void> syncFinanceKit(String token, bool requestAuthorizationIfNeeded,
+      bool simulatedBehavior) async {
     throw UnimplementedError('syncFinanceKit() has not been implemented.');
   }
 }
