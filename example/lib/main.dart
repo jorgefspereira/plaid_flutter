@@ -13,37 +13,140 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int currentPageIndex = 0;
-  final String linkToken =
-      'link-sandbox-9af0f80f-22c7-4050-9158-c87d4e4f34f4'; // Replace with your actual link token
+  LinkTokenConfiguration? _configuration;
+  StreamSubscription<LinkEvent>? _streamEvent;
+  StreamSubscription<LinkExit>? _streamExit;
+  StreamSubscription<LinkSuccess>? _streamSuccess;
+  StreamSubscription<LinkOnLoad>? _streamOnLoad;
+
+  LinkObject? _successObject;
+  bool _isLoadingConfiguration = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _streamEvent = PlaidLink.onEvent.listen(_onEvent);
+    _streamExit = PlaidLink.onExit.listen(_onExit);
+    _streamSuccess = PlaidLink.onSuccess.listen(_onSuccess);
+    _streamOnLoad = PlaidLink.onLoad.listen(_onLoad);
+  }
+
+  @override
+  void dispose() {
+    _streamEvent?.cancel();
+    _streamExit?.cancel();
+    _streamSuccess?.cancel();
+    _streamOnLoad?.cancel();
+    super.dispose();
+  }
+
+  void _openLink() async {
+    if (_configuration == null) {
+      print("Configuration is null, please create it first.");
+      return;
+    }
+
+    try {
+      setState(() => _configuration = null);
+      await PlaidLink.open();
+    } catch (e) {
+      print("Error opening Link: $e");
+    }
+  }
+
+  void _createLinkTokenConfiguration() async {
+    LinkTokenConfiguration configuration = const LinkTokenConfiguration(
+      token: "link-sandbox-624b7377-4000-4634-908c-8fa2b2e841fe", // Replace with your actual link token
+    );
+    setState(() => _isLoadingConfiguration = true);
+
+    await PlaidLink.create(configuration: configuration);
+
+    setState(() {
+      _isLoadingConfiguration = false;
+      _configuration = configuration;
+    });
+  }
+
+  void _onLoad(_) {
+    print("LinkTokenConfiguration Loaded");
+  }
+
+  void _onEvent(LinkEvent event) {
+    final name = event.name;
+    final metadata = event.metadata.description();
+    print("onEvent: $name, metadata: $metadata");
+  }
+
+  void _onSuccess(LinkSuccess event) {
+    final token = event.publicToken;
+    final metadata = event.metadata.description();
+    print("onSuccess: $token, metadata: $metadata");
+    setState(() => _successObject = event);
+  }
+
+  void _onExit(LinkExit event) {
+    final metadata = event.metadata.description();
+    final error = event.error?.description();
+    print("onExit metadata: $metadata, error: $error");
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        bottomNavigationBar: NavigationBar(
-          onDestinationSelected: (int index) {
-            setState(() => currentPageIndex = index);
-          },
-          selectedIndex: currentPageIndex,
-          destinations: const <Widget>[
-            NavigationDestination(
-              icon: Icon(Icons.looks_one),
-              label: 'LinkToken',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.looks_two),
-              label: 'EmbeddedLink',
-            ),
-          ],
+        body: Container(
+          width: double.infinity,
+          color: Colors.grey[200],
+          padding: const EdgeInsets.all(40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Expanded(
+                child: Center(
+                  child: Text(
+                    _configuration?.toJson().toString() ?? "",
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: _createLinkTokenConfiguration,
+                child: _isLoadingConfiguration
+                    ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator())
+                    : const Text("Create Link Token Configuration"),
+              ),
+              const SizedBox(height: 15),
+              ElevatedButton(
+                onPressed: _openLink,
+                child: const Text("Open"),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: _configuration != null
+                    ? () {
+                        PlaidLink.submit(
+                          SubmissionData(
+                            phoneNumber: "14155550015",
+                          ),
+                        );
+                      }
+                    : null,
+                child: const Text("Submit Phone Number"),
+              ),
+              Expanded(
+                child: Center(
+                  child: Text(
+                    _successObject?.toJson().toString() ?? "",
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-        body: <Widget>[
-          /// Link Token page
-          ExampleLinkToken(linkToken: linkToken),
-
-          /// Embedded Link page
-          ExampleEmbeddedLink(linkToken: linkToken),
-        ][currentPageIndex],
       ),
     );
   }
