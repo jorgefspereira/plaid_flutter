@@ -48,6 +48,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
 
   /// SubmissionData
   private static final String PHONE_NUMBER = "phoneNumber";
+  private static final String DATE_OF_BIRTH = "dateOfBirth";
 
   /// LinkResultHandler
   private static final String EVENT_ON_SUCCESS = "success";
@@ -248,10 +249,14 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
       return;
     }
 
-    String phoneNumber = (String) arguments.get(PHONE_NUMBER);
+    Object pnObj = arguments.get(PHONE_NUMBER);
+    String phoneNumber = pnObj instanceof String ? (String) pnObj : null;
 
-    if (plaidHandler != null && phoneNumber != null) {
-      SubmissionData submissionData = new SubmissionData(phoneNumber);
+    Object dobObj = arguments.get(DATE_OF_BIRTH);
+    String dateOfBirth = dobObj instanceof String ? (String) dobObj : null;
+
+    if (plaidHandler != null) {
+      SubmissionData submissionData = new SubmissionData(phoneNumber, dateOfBirth);
       plaidHandler.submit(submissionData);
     }
 

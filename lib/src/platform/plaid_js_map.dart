@@ -33,6 +33,7 @@ class WebConfiguration {
 class SubmitConfiguration {
   external factory SubmitConfiguration({
     @JS('phone_number') String? phoneNumber,
+    @JS('date_of_birth') String? dateOfBirth,
   });
 }
 

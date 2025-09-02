@@ -86,6 +86,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
   Future<void> submit(SubmissionData data) async {
     SubmitConfiguration options = SubmitConfiguration(
       phoneNumber: data.phoneNumber,
+      dateOfBirth: data.dateOfBirth,
     );
     _plaid?.submit(options);
   }

@@ -50,15 +50,20 @@ class LinkTokenConfiguration {
 /// Data to submit during a Link session.
 class SubmissionData {
   /// The end user's phone number.
-  final String phoneNumber;
+  String? phoneNumber;
+
+  /// The end user's date of birth.
+  String? dateOfBirth;
 
   SubmissionData({
-    required this.phoneNumber,
+    this.phoneNumber,
+    this.dateOfBirth,
   });
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'phoneNumber': phoneNumber,
+      'dateOfBirth': dateOfBirth,
     };
   }
 }
