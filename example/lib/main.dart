@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
 
   void _createLinkTokenConfiguration() async {
     LinkTokenConfiguration configuration = const LinkTokenConfiguration(
-      token: "link-sandbox-624b7377-4000-4634-908c-8fa2b2e841fe", // Replace with your actual link token
+      token: "GENERATED_LINK_TOKEN", // Replace with your actual link token
     );
     setState(() => _isLoadingConfiguration = true);
 
@@ -115,7 +115,10 @@ class _MyAppState extends State<MyApp> {
               ElevatedButton(
                 onPressed: _createLinkTokenConfiguration,
                 child: _isLoadingConfiguration
-                    ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator())
+                    ? const SizedBox(
+                        height: 15,
+                        width: 15,
+                        child: CircularProgressIndicator())
                     : const Text("Create Link Token Configuration"),
               ),
               const SizedBox(height: 15),

@@ -8,10 +8,12 @@ import 'plaid_platform_interface.dart';
 
 class PlaidMethodChannel extends PlaidPlatformInterface {
   /// The method channel used to interact with the native platform.
-  final MethodChannel _channel = const MethodChannel('plugins.flutter.io/plaid_flutter');
+  final MethodChannel _channel =
+      const MethodChannel('plugins.flutter.io/plaid_flutter');
 
   /// The event channel used to receive changes from the native platform.
-  final EventChannel _eventChannel = const EventChannel('plugins.flutter.io/plaid_flutter/events');
+  final EventChannel _eventChannel =
+      const EventChannel('plugins.flutter.io/plaid_flutter/events');
 
   /// A broadcast stream from the native platform
   Stream<LinkObject>? _onObject;
@@ -69,7 +71,8 @@ class PlaidMethodChannel extends PlaidPlatformInterface {
 
   /// It allows the client application to submit additional user-collected data to the Link flow (e.g. a user phone number) for the Layer product.
   @override
-  Future<void> syncFinanceKit(String token, bool requestAuthorizationIfNeeded, bool simulatedBehavior) async {
+  Future<void> syncFinanceKit(String token, bool requestAuthorizationIfNeeded,
+      bool simulatedBehavior) async {
     if (Platform.isIOS) {
       await _channel.invokeMethod(
         'syncFinanceKit',
