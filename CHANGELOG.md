@@ -1,3 +1,9 @@
+## 5.0.4
+
+* Fixed issue with SubmissionData not having date of birth.
+* Fixed issue with Identity Verification flow not working on iOS. 
+* Fixed issue with onLoad callback not being reliable on Identity Verification flow. Created an onLoad stream event to signal the app when LinkTokenConfiguration is ready.
+
 ## 5.0.3
 
 * Fixed issue with syncFinanceKit (iOS)

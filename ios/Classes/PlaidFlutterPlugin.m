@@ -31,7 +31,7 @@ static NSString* const kSimulatedBehavior = @"simulatedBehavior";
 }
 
 + (NSString *)sdkVersion {
-  return @"5.0.3"; // Update this version with every SDK release.
+  return @"5.0.4"; // Update this version with every SDK release.
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
