@@ -5,6 +5,20 @@ abstract class LinkObject {
   Map<String, dynamic> toJson();
 }
 
+/// onLoad event object
+class LinkOnLoad extends LinkObject {
+  LinkOnLoad();
+
+  factory LinkOnLoad.fromJson(dynamic json) {
+    return LinkOnLoad();
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{};
+  }
+}
+
 /// Success event object
 class LinkSuccess extends LinkObject {
   /// The public token for the linked item. It is a string.

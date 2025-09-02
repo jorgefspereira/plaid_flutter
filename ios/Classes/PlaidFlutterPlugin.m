@@ -11,6 +11,7 @@ static NSString* const kNoLoadingStateKey = @"noLoadingState";
 static NSString* const kOnSuccessType = @"success";
 static NSString* const kOnExitType = @"exit";
 static NSString* const kOnEventType = @"event";
+static NSString* const kOnLoadType = @"onload";
 static NSString* const kErrorKey = @"error";
 static NSString* const kMetadataKey = @"metadata";
 static NSString* const kPublicTokenKey = @"publicToken";
@@ -142,6 +143,12 @@ static NSString* const kSimulatedBehavior = @"simulatedBehavior";
         }
     };
 
+    void (^onLoadHandler)(void) = ^{
+        __strong typeof(self) strongSelf = weakSelf;
+        
+        [strongSelf sendEventWithArguments:@{kTypeKey: kOnLoadType}];
+    };
+    
     PLKLinkTokenConfiguration *config = [self getLinkTokenConfigurationWithToken:token onSuccessHandler:successHandler];
     config.onEvent = eventHandler;
     config.onExit = exitHandler;
@@ -149,16 +156,14 @@ static NSString* const kSimulatedBehavior = @"simulatedBehavior";
     config.showGradientBackground = showGradientBackground;
 
     NSError *error = nil;
-    _linkHandler = [PLKPlaid createWithLinkTokenConfiguration:config
-                                                       onLoad:^{
-                                                            result(nil);
-                                                        }
-                                                        error:&error];
+    _linkHandler = [PLKPlaid createWithLinkTokenConfiguration:config onLoad:onLoadHandler error:&error];
     _creationError = error;
     
     if (error) {
         result([FlutterError errorWithCode:[@(error.code) stringValue]
                                    message:error.localizedDescription details: nil]);
+    } else {
+        result(nil);
     }
 }
 
@@ -186,6 +191,7 @@ static NSString* const kSimulatedBehavior = @"simulatedBehavior";
         };
 
         [_linkHandler openWithPresentationHandler:presentationHandler dismissalHandler:dismissalHandler];
+                
         result(nil);
 
     } else {
