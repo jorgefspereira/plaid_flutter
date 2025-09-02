@@ -17,6 +17,8 @@ class _MyAppState extends State<MyApp> {
   StreamSubscription<LinkEvent>? _streamEvent;
   StreamSubscription<LinkExit>? _streamExit;
   StreamSubscription<LinkSuccess>? _streamSuccess;
+  StreamSubscription<LinkOnLoad>? _streamOnLoad;
+
   LinkObject? _successObject;
   bool _isLoadingConfiguration = false;
 
@@ -27,6 +29,7 @@ class _MyAppState extends State<MyApp> {
     _streamEvent = PlaidLink.onEvent.listen(_onEvent);
     _streamExit = PlaidLink.onExit.listen(_onExit);
     _streamSuccess = PlaidLink.onSuccess.listen(_onSuccess);
+    _streamOnLoad = PlaidLink.onLoad.listen(_onLoad);
   }
 
   @override
@@ -34,6 +37,7 @@ class _MyAppState extends State<MyApp> {
     _streamEvent?.cancel();
     _streamExit?.cancel();
     _streamSuccess?.cancel();
+    _streamOnLoad?.cancel();
     super.dispose();
   }
 
@@ -53,7 +57,7 @@ class _MyAppState extends State<MyApp> {
 
   void _createLinkTokenConfiguration() async {
     LinkTokenConfiguration configuration = const LinkTokenConfiguration(
-      token: "GENERATED_LINK_TOKEN", // Replace with your actual link token
+      token: "link-sandbox-624b7377-4000-4634-908c-8fa2b2e841fe", // Replace with your actual link token
     );
     setState(() => _isLoadingConfiguration = true);
 
@@ -63,6 +67,10 @@ class _MyAppState extends State<MyApp> {
       _isLoadingConfiguration = false;
       _configuration = configuration;
     });
+  }
+
+  void _onLoad(_) {
+    print("LinkTokenConfiguration Loaded");
   }
 
   void _onEvent(LinkEvent event) {
@@ -107,10 +115,7 @@ class _MyAppState extends State<MyApp> {
               ElevatedButton(
                 onPressed: _createLinkTokenConfiguration,
                 child: _isLoadingConfiguration
-                    ? const SizedBox(
-                        height: 15,
-                        width: 15,
-                        child: CircularProgressIndicator())
+                    ? const SizedBox(height: 15, width: 15, child: CircularProgressIndicator())
                     : const Text("Create Link Token Configuration"),
               ),
               const SizedBox(height: 15),
