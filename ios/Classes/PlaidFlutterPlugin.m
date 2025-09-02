@@ -4,6 +4,7 @@
 
 static NSString* const kTokenKey = @"token";
 static NSString* const kPhoneNumberKey = @"phoneNumber";
+static NSString* const kDateOfBirthKey = @"dateOfBirth";
 static NSString* const kContinueRedirectUriKey = @"redirectUri";
 static NSString* const kNoLoadingStateKey = @"noLoadingState";
 static NSString* const kOnSuccessType = @"success";
@@ -239,10 +240,19 @@ static NSString* const kSimulatedBehavior = @"simulatedBehavior";
 
 - (void) submit: (id _Nullable)arguments withResult:(FlutterResult)result{
     NSString* phoneNumber = arguments[kPhoneNumberKey];
+    NSString* dateOfBirth = arguments[kDateOfBirthKey];
     
-    if (_linkHandler && phoneNumber) {
+    if (_linkHandler) {
         PLKSubmissionData *data = [[PLKSubmissionData alloc] init];
-        data.phoneNumber = phoneNumber;
+
+        if (phoneNumber && ![phoneNumber isKindOfClass:[NSNull class]]) {
+            data.phoneNumber = phoneNumber;
+        }
+        
+        if (dateOfBirth && ![dateOfBirth isKindOfClass:[NSNull class]]) {
+            data.dateOfBirth = dateOfBirth;
+        }
+        
         [_linkHandler submit: data];
     }
     
