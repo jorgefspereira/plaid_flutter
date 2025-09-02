@@ -6,7 +6,7 @@
   <application>
         <meta-data
             android:name="com.github.jorgefspereira.plaid_flutter.version"
-            android:value="5.0.3" />
+            android:value="5.0.4" />
     </application>
   
 </manifest>
