@@ -1,3 +1,7 @@
+## 5.0.5
+
+* Fixed crash on android in release mode: java.lang.ClassCastException: java.lang.Class cannot be cast to java.lang.reflect.ParameterizedType
+
 ## 5.0.4
 
 * Fixed issue with SubmissionData not having date of birth.

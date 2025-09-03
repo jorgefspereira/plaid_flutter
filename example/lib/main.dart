@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
 
   void _openLink() async {
     if (_configuration == null) {
-      print("Configuration is null, please create it first.");
+      debugPrint("Configuration is null, please create it first.");
       return;
     }
 
@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
       setState(() => _configuration = null);
       await PlaidLink.open();
     } catch (e) {
-      print("Error opening Link: $e");
+      debugPrint("Error opening Link: $e");
     }
   }
 
@@ -70,26 +70,26 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _onLoad(_) {
-    print("LinkTokenConfiguration Loaded");
+    debugPrint("LinkTokenConfiguration Loaded");
   }
 
   void _onEvent(LinkEvent event) {
     final name = event.name;
     final metadata = event.metadata.description();
-    print("onEvent: $name, metadata: $metadata");
+    debugPrint("onEvent: $name, metadata: $metadata");
   }
 
   void _onSuccess(LinkSuccess event) {
     final token = event.publicToken;
     final metadata = event.metadata.description();
-    print("onSuccess: $token, metadata: $metadata");
+    debugPrint("onSuccess: $token, metadata: $metadata");
     setState(() => _successObject = event);
   }
 
   void _onExit(LinkExit event) {
     final metadata = event.metadata.description();
     final error = event.error?.description();
-    print("onExit metadata: $metadata, error: $error");
+    debugPrint("onExit metadata: $metadata, error: $error");
   }
 
   @override
