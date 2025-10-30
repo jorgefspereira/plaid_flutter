@@ -1,5 +1,6 @@
 package com.github.jorgefspereira.plaid_flutter;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -103,6 +104,12 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
     this.methodChannel.setMethodCallHandler(this);
     this.eventChannel = new EventChannel(binding.getBinaryMessenger(), EVENT_CHANNEL_NAME);
     this.eventChannel.setStreamHandler(this);
+
+    // Register the embedded view factory
+    binding.getPlatformViewRegistry().registerViewFactory(
+        "plaid/embedded-view",
+        new PLKEmbeddedView(binding.getBinaryMessenger(), this)
+    );
   }
 
   @Override
@@ -180,10 +187,14 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
     eventSink = null;
   }
 
-  private void sendEvent(Object argument) {
+  public void sendEvent(Object argument) {
     if (eventSink != null) {
       eventSink.success(argument);
     }
+  }
+
+  public Activity getActivity() {
+    return binding != null ? binding.getActivity() : null;
   }
 
   /// Exposed methods
@@ -271,7 +282,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
 
   /// Metadata Parsing
 
-  private Map<String, String> mapFromError(LinkError error) {
+  public Map<String, String> mapFromError(LinkError error) {
     Map<String, String> result = new HashMap<>();
 
     result.put("errorType", ""); //TODO:
@@ -307,7 +318,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
     return result;
   }
 
-  private Map<String, Object> mapFromSuccessMetadata(LinkSuccessMetadata data) {
+  public Map<String, Object> mapFromSuccessMetadata(LinkSuccessMetadata data) {
     Map<String, Object> result = new HashMap<>();
 
     Map<String, String> institution = new HashMap<>();
@@ -340,7 +351,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
     return result;
   }
 
-  private Map<String, Object> mapFromExitMetadata(LinkExitMetadata data) {
+  public Map<String, Object> mapFromExitMetadata(LinkExitMetadata data) {
     Map<String, Object> result = new HashMap<>();
 
     Map<String, String> institution = new HashMap<>();
