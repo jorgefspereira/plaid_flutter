@@ -16,9 +16,16 @@ class PlaidEmbeddedView extends StatelessWidget {
   Widget build(BuildContext context) {
     const viewType = 'plaid/embedded-view';
 
-    // If you need Android support as well, switch to PlatformViewLink.
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
+        viewType: viewType,
+        layoutDirection: TextDirection.ltr,
+        creationParams: {'token': token},
+        creationParamsCodec: const StandardMessageCodec(),
+        onPlatformViewCreated: onPlatformViewCreated,
+      );
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      return AndroidView(
         viewType: viewType,
         layoutDirection: TextDirection.ltr,
         creationParams: {'token': token},
