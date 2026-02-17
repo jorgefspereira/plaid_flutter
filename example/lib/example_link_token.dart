@@ -122,11 +122,12 @@ class _ExampleLinkTokenState extends State<ExampleLinkToken> {
                     PlaidLink.submit(
                       SubmissionData(
                         phoneNumber: "14155550015",
+                        dateOfBirth: "1975-01-18",
                       ),
                     );
                   }
                 : null,
-            child: const Text("Submit Phone Number"),
+            child: const Text("Submit Phone and Date of Birth"),
           ),
           Expanded(
             child: Center(
