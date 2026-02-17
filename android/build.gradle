@@ -44,6 +44,6 @@ android {
     }
 
     dependencies {
-        implementation 'com.plaid.link:sdk-core:5.5.1'
+        implementation 'com.plaid.link:sdk-core:5.5.0'
     }
 }

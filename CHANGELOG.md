@@ -1,6 +1,8 @@
 ## 5.1.0
 
 * Added Plaid Embedded View support for iOS and Android
+* Updated iOS SDK to 6.4.3
+* Updated Android SDK to 5.5.0
 
 ## 5.0.5
 
