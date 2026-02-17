@@ -1,3 +1,7 @@
+## 5.1.0
+
+* Added Plaid Embedded View support for iOS and Android
+
 ## 5.0.5
 
 * Fixed crash on android in release mode: java.lang.ClassCastException: java.lang.Class cannot be cast to java.lang.reflect.ParameterizedType
