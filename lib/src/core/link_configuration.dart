@@ -37,14 +37,11 @@ class LinkTokenConfiguration {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is LinkTokenConfiguration &&
-          runtimeType == other.runtimeType &&
-          hashCode == other.hashCode;
+      identical(this, other) || other is LinkTokenConfiguration && runtimeType == other.runtimeType && hashCode == other.hashCode;
 
   @override
-  int get hashCode => Object.hash(token.hashCode, noLoadingState.hashCode,
-      receivedRedirectUri.hashCode, showGradientBackground.hashCode);
+  int get hashCode =>
+      Object.hash(token.hashCode, noLoadingState.hashCode, receivedRedirectUri.hashCode, showGradientBackground.hashCode);
 }
 
 /// Data to submit during a Link session.
@@ -52,7 +49,7 @@ class SubmissionData {
   /// The end user's phone number.
   String? phoneNumber;
 
-  /// The end user's date of birth.
+  /// The end user's date of birth. To be provided in the format "yyyy-mm-dd".
   String? dateOfBirth;
 
   SubmissionData({

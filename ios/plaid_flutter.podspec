@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'plaid_flutter'
-  s.version          = '0.0.1'
+  s.version          = '5.1.0'
   s.summary          = 'Plaid Link plugin for Flutter'
   s.description      = <<-DESC
 Enables Plaid in Flutter apps.
@@ -15,7 +15,7 @@ Enables Plaid in Flutter apps.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'Plaid', '6.4.0'
+  s.dependency 'Plaid', '6.4.3'
   s.static_framework = true
   s.ios.deployment_target = '14.0'
 end
