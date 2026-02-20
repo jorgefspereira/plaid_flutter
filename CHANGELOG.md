@@ -1,3 +1,7 @@
+## 5.1.1
+
+* Fix web/wasm JS interop type conversion for callbacks
+
 ## 5.1.0
 
 * Added Plaid Embedded View support for iOS and Android

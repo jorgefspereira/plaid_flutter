@@ -3,7 +3,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'plaid_flutter'
-  s.version          = '5.1.0'
+  s.version          = '5.1.1'
   s.summary          = 'Plaid Link plugin for Flutter'
   s.description      = <<-DESC
 Enables Plaid in Flutter apps.
