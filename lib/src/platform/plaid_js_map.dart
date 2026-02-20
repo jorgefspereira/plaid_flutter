@@ -2,7 +2,6 @@
 library plaid.js;
 
 import 'dart:js_interop';
-import 'dart:js_interop_unsafe';
 
 extension type Plaid._(JSObject _) implements JSObject {
   external static Plaid create(WebConfiguration options);
@@ -38,19 +37,16 @@ class SubmitConfiguration {
 }
 
 /// A workaround to converting an object from JS to a Dart Map.
-Map jsToMap(JSAny? jsObject) {
-  if (jsObject == null || !jsObject.isA<JSObject>()) {
+Map jsToMap(Object? jsObject) {
+  if (jsObject is Map) {
+    return jsObject;
+  }
+  if (jsObject is! JSAny) {
     return {};
   }
-  final o = jsObject as JSObject;
-
-  return Map.fromIterable(_getKeysOfObject(jsObject).toDart,
-      value: (key) => o[key] // js. getProperty(jsObject, key),
-      );
+  final dartified = jsObject.dartify();
+  if (dartified is Map) {
+    return dartified;
+  }
+  return {};
 }
-
-// Both of these interfaces exist to call `Object.keys` from Dart.
-//
-// But you don't use them directly. Just see `jsToMap`.
-@JS('Object.keys')
-external JSArray<JSString> _getKeysOfObject(JSAny jsObject);
