@@ -38,7 +38,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
       receivedRedirectUri: configuration.receivedRedirectUri,
       onSuccess: ((JSAny publicToken, JSAny metadata) {
         Map<String, dynamic> data = {
-          'publicToken': publicToken,
+          'publicToken': asString(publicToken.dartify()),
           'metadata': mapFromSuccessMetadata(jsToMap(metadata)),
         };
 
@@ -46,7 +46,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
       }).toJS,
       onEvent: ((JSString event, JSAny metadata) {
         Map<String, dynamic> data = {
-          'name': event,
+          'name': event.toDart,
           'metadata': mapFromEventMetadata(jsToMap(metadata)),
         };
 
@@ -54,7 +54,7 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
       }).toJS,
       onExit: ((JSAny? error, JSAny metadata) {
         Map<String, dynamic> data = {
-          'metadata': mapFromExitMetadata(jsToMap(metadata))
+          'metadata': mapFromExitMetadata(jsToMap(metadata)),
         };
 
         if (error != null) {
@@ -116,10 +116,14 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
   Map<String, dynamic> mapFromError(Map<dynamic, dynamic> data) {
     Map<String, dynamic> result = {};
 
-    result["errorType"] = data["error_type"] ?? "";
-    result["errorCode"] = data["error_code"] ?? "";
-    result["errorMessage"] = data["error_message"] ?? "";
-    result["errorType"] = data["error_type"] ?? "";
+    result["errorType"] = asString(data["error_type"] ?? data["errorType"]);
+    result["errorCode"] = asString(data["error_code"] ?? data["errorCode"]);
+    result["errorMessage"] = asString(
+      data["error_message"] ?? data["errorMessage"],
+    );
+    result["errorDisplayMessage"] = asNullableString(
+      data["error_display_message"] ?? data["errorDisplayMessage"],
+    );
 
     return result;
   }
@@ -130,23 +134,27 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
     Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
 
     result["institution"] = {
-      "id": institutionMap["institution_id"] ?? "",
-      "name": institutionMap["name"] ?? ""
+      "id": asString(institutionMap["institution_id"] ?? institutionMap["id"]),
+      "name": asString(institutionMap["name"]),
     };
-    result["linkSessionId"] = data["link_session_id"] ?? "";
+    result["linkSessionId"] = asString(
+      data["link_session_id"] ?? data["linkSessionId"],
+    );
 
     List<dynamic> accountsList = [];
 
-    for (dynamic item in data["accounts"]) {
+    for (dynamic item in asList(data["accounts"])) {
       Map<dynamic, dynamic> accountMap = jsToMap(item);
       Map<String, dynamic> account = {};
 
-      account["id"] = accountMap["id"] ?? "";
-      account["name"] = accountMap["name"] ?? "";
-      account["type"] = accountMap["type"] ?? "";
-      account["subtype"] = accountMap["subtype"] ?? "";
-      account["mask"] = accountMap["mask"];
-      account["verificationStatus"] = accountMap["verification_status"];
+      account["id"] = asString(accountMap["id"]);
+      account["name"] = asString(accountMap["name"]);
+      account["type"] = asString(accountMap["type"]);
+      account["subtype"] = asString(accountMap["subtype"]);
+      account["mask"] = asNullableString(accountMap["mask"]);
+      account["verificationStatus"] = asNullableString(
+        accountMap["verification_status"] ?? accountMap["verificationStatus"],
+      );
 
       accountsList.add(account);
     }
@@ -160,15 +168,19 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
     Map<String, dynamic> result = {};
 
     result["institution"] = {"id": "", "name": ""};
-    result["requestId"] = data["request_id"] ?? "";
-    result["linkSessionId"] = data["link_session_id"] ?? "";
-    result["status"] = data["status"] ?? "";
+    result["requestId"] = asString(data["request_id"] ?? data["requestId"]);
+    result["linkSessionId"] = asString(
+      data["link_session_id"] ?? data["linkSessionId"],
+    );
+    result["status"] = asString(data["status"]);
 
     if (data["institution"] != null) {
       Map<dynamic, dynamic> institutionMap = jsToMap(data["institution"]);
       result["institution"] = {
-        "id": institutionMap["institution_id"] ?? "",
-        "name": institutionMap["name"] ?? ""
+        "id": asString(
+          institutionMap["institution_id"] ?? institutionMap["id"],
+        ),
+        "name": asString(institutionMap["name"]),
       };
     }
 
@@ -178,24 +190,60 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
   Map<String, dynamic> mapFromEventMetadata(Map<dynamic, dynamic> data) {
     Map<String, dynamic> result = {};
 
-    result['errorCode'] = data['error_code'] ?? "";
-    result['errorMessage'] = data['error_message'] ?? "";
-    result['errorType'] = data['error_type'] ?? "";
-    result['exitStatus'] = data['exit_status'] ?? "";
-    result['institutionSearchQuery'] = data['institution_search_query'] ?? "";
-    result['institutionName'] = data['institution_name'] ?? "";
-    result['institutionId'] = data['institution_id'] ?? "";
-    result['linkSessionId'] = data['link_session_id'] ?? "";
-    result['mfaType'] = data['mfa_type'] ?? "";
-    result['viewName'] = data['view_name'] ?? "";
-    result['requestId'] = data['request_id'] ?? "";
-    result['timestamp'] = data['timestamp'] ?? "";
-    result['accountNumberMask'] = data['account_number_mask'] ?? "";
-    result['isUpdateMode'] = data['is_update_mode'] ?? "";
-    result['matchReason'] = data['match_reason'] ?? "";
-    result['routingNumber'] = data['routing_number'] ?? "";
-    result['selection'] = data['selection'] ?? "";
+    result['errorCode'] = asString(data['error_code'] ?? data['errorCode']);
+    result['errorMessage'] = asString(
+      data['error_message'] ?? data['errorMessage'],
+    );
+    result['errorType'] = asString(data['error_type'] ?? data['errorType']);
+    result['exitStatus'] = asString(data['exit_status'] ?? data['exitStatus']);
+    result['institutionSearchQuery'] = asString(
+      data['institution_search_query'] ?? data['institutionSearchQuery'],
+    );
+    result['institutionName'] = asString(
+      data['institution_name'] ?? data['institutionName'],
+    );
+    result['institutionId'] = asString(
+      data['institution_id'] ?? data['institutionId'],
+    );
+    result['linkSessionId'] = asString(
+      data['link_session_id'] ?? data['linkSessionId'],
+    );
+    result['mfaType'] = asString(data['mfa_type'] ?? data['mfaType']);
+    result['viewName'] = asString(data['view_name'] ?? data['viewName']);
+    result['requestId'] = asString(data['request_id'] ?? data['requestId']);
+    result['timestamp'] = asString(data['timestamp']);
+    result['accountNumberMask'] = asString(
+      data['account_number_mask'] ?? data['accountNumberMask'],
+    );
+    result['isUpdateMode'] = asString(
+      data['is_update_mode'] ?? data['isUpdateMode'],
+    );
+    result['matchReason'] = asString(
+      data['match_reason'] ?? data['matchReason'],
+    );
+    result['routingNumber'] = asString(
+      data['routing_number'] ?? data['routingNumber'],
+    );
+    result['selection'] = asString(data['selection']);
 
     return result;
+  }
+
+  String asString(Object? value) {
+    if (value == null) {
+      return "";
+    }
+    return value.toString();
+  }
+
+  String? asNullableString(Object? value) {
+    return value?.toString();
+  }
+
+  List<dynamic> asList(Object? value) {
+    if (value is List) {
+      return value;
+    }
+    return const [];
   }
 }
