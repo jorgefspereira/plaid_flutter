@@ -12,8 +12,8 @@ Enables Plaid in Flutter apps.
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Jorge Pereira' => 'jorgefspereira@icloud.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/**/*.h'
+  s.source_files = 'plaid_flutter/Source/plaid_flutter/Classes/**/*'
+  s.public_header_files = 'plaid_flutter/Source/plaid_flutter/Classes/**/*.h'
   s.dependency 'Flutter'
   s.dependency 'Plaid', '6.4.3'
   s.static_framework = true

@@ -1,3 +1,7 @@
+## 6.0.0
+
+* Migration to Swift Package Management
+
 ## 5.1.1
 
 * Fix web/wasm JS interop type conversion for callbacks
