@@ -91,22 +91,11 @@ main() {
 
     group('open', () {
       test('calls platform.open', () async {
-        const token = 'token';
-        const linkTokenConfiguration = LinkTokenConfiguration(token: token);
-
-        when(
-          () => plaidPlatformInterface.create(
-            configuration: linkTokenConfiguration,
-          ),
-        ).thenAnswer(Future.value);
+        when(() => plaidPlatformInterface.open()).thenAnswer(Future.value);
 
         await PlaidLink.open();
 
-        verify(
-          () => plaidPlatformInterface.create(
-            configuration: linkTokenConfiguration,
-          ),
-        ).called(1);
+        verify(() => plaidPlatformInterface.open()).called(1);
       });
     });
 
@@ -136,6 +125,70 @@ main() {
 
         verify(
           () => plaidPlatformInterface.resumeAfterTermination(redirectUri),
+        ).called(1);
+      });
+    });
+
+    group('submit', () {
+      test('SubmissionData does not require params', () {
+        final submissionData = SubmissionData();
+
+        expect(
+          submissionData.toJson(),
+          {
+            'phoneNumber': null,
+            'dateOfBirth': null,
+            'params': null,
+          },
+        );
+      });
+
+      test('SubmissionData supports existing phone and date of birth usage',
+          () {
+        final submissionData = SubmissionData(
+          phoneNumber: '14155550015',
+          dateOfBirth: '1975-01-18',
+        );
+
+        expect(
+          submissionData.toJson(),
+          {
+            'phoneNumber': '14155550015',
+            'dateOfBirth': '1975-01-18',
+            'params': null,
+          },
+        );
+      });
+
+      test('SubmissionData serializes optional params', () {
+        final submissionData = SubmissionData(
+          params: {'client_user_id': 'optional-user-id'},
+        );
+
+        expect(
+          submissionData.toJson(),
+          {
+            'phoneNumber': null,
+            'dateOfBirth': null,
+            'params': {'client_user_id': 'optional-user-id'},
+          },
+        );
+      });
+
+      test('calls platform.submit without requiring params', () async {
+        final submissionData = SubmissionData(
+          phoneNumber: '14155550015',
+          dateOfBirth: '1975-01-18',
+        );
+
+        when(
+          () => plaidPlatformInterface.submit(submissionData),
+        ).thenAnswer(Future.value);
+
+        await PlaidLink.submit(submissionData);
+
+        verify(
+          () => plaidPlatformInterface.submit(submissionData),
         ).called(1);
       });
     });

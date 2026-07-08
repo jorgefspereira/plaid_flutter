@@ -125,6 +125,7 @@ class _ExampleLinkTokenState extends State<ExampleLinkToken> {
                       SubmissionData(
                         phoneNumber: "14155550015",
                         dateOfBirth: "1975-01-18",
+                        params: {"client_user_id": "optional-user-id"},
                       ),
                     );
                   }
