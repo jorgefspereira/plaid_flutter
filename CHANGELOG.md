@@ -1,6 +1,8 @@
 ## 5.1.1
 
 * Fix web/wasm JS interop type conversion for callbacks
+* Updated iOS SDK to 6.4.7
+* Updated Android SDK to 5.5.2
 
 ## 5.1.0
 

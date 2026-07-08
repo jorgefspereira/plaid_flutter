@@ -7,6 +7,7 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -256,7 +257,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
     String dateOfBirth = dobObj instanceof String ? (String) dobObj : null;
 
     if (plaidHandler != null) {
-      SubmissionData submissionData = new SubmissionData(phoneNumber, dateOfBirth);
+      SubmissionData submissionData = new SubmissionData(phoneNumber, dateOfBirth, Collections.emptyMap());
       plaidHandler.submit(submissionData);
     }
 
@@ -373,4 +374,3 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
   }
 
 }
-
