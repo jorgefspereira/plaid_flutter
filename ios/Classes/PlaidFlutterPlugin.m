@@ -6,6 +6,7 @@
 static NSString* const kTokenKey = @"token";
 static NSString* const kPhoneNumberKey = @"phoneNumber";
 static NSString* const kDateOfBirthKey = @"dateOfBirth";
+static NSString* const kParamsKey = @"params";
 static NSString* const kContinueRedirectUriKey = @"redirectUri";
 static NSString* const kNoLoadingStateKey = @"noLoadingState";
 static NSString* const kOnSuccessType = @"success";
@@ -252,6 +253,7 @@ static NSString* const kSimulatedBehavior = @"simulatedBehavior";
 - (void) submit: (id _Nullable)arguments withResult:(FlutterResult)result{
     NSString* phoneNumber = arguments[kPhoneNumberKey];
     NSString* dateOfBirth = arguments[kDateOfBirthKey];
+    id paramsObject = arguments[kParamsKey];
     
     if (_linkHandler) {
         PLKSubmissionData *data = [[PLKSubmissionData alloc] init];
@@ -262,6 +264,16 @@ static NSString* const kSimulatedBehavior = @"simulatedBehavior";
         
         if (dateOfBirth && ![dateOfBirth isKindOfClass:[NSNull class]]) {
             data.dateOfBirth = dateOfBirth;
+        }
+
+        if (paramsObject && [paramsObject isKindOfClass:[NSDictionary class]]) {
+            NSMutableDictionary<NSString *, NSString *> *params = [NSMutableDictionary dictionary];
+            [(NSDictionary *)paramsObject enumerateKeysAndObjectsUsingBlock:^(id key, id value, BOOL *stop) {
+                if ([key isKindOfClass:[NSString class]] && [value isKindOfClass:[NSString class]]) {
+                    params[key] = value;
+                }
+            }];
+            data.params = params;
         }
         
         [_linkHandler submit: data];
