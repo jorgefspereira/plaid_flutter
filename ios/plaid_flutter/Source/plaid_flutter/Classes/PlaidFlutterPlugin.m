@@ -33,7 +33,7 @@ static NSString* const kSimulatedBehavior = @"simulatedBehavior";
 }
 
 + (NSString *)sdkVersion {
-  return @"5.1.1"; // Update this version with every SDK release.
+  return @"5.2.0"; // Update this version with every SDK release.
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -621,7 +621,7 @@ static NSString* const kSimulatedBehavior = @"simulatedBehavior";
     }  else if ([accountSubtype isKindOfClass:[PLKAccountSubtypeInvestment class]]) {
         return @"investment";
     }
-    return @"unknown";
+     return @"unknown";
 }
 
 + (NSString *)subtypeNameForAccountSubtype:(id<PLKAccountSubtype>)accountSubtype {
@@ -769,9 +769,15 @@ static NSString* const kSimulatedBehavior = @"simulatedBehavior";
             return @"SELECT_ACCOUNT";
         case PLKEventNameValueLayerAutoFillNotAvailable:
             return @"LAYER_AUTO_FILL_NOT_AVAILABLE";
+        case PLKEventNameValueSelectDenylistedInstitution:
+            return @"SELECT_DENYLISTED_INSTITUTION";
+        case PLKEventNameValueSelectFallbackRoutingInstitution:
+            return @"SELECT_FALLBACK_ROUTING_INSTITUTION";
+        case PLKEventNameValueSelectRememberMeDuplicateInstitution:
+            return @"SELECT_REMEMBER_ME_DUPLICATE_INSTITUTION";
 
     }
-     return @"unknown";
+    return @"unknown";
 }
 
 + (NSString *)stringForMfaType:(PLKMFAType)mfaType {

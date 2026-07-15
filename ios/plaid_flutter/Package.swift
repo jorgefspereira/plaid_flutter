@@ -1,8 +1,9 @@
 // swift-tools-version: 5.9
+// The swift-tools-version declares the minimum version of Swift required to build this package.
+
 import PackageDescription
 
 let package = Package(
-    // TODO: Update your plugin name.
     name: "plaid_flutter",
     platforms: [
         .iOS("14.0"),
