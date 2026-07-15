@@ -101,6 +101,7 @@ class _MyAppState extends State<MyApp> {
                         PlaidLink.submit(
                           SubmissionData(
                             phoneNumber: "14155550015",
+                            params: {"client_user_id": "optional-user-id"},
                           ),
                         );
                       }

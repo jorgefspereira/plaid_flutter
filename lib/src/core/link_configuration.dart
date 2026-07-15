@@ -52,15 +52,20 @@ class SubmissionData {
   /// The end user's date of birth. To be provided in the format "yyyy-mm-dd".
   String? dateOfBirth;
 
+  /// Additional optional values to submit during a Link session.
+  Map<String, String>? params;
+
   SubmissionData({
     this.phoneNumber,
     this.dateOfBirth,
+    this.params,
   });
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'phoneNumber': phoneNumber,
       'dateOfBirth': dateOfBirth,
+      'params': params,
     };
   }
 }

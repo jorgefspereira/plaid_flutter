@@ -7,6 +7,7 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
   /// SubmissionData
   private static final String PHONE_NUMBER = "phoneNumber";
   private static final String DATE_OF_BIRTH = "dateOfBirth";
+  private static final String PARAMS = "params";
 
   /// LinkResultHandler
   private static final String EVENT_ON_SUCCESS = "success";
@@ -255,12 +257,34 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
     Object dobObj = arguments.get(DATE_OF_BIRTH);
     String dateOfBirth = dobObj instanceof String ? (String) dobObj : null;
 
+    Map<String, String> params = getStringMap(arguments.get(PARAMS));
+
     if (plaidHandler != null) {
-      SubmissionData submissionData = new SubmissionData(phoneNumber, dateOfBirth);
+      SubmissionData submissionData = new SubmissionData(phoneNumber, dateOfBirth, params);
       plaidHandler.submit(submissionData);
     }
 
     reply.success(null);
+  }
+
+  private Map<String, String> getStringMap(Object object) {
+    if (!(object instanceof Map)) {
+      return Collections.emptyMap();
+    }
+
+    Map<?, ?> rawMap = (Map<?, ?>) object;
+    Map<String, String> result = new HashMap<>();
+
+    for (Map.Entry<?, ?> entry : rawMap.entrySet()) {
+      Object key = entry.getKey();
+      Object value = entry.getValue();
+
+      if (key instanceof String && value instanceof String) {
+        result.put((String) key, (String) value);
+      }
+    }
+
+    return result;
   }
 
   /// Configuration Parsing
@@ -373,4 +397,3 @@ public class PlaidFlutterPlugin implements FlutterPlugin, MethodCallHandler, Eve
   }
 
 }
-
