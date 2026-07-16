@@ -59,7 +59,7 @@ public final class PlaidFlutterPlugin: NSObject, FlutterPlugin, FlutterStreamHan
   }
 
   @objc public static func sdkVersion() -> String {
-    "6.0.0"
+    "6.0.0-beta.1"
   }
 
   public static func register(with registrar: FlutterPluginRegistrar) {

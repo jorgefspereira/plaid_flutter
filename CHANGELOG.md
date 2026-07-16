@@ -1,4 +1,4 @@
-## 6.0.0
+## 6.0.0-beta.1
 
 * Updated Plaid Link iOS to 7.0.3.
 * Reimplemented the iOS plugin in Swift against the Swift-native `LinkKit` API; `LinkKitObjC` is no longer imported.
