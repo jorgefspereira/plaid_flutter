@@ -4,6 +4,15 @@ import '../platform/plaid_platform_interface.dart';
 import 'events.dart';
 import 'link_configuration.dart';
 
+/// The FinanceKit synchronization mode used by LinkKit on iOS.
+enum FinanceKitSyncBehavior {
+  /// Synchronize with the live FinanceKit store.
+  live,
+
+  /// Run FinanceKit synchronization with simulated data.
+  simulated,
+}
+
 /// Provides Plaid Link drop in functionality.
 class PlaidLink {
   /// Platform interface
@@ -36,13 +45,21 @@ class PlaidLink {
   static Stream<LinkOnLoad> get onLoad =>
       _platform.onObject.where((event) => event is LinkOnLoad).cast();
 
-  /// Creates a handler for Plaid Link. A one-time use object used to open a Link session.
+  /// Creates and preloads a one-time native Link session.
+  ///
+  /// On iOS this completes when a standard or headless session invokes
+  /// LinkKit's `onLoad`. For Layer, it completes as soon as the native session
+  /// is created so that data can be submitted before `LAYER_READY`.
   static Future<void> create(
       {required LinkTokenConfiguration configuration}) async {
     await _platform.create(configuration: configuration);
   }
 
-  /// Open Plaid Link by calling open on the Handler object.
+  /// Opens the created Link session.
+  ///
+  /// On iOS, this presents a standard or Layer session. For a
+  /// [LinkSessionType.headless] configuration, it starts the headless session
+  /// instead. Android and web retain their platform-native open behavior.
   static Future<void> open() async {
     await _platform.open();
   }
@@ -52,13 +69,25 @@ class PlaidLink {
     await _platform.close();
   }
 
-  /// Continue with redirect uri
-  static Future<void> resumeAfterTermination(String redirectUri) async {
-    await _platform.resumeAfterTermination(redirectUri);
-  }
-
   /// It allows the client application to submit additional user-collected data to the Link flow (e.g. a user phone number) for the Layer product.
   static Future<void> submit(SubmissionData data) async {
     await _platform.submit(data);
+  }
+
+  /// Synchronizes a previously linked Apple Card Item with FinanceKit.
+  ///
+  /// This is available on iOS 17.4 and later. [FinanceKitSyncBehavior.live]
+  /// requires Apple's FinanceKit entitlement; calling the live API without
+  /// that entitlement causes the native FinanceKit API to terminate the app.
+  static Future<void> syncFinanceKit({
+    required String token,
+    bool requestAuthorizationIfNeeded = false,
+    FinanceKitSyncBehavior behavior = FinanceKitSyncBehavior.live,
+  }) async {
+    await _platform.syncFinanceKit(
+      token,
+      requestAuthorizationIfNeeded,
+      behavior == FinanceKitSyncBehavior.simulated,
+    );
   }
 }

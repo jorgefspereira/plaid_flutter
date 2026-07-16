@@ -1,4 +1,4 @@
-// swift-tools-version: 5.9
+// swift-tools-version: 5.10
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -6,14 +6,14 @@ import PackageDescription
 let package = Package(
     name: "plaid_flutter",
     platforms: [
-        .iOS("14.0"),
+        .iOS("15.0"),
     ],
     products: [
       .library(name: "plaid-flutter", targets: ["plaid_flutter"])
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework"),
-        .package(url: "https://github.com/plaid/plaid-link-ios-spm.git", from: "6.4.7")
+        .package(url: "https://github.com/plaid/plaid-link-ios-spm.git", exact: "7.0.3")
     ],
     targets: [
         .target(
@@ -22,20 +22,7 @@ let package = Package(
                 .product(name: "FlutterFramework", package: "FlutterFramework"),
                 .product(name: "LinkKit", package: "plaid-link-ios-spm")
             ],
-            path: "Source/plaid_flutter",
-            resources: [
-                // TODO: If your plugin requires a privacy manifest
-                // (e.g. if it uses any required reason APIs), update the PrivacyInfo.xcprivacy file
-                // to describe your plugin's privacy impact, and then uncomment this line.
-                // For more information, see:
-                // https://developer.apple.com/documentation/bundleresources/privacy_manifest_files
-                // .process("PrivacyInfo.xcprivacy"),
-
-                // TODO: If you have other resources that need to be bundled with your plugin, refer to
-                // the following instructions to add them:
-                // https://developer.apple.com/documentation/xcode/bundling-resources-with-a-swift-package
-            ],
-            publicHeadersPath: "Classes"
+            path: "Sources/plaid_flutter"
         )
     ]
 )

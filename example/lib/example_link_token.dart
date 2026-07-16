@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:plaid_flutter/plaid_flutter.dart';
 
 class ExampleLinkToken extends StatefulWidget {
-  const ExampleLinkToken({
-    super.key,
-    required this.linkToken,
-  });
+  const ExampleLinkToken({super.key, required this.linkToken});
 
   final String linkToken;
 
@@ -23,6 +20,8 @@ class _ExampleLinkTokenState extends State<ExampleLinkToken> {
   StreamSubscription<LinkOnLoad>? _streamOnLoad;
   LinkObject? _successObject;
   bool _isLoadingConfiguration = false;
+  bool _isLinkReady = false;
+  LinkSessionType _sessionType = LinkSessionType.standard;
 
   @override
   void initState() {
@@ -45,28 +44,47 @@ class _ExampleLinkTokenState extends State<ExampleLinkToken> {
 
   void _openLink() async {
     try {
-      setState(() => _configuration = null);
       await PlaidLink.open();
+      if (mounted) {
+        setState(() {
+          _configuration = null;
+          _isLinkReady = false;
+        });
+      }
     } catch (e) {
       debugPrint("Error opening Link: $e");
     }
   }
 
   void _createLinkTokenConfiguration() async {
-    LinkTokenConfiguration configuration =
-        LinkTokenConfiguration(token: widget.linkToken);
-    setState(() => _isLoadingConfiguration = true);
-
-    await PlaidLink.create(configuration: configuration);
-
+    final configuration = LinkTokenConfiguration(
+      token: widget.linkToken,
+      sessionType: _sessionType,
+    );
     setState(() {
-      _isLoadingConfiguration = false;
-      _configuration = configuration;
+      _isLoadingConfiguration = true;
+      _isLinkReady = false;
     });
+
+    try {
+      await PlaidLink.create(configuration: configuration);
+      if (mounted) {
+        setState(() => _configuration = configuration);
+      }
+    } catch (error) {
+      debugPrint("Error creating Link: $error");
+    } finally {
+      if (mounted) {
+        setState(() => _isLoadingConfiguration = false);
+      }
+    }
   }
 
   void _onLoad(_) {
     debugPrint("LinkTokenConfiguration Loaded");
+    if (mounted) {
+      setState(() => _isLinkReady = true);
+    }
   }
 
   void _onEvent(LinkEvent event) {
@@ -105,21 +123,48 @@ class _ExampleLinkTokenState extends State<ExampleLinkToken> {
               ),
             ),
           ),
+          DropdownButtonFormField<LinkSessionType>(
+            initialValue: _sessionType,
+            decoration: const InputDecoration(labelText: "Session type"),
+            items: LinkSessionType.values
+                .map(
+                  (type) =>
+                      DropdownMenuItem(value: type, child: Text(type.name)),
+                )
+                .toList(),
+            onChanged: _isLoadingConfiguration
+                ? null
+                : (type) {
+                    if (type == null) return;
+                    setState(() {
+                      _sessionType = type;
+                      _configuration = null;
+                      _isLinkReady = false;
+                    });
+                  },
+          ),
+          const SizedBox(height: 15),
           ElevatedButton(
             onPressed: _createLinkTokenConfiguration,
             child: _isLoadingConfiguration
                 ? const SizedBox(
-                    height: 15, width: 15, child: CircularProgressIndicator())
+                    height: 15,
+                    width: 15,
+                    child: CircularProgressIndicator(),
+                  )
                 : const Text("Create Link Token Configuration"),
           ),
           const SizedBox(height: 15),
           ElevatedButton(
-            onPressed: _configuration != null ? _openLink : null,
+            onPressed: _configuration != null && _isLinkReady
+                ? _openLink
+                : null,
             child: const Text("Open"),
           ),
           const SizedBox(height: 15),
           ElevatedButton(
-            onPressed: _configuration != null
+            onPressed:
+                _configuration != null && _sessionType == LinkSessionType.layer
                 ? () {
                     PlaidLink.submit(
                       SubmissionData(

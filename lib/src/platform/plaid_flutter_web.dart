@@ -124,6 +124,9 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
     result["errorDisplayMessage"] = asNullableString(
       data["error_display_message"] ?? data["errorDisplayMessage"],
     );
+    result["errorJson"] = asNullableString(
+      data["error_json"] ?? data["errorJson"],
+    );
 
     return result;
   }
@@ -211,6 +214,13 @@ class PlaidFlutterPlugin extends PlaidPlatformInterface {
     result['mfaType'] = asString(data['mfa_type'] ?? data['mfaType']);
     result['viewName'] = asString(data['view_name'] ?? data['viewName']);
     result['requestId'] = asString(data['request_id'] ?? data['requestId']);
+    result['issueId'] = asString(data['issue_id'] ?? data['issueId']);
+    result['issueDescription'] = asString(
+      data['issue_description'] ?? data['issueDescription'],
+    );
+    result['issueDetectedAt'] = asString(
+      data['issue_detected_at'] ?? data['issueDetectedAt'],
+    );
     result['timestamp'] = asString(data['timestamp']);
     result['accountNumberMask'] = asString(
       data['account_number_mask'] ?? data['accountNumberMask'],

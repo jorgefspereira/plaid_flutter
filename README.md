@@ -9,7 +9,7 @@ A Flutter plugin for [Plaid Link](https://plaid.com/docs/link).
 
 This plugin integrates the native SDKs:
 
-- [Plaid Link iOS SDK 6.x.x](https://plaid.com/docs/link/ios)
+- [Plaid Link iOS SDK 7.x.x](https://plaid.com/docs/link/ios)
 - [Plaid Link Android SDK 5.x.x](https://plaid.com/docs/link/android)
 - [Plaid Link JavaScript SDK](https://plaid.com/docs/link/web)
 
@@ -26,14 +26,14 @@ LinkTokenConfiguration _configuration = LinkTokenConfiguration(
     token: "<GENERATED_LINK_TOKEN>",
 );
 
-// Create the internal handler for Plaid Link.
-// This is a one-time use object that opens a Link session.
+// Create the native Plaid Link session.
+// This is a one-time-use session.
 // Must be called before `open()`.
 // Completes when Plaid is ready to open, or throws an error if setup fails.
 await PlaidLink.create(configuration: _configuration);
 
-/// Open Plaid Link by calling open on the handler.
-PlaidLink.open();
+// Present standard or Layer Link, or start a headless session.
+await PlaidLink.open();
 
 ...
 
@@ -42,8 +42,6 @@ PlaidLink.open();
 Note that each time you open Link, you will need to get a new link_token from your server and create a new LinkTokenConfiguration with it.
 
 A link_token can be configured for different Link flows depending on the fields provided during token creation. It is the preferred way of initializing Link going forward. You will need to pass in most of your Link configurations server-side in the [/link/token/create](https://plaid.com/docs/#create-link-token) endpoint rather than client-side where they previously existed.
-
-If your integration is still using a public_key to initialize Plaid Link, the LinkConfiguration class has support for it. Check the [migration guide](https://plaid.com/docs/upgrade-to-link-tokens/) to upgrade your app to the link_token flow.
 
 ## Installation
 
@@ -55,8 +53,75 @@ Add `plaid_flutter` as a [dependency in your pubspec.yaml file](https://flutter.
 
 | Name | Version |
 |------|---------|
+| Flutter | >= 3.44.0 |
 | Xcode | >= 16.1.0 |
-| iOS | >= 14.0 |
+| Swift | >= 5.10 |
+| iOS | >= 15.0 |
+
+Plaid Link iOS 7 is distributed only through Swift Package Manager. This
+plugin has no CocoaPods specification. Flutter 3.44 enables Swift Package
+Manager by default; if it was disabled locally, re-enable it with:
+
+```shell
+flutter config --enable-swift-package-manager
+```
+
+### LinkKit 7 session types
+
+Standard Link remains the default and requires no code changes:
+
+```dart
+const configuration = LinkTokenConfiguration(
+  token: '<GENERATED_LINK_TOKEN>',
+);
+```
+
+Layer and headless tokens must opt into their matching native LinkKit 7
+session API:
+
+```dart
+const layerConfiguration = LinkTokenConfiguration(
+  token: '<LAYER_LINK_TOKEN>',
+  sessionType: LinkSessionType.layer,
+);
+
+const headlessConfiguration = LinkTokenConfiguration(
+  token: '<HEADLESS_LINK_TOKEN>',
+  sessionType: LinkSessionType.headless,
+);
+```
+
+For standard and headless sessions, `create` completes when LinkKit calls
+`onLoad`; `open` then presents Link or calls `start()`. A Layer `create`
+completes as soon as its native session exists. Wait for a `LAYER_READY` event
+before calling `open`.
+
+`LAYER_NOT_AVAILABLE` is recoverable for Extended Autofill: call
+`PlaidLink.submit` on that same active Layer session with the requested phone
+number or date of birth, then wait for `LAYER_READY` or
+`LAYER_AUTOFILL_NOT_AVAILABLE`. Tokens are specific to their session type and
+cannot be interchanged.
+
+Embedded Link continues to use `PlaidEmbeddedView` and its dedicated embedded
+token configuration. The `noLoadingState` option is Android-only with LinkKit
+7; `showGradientBackground` applies only to standard Link on iOS.
+
+### FinanceKit
+
+FinanceKit sync requires iOS 17.4 or later and a link token associated with an
+access token for a previously linked Apple Card Item:
+
+```dart
+await PlaidLink.syncFinanceKit(
+  token: '<FINANCEKIT_LINK_TOKEN>',
+  requestAuthorizationIfNeeded: true,
+  behavior: FinanceKitSyncBehavior.simulated,
+);
+```
+
+`FinanceKitSyncBehavior.live` requires Apple's FinanceKit entitlement. The
+native FinanceKit API will terminate an app that calls live sync without that
+entitlement.
 
 ### (Identity Verification only) - Enable camera support 
 
@@ -112,4 +177,3 @@ Include the Plaid Link initialize script on your main HTML page.
 ```
 
 *More info at [https://plaid.com/docs/link/web](https://plaid.com/docs/link/web).*
-

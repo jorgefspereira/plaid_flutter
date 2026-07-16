@@ -99,6 +99,24 @@ main() {
       });
     });
 
+    group('create', () {
+      test('forwards the complete configuration to the platform', () async {
+        const configuration = LinkTokenConfiguration(
+          token: 'layer-token',
+          sessionType: LinkSessionType.layer,
+        );
+        when(
+          () => plaidPlatformInterface.create(configuration: configuration),
+        ).thenAnswer((_) async {});
+
+        await PlaidLink.create(configuration: configuration);
+
+        verify(
+          () => plaidPlatformInterface.create(configuration: configuration),
+        ).called(1);
+      });
+    });
+
     group('close', () {
       test('calls platform.close', () async {
         when(
@@ -109,22 +127,6 @@ main() {
 
         verify(
           () => plaidPlatformInterface.close(),
-        ).called(1);
-      });
-    });
-
-    group('resumeAfterTermination', () {
-      test('calls platform.resumeAfterTermination', () async {
-        const redirectUri = 'redirectUri';
-
-        when(
-          () => plaidPlatformInterface.resumeAfterTermination(redirectUri),
-        ).thenAnswer(Future.value);
-
-        await PlaidLink.resumeAfterTermination(redirectUri);
-
-        verify(
-          () => plaidPlatformInterface.resumeAfterTermination(redirectUri),
         ).called(1);
       });
     });
@@ -189,6 +191,62 @@ main() {
 
         verify(
           () => plaidPlatformInterface.submit(submissionData),
+        ).called(1);
+      });
+    });
+
+    group('LinkTokenConfiguration', () {
+      test('defaults to a standard session', () {
+        const configuration = LinkTokenConfiguration(token: 'link-token');
+
+        expect(configuration.sessionType, LinkSessionType.standard);
+        expect(configuration.toJson(), {
+          'token': 'link-token',
+          'noLoadingState': false,
+          'receivedRedirectUri': null,
+          'showGradientBackground': false,
+          'sessionType': 'standard',
+        });
+      });
+
+      test('serializes Layer and headless session types', () {
+        const layer = LinkTokenConfiguration(
+          token: 'link-token',
+          sessionType: LinkSessionType.layer,
+        );
+        const headless = LinkTokenConfiguration(
+          token: 'link-token',
+          sessionType: LinkSessionType.headless,
+        );
+
+        expect(layer.toJson()['sessionType'], 'layer');
+        expect(headless.toJson()['sessionType'], 'headless');
+        expect(layer, isNot(headless));
+      });
+    });
+
+    group('syncFinanceKit', () {
+      test('maps simulated behavior to the platform API', () async {
+        when(
+          () => plaidPlatformInterface.syncFinanceKit(
+            'finance-token',
+            true,
+            true,
+          ),
+        ).thenAnswer((_) async {});
+
+        await PlaidLink.syncFinanceKit(
+          token: 'finance-token',
+          requestAuthorizationIfNeeded: true,
+          behavior: FinanceKitSyncBehavior.simulated,
+        );
+
+        verify(
+          () => plaidPlatformInterface.syncFinanceKit(
+            'finance-token',
+            true,
+            true,
+          ),
         ).called(1);
       });
     });

@@ -1,15 +1,41 @@
+/// The native LinkKit session created for a link token.
+///
+/// LinkKit 7 requires a token to be used with the session type it was created
+/// for. Tokens for different session types are not interchangeable.
+enum LinkSessionType {
+  /// A standard, user-presented Plaid Link session on iOS.
+  standard,
+
+  /// A Plaid Layer session on iOS.
+  layer,
+
+  /// A headless Link session on iOS that runs without presenting Link UI.
+  headless,
+}
+
 class LinkTokenConfiguration {
   /// Specify a link_token to authenticate your app with Link. This is a short lived, one-time use token that should be unique for each Link session
   final String token;
 
-  /// MOBILE ONLY: A bool indicating that Link should skip displaying a loading animation and Link UI will be presented once it is fully loaded.
+  /// ANDROID ONLY: A bool indicating that Link should skip displaying a
+  /// loading animation and present Link UI once it is fully loaded.
+  ///
+  /// LinkKit 7 no longer supports this option on iOS. Use [sessionType] to
+  /// create a [LinkSessionType.headless] session when using a headless token.
   final bool noLoadingState;
 
   /// WEB ONLY: A receivedRedirectUri is required to support OAuth authentication flows when re-launching Link on a mobile device.
   final String? receivedRedirectUri;
 
-  /// A Boolean value that determines whether Link displays a transparent gradient background.
+  /// IOS STANDARD LINK ONLY: Whether Link displays a transparent gradient
+  /// background.
   final bool showGradientBackground;
+
+  /// The type of native Link session to create.
+  ///
+  /// Android and web continue to use their platform-native handler APIs. iOS
+  /// uses this value to select the matching LinkKit 7 session API.
+  final LinkSessionType sessionType;
 
   /// The LinkTokenConfiguration only needs a token which is created by your app's
   /// server and passed to your app's client to initialize Link. The Link configuration parameters that were
@@ -23,6 +49,7 @@ class LinkTokenConfiguration {
     this.noLoadingState = false,
     this.showGradientBackground = false,
     this.receivedRedirectUri,
+    this.sessionType = LinkSessionType.standard,
   });
 
   /// Returns a representation of this object as a JSON object.
@@ -32,16 +59,28 @@ class LinkTokenConfiguration {
       'noLoadingState': noLoadingState,
       'receivedRedirectUri': receivedRedirectUri,
       'showGradientBackground': showGradientBackground,
+      'sessionType': sessionType.name,
     };
   }
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is LinkTokenConfiguration && runtimeType == other.runtimeType && hashCode == other.hashCode;
+      identical(this, other) ||
+      other is LinkTokenConfiguration &&
+          token == other.token &&
+          noLoadingState == other.noLoadingState &&
+          receivedRedirectUri == other.receivedRedirectUri &&
+          showGradientBackground == other.showGradientBackground &&
+          sessionType == other.sessionType;
 
   @override
-  int get hashCode =>
-      Object.hash(token.hashCode, noLoadingState.hashCode, receivedRedirectUri.hashCode, showGradientBackground.hashCode);
+  int get hashCode => Object.hash(
+        token.hashCode,
+        noLoadingState.hashCode,
+        receivedRedirectUri.hashCode,
+        showGradientBackground.hashCode,
+        sessionType.hashCode,
+      );
 }
 
 /// Data to submit during a Link session.

@@ -41,6 +41,8 @@ class _MyAppState extends State<MyApp> {
   void _createLinkTokenConfiguration() async {
     LinkTokenConfiguration configuration = const LinkTokenConfiguration(
       token: "GENERATED_LINK_TOKEN",
+      // Use LinkSessionType.layer or .headless for matching LinkKit 7 tokens.
+      sessionType: LinkSessionType.standard,
     );
 
     await PlaidLink.create(configuration: configuration);
@@ -95,6 +97,8 @@ class _MyAppState extends State<MyApp> {
                 child: const Text("Open"),
               ),
               const SizedBox(height: 10),
+              // submit() is available on an active Layer session, including
+              // after LAYER_NOT_AVAILABLE for Extended Autofill.
               ElevatedButton(
                 onPressed: _configuration != null
                     ? () {

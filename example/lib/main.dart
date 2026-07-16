@@ -14,8 +14,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int currentPageIndex = 0;
-  final String linkToken =
-      'GENERATED_LINK_TOKEN'; // Replace with your actual link token
+  final String linkToken = 'GENERATED_LINK_TOKEN'; // Replace with your actual link token
 
   @override
   Widget build(BuildContext context) {
@@ -27,14 +26,8 @@ class _MyAppState extends State<MyApp> {
           },
           selectedIndex: currentPageIndex,
           destinations: const <Widget>[
-            NavigationDestination(
-              icon: Icon(Icons.looks_one),
-              label: 'LinkToken',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.looks_two),
-              label: 'EmbeddedLink',
-            ),
+            NavigationDestination(icon: Icon(Icons.looks_one), label: 'LinkToken'),
+            NavigationDestination(icon: Icon(Icons.looks_two), label: 'EmbeddedLink'),
           ],
         ),
         body: <Widget>[

@@ -27,12 +27,12 @@ abstract class PlaidPlatformInterface extends PlatformInterface {
     throw UnimplementedError('onObject has not been implemented.');
   }
 
-  /// Creates a handler for Plaid Link. A one-time use object used to open a Link session.
+  /// Creates a one-time native Link session.
   Future<void> create({required LinkTokenConfiguration configuration}) async {
     throw UnimplementedError('create() has not been implemented.');
   }
 
-  /// Open Plaid Link by calling open on the Handler object.
+  /// Opens or starts the created Link session.
   Future<void> open() async {
     throw UnimplementedError('open() has not been implemented.');
   }
@@ -40,12 +40,6 @@ abstract class PlaidPlatformInterface extends PlatformInterface {
   /// Closes Plaid Link View
   Future<void> close() async {
     throw UnimplementedError('close() has not been implemented.');
-  }
-
-  /// Resume after termination
-  Future<void> resumeAfterTermination(String redirectUri) async {
-    throw UnimplementedError(
-        'resumeAfterTermination() has not been implemented.');
   }
 
   /// It allows the client application to submit additional user-collected data to the Link flow (e.g. a user phone number) for the Layer product.

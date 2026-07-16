@@ -1,3 +1,17 @@
+## 6.0.0
+
+* Updated Plaid Link iOS to 7.0.3.
+* Reimplemented the iOS plugin in Swift against the Swift-native `LinkKit` API; `LinkKitObjC` is no longer imported.
+* BREAKING CHANGE: iOS now uses Swift Package Manager exclusively. Removed the CocoaPods specification and raised the minimums to Flutter 3.44.0, Xcode 16.1, Swift 5.10, and iOS 15.
+* Added `LinkSessionType` so standard, Layer, and headless LinkKit 7 sessions use their dedicated native creation APIs.
+* Layer creation now returns the active session before readiness so Extended Autofill data can be submitted after `LAYER_NOT_AVAILABLE`; presentation remains gated on `LAYER_READY`.
+* Added LinkKit 7 issue metadata (`issueId`, `issueDescription`, and `issueDetectedAt`) to `LinkEventMetadata`.
+* Added LinkKit 7 raw exit error metadata as `LinkError.errorJson`.
+* Migrated Embedded Link to `EmbeddedLinkTokenConfiguration` and FinanceKit sync to `PlaidFinanceKit.SyncBehavior`; added the public `PlaidLink.syncFinanceKit` facade.
+* BREAKING CHANGE: Removed `PlaidLink.resumeAfterTermination`, which LinkKit 7 no longer supports.
+* `noLoadingState` is now Android-only; `showGradientBackground` is supported for standard Link sessions on iOS.
+* iOS now reports LinkKit 7's corrected `continue_to_third_party` exit status spelling, and FinanceKit failures use symbolic LinkKit 7 error codes instead of legacy numeric `NSError` codes.
+
 ## 5.2.0
 
 * Migration to Swift Package Management

@@ -36,13 +36,13 @@ class PlaidMethodChannel extends PlaidPlatformInterface {
     return _onObject!;
   }
 
-  /// Creates a handler for Plaid Link. A one-time use object used to open a Link session.
+  /// Creates a one-time native Link session.
   @override
   Future<void> create({required LinkTokenConfiguration configuration}) async {
     await _channel.invokeMethod('create', configuration.toJson());
   }
 
-  /// Open Plaid Link by calling open on the Handler object.
+  /// Opens or starts the created Link session.
   @override
   Future<void> open() async {
     await _channel.invokeMethod('open');
@@ -52,15 +52,6 @@ class PlaidMethodChannel extends PlaidPlatformInterface {
   @override
   Future<void> close() async {
     await _channel.invokeMethod('close');
-  }
-
-  /// Continue with redirect uri
-  @override
-  Future<void> resumeAfterTermination(String redirectUri) async {
-    await _channel.invokeMethod(
-      'resumeAfterTermination',
-      {"redirectUri": redirectUri},
-    );
   }
 
   /// It allows the client application to submit additional user-collected data to the Link flow (e.g. a user phone number) for the Layer product.

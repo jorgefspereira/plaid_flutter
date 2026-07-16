@@ -14,11 +14,15 @@ class LinkError {
   /// This may change over time and is not safe for programmatic use.
   final String? displayMessage;
 
+  /// The raw JSON metadata provided by LinkKit for this exit error.
+  final String? errorJson;
+
   LinkError({
     required this.code,
     required this.type,
     required this.message,
     this.displayMessage,
+    this.errorJson,
   });
 
   factory LinkError.fromJson(dynamic json) {
@@ -27,11 +31,12 @@ class LinkError {
       type: json["errorType"],
       message: json["errorMessage"],
       displayMessage: json["errorDisplayMessage"],
+      errorJson: json["errorJson"],
     );
   }
 
   String description() {
-    return "[code: $code, type: $type, message: $message, displayMessage: $displayMessage]";
+    return "[code: $code, type: $type, message: $message, displayMessage: $displayMessage, errorJson: $errorJson]";
   }
 }
 
@@ -238,6 +243,15 @@ class LinkEventMetadata {
   /// The request ID for the last request made by Link. This can be shared with Plaid Support to expedite investigation. Emitted by: all events.
   final String? requestId;
 
+  /// The identifier of an issue associated with the event, when available.
+  final String? issueId;
+
+  /// A description of an issue associated with the event, when available.
+  final String? issueDescription;
+
+  /// An ISO 8601 representation of when the associated issue was detected.
+  final String? issueDetectedAt;
+
   /// An ISO 8601 representation of when the event occurred. For example 2017-09-14T14:42:19.350Z. Emitted by: all events.
   final String timestamp;
 
@@ -264,6 +278,9 @@ class LinkEventMetadata {
     required this.exitStatus,
     required this.mfaType,
     required this.requestId,
+    this.issueId,
+    this.issueDescription,
+    this.issueDetectedAt,
     required this.timestamp,
     required this.linkSessionId,
     required this.institutionName,
@@ -285,6 +302,9 @@ class LinkEventMetadata {
       exitStatus: json["exitStatus"],
       mfaType: json["mfaType"],
       requestId: json["requestId"],
+      issueId: json["issueId"],
+      issueDescription: json["issueDescription"],
+      issueDetectedAt: json["issueDetectedAt"],
       timestamp: json["timestamp"],
       linkSessionId: json["linkSessionId"],
       institutionName: json["institutionName"],
@@ -302,6 +322,6 @@ class LinkEventMetadata {
   }
 
   String description() {
-    return "viewName: $viewName, exitStatus: $exitStatus, mfaType: $mfaType, requestId: $requestId, timestamp: $timestamp, linkSessionId: $linkSessionId, institutionId: $institutionId, institutionName: $institutionName, institutionSearchQuery: $institutionSearchQuery, errorType: $errorType, errorCode: $errorCode, errorMessage: $errorMessage,  selection: $selection, routingNumber: $routingNumber, matchReason: $matchReason, accountNumberMask: $accountNumberMask";
+    return "viewName: $viewName, exitStatus: $exitStatus, mfaType: $mfaType, requestId: $requestId, issueId: $issueId, issueDescription: $issueDescription, issueDetectedAt: $issueDetectedAt, timestamp: $timestamp, linkSessionId: $linkSessionId, institutionId: $institutionId, institutionName: $institutionName, institutionSearchQuery: $institutionSearchQuery, errorType: $errorType, errorCode: $errorCode, errorMessage: $errorMessage, selection: $selection, routingNumber: $routingNumber, matchReason: $matchReason, accountNumberMask: $accountNumberMask";
   }
 }
