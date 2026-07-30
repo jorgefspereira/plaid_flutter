@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:plaid_flutter/plaid_flutter.dart';
 
 class ExampleLinkToken extends StatefulWidget {
-  const ExampleLinkToken({
-    super.key,
-    required this.linkToken,
-  });
+  const ExampleLinkToken({super.key, required this.linkToken});
 
   final String linkToken;
 
@@ -53,8 +50,9 @@ class _ExampleLinkTokenState extends State<ExampleLinkToken> {
   }
 
   void _createLinkTokenConfiguration() async {
-    LinkTokenConfiguration configuration =
-        LinkTokenConfiguration(token: widget.linkToken);
+    LinkTokenConfiguration configuration = LinkTokenConfiguration(
+      token: widget.linkToken,
+    );
     setState(() => _isLoadingConfiguration = true);
 
     await PlaidLink.create(configuration: configuration);
@@ -109,7 +107,10 @@ class _ExampleLinkTokenState extends State<ExampleLinkToken> {
             onPressed: _createLinkTokenConfiguration,
             child: _isLoadingConfiguration
                 ? const SizedBox(
-                    height: 15, width: 15, child: CircularProgressIndicator())
+                    height: 15,
+                    width: 15,
+                    child: CircularProgressIndicator(),
+                  )
                 : const Text("Create Link Token Configuration"),
           ),
           const SizedBox(height: 15),

@@ -4,10 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:plaid_flutter/plaid_flutter.dart';
 
 class ExampleEmbeddedLink extends StatefulWidget {
-  const ExampleEmbeddedLink({
-    super.key,
-    required this.linkToken,
-  });
+  const ExampleEmbeddedLink({super.key, required this.linkToken});
 
   final String linkToken;
 
@@ -73,9 +70,7 @@ class _ExampleEmbeddedLinkState extends State<ExampleEmbeddedLink> {
           SizedBox(
             width: 350,
             height: 450,
-            child: PlaidEmbeddedView(
-              token: widget.linkToken,
-            ),
+            child: PlaidEmbeddedView(token: widget.linkToken),
           ),
         ],
       ),

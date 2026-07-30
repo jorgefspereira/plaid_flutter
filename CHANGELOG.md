@@ -1,3 +1,7 @@
+## 5.2.1
+
+* Updated Android SDK to 5.5.3
+
 ## 5.2.0
 
 * Migration to Swift Package Management
